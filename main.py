@@ -60,16 +60,16 @@ def handle_keys():
         return True  # exit game
  
     # movement keys
-    if tcod.console_is_key_pressed(tcod.KEY_UP):
+    if tcod.console_is_key_pressed(tcod.KEY_UP) or key.c == ord('w'):
         player_y -= 1
  
-    elif tcod.console_is_key_pressed(tcod.KEY_DOWN):
+    elif tcod.console_is_key_pressed(tcod.KEY_DOWN) or key.c == ord('s'):
         player_y += 1
  
-    elif tcod.console_is_key_pressed(tcod.KEY_LEFT):
+    elif tcod.console_is_key_pressed(tcod.KEY_LEFT) or key.c == ord('a'):
         player_x -= 1
  
-    elif tcod.console_is_key_pressed(tcod.KEY_RIGHT):
+    elif tcod.console_is_key_pressed(tcod.KEY_RIGHT) or key.c == ord('d'):
         player_x += 1
  
  
