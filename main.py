@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import libtcodpy as tcod
+import tcod
  
 # ######################################################################
 # Global Game Settings
