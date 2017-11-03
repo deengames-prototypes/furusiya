@@ -1,1 +1,3 @@
-Implementation of [python3 + libtcod tutorial](http://www.roguebasin.com/index.php?title=Complete_Roguelike_Tutorial,_using_python3%2Blibtcod,_part_1)
+Martial-arts roguelike. A warrior trained in Changquan, your daughter falls seriously ill. The elders advise you to travel halfway across the world to recover a rare plant that can be used to heal her ...
+
+Built with Python 3 and TDL.
