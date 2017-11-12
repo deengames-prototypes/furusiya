@@ -8,21 +8,14 @@ class TdlAdapter:
         tdl.setFPS(fps_limit)
 
     # TODO: maybe we don't want this design ...
-    def draw_walls(self, data):
-        width = len(data)
-        height = len(data[0])
+    def draw(self, x, y, char, colour):
+        self.console.draw_str(x, y, char, colour, bg=None)
 
-        for y in range(0, height):
-            for x in range(0, width):
-                if data[x][y] == True:
-                    char = 'T'
-                    fg = (0, 128, 0)
-                else:
-                    char = '.'
-                    fg = (0, 64, 0)
-                self.console.draw_str(x, y, char, fg, bg=None)
-
+    def flush(self):
         # draw on-screen
         tdl.flush()
+
+    def wait_for_input(self):
         # wait for response
         key = tdl.event.key_wait()
+        return key

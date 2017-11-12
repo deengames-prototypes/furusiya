@@ -17,6 +17,16 @@ while total > 0:
     total -= batch
     fg.drunken_man_walk(batch, True)
 
-
 # DRAW IT!
-ui_adapter.draw_walls(fg.data)
+for y in range(0, SCREEN_HEIGHT):
+    for x in range(0, SCREEN_WIDTH):
+        if fg.data[x][y] == True:
+            char = 'T'
+            colour = (0, 96, 0)
+        else:
+            char = '.'
+            colour = (64, 48, 0)
+        ui_adapter.draw(x, y, char, colour)
+
+ui_adapter.flush()
+ui_adapter.wait_for_input()
