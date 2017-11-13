@@ -13,7 +13,7 @@ class ForestGenerator:
             for y in range(0, height):
                 self.data[x].append(is_walkable) # walkable
 
-    def drunken_man_walk(self, num_tiles, is_walkable = False):
+    def random_walk(self, num_tiles, is_walkable = False):
         # Pick a random point, walk to a random adjacent point.
         # If wall, make it floor, and decrement num_tiles.
         # Repeat until num_tiles is 0
