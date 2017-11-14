@@ -18,8 +18,7 @@ class ConfigWatcher:
         self.timer.start()        
 
     def poll_file_for_changes(self):
-        print("POLLING!!!")
+        pass
 
     def dispose(self):
         self.timer.stop()
-        print("DEAD")

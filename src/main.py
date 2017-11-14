@@ -5,8 +5,8 @@ import time
 import sys
 
 #actual size of the window
-SCREEN_WIDTH = 80
-SCREEN_HEIGHT = 50
+SCREEN_WIDTH = 60
+SCREEN_HEIGHT = 40
 LIMIT_FPS = 20
 
 ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -34,7 +34,6 @@ for y in range(0, SCREEN_HEIGHT):
 ui_adapter.flush()
 
 config = ConfigWatcher()
-
 ui_adapter.wait_for_input()
 
 config.dispose()

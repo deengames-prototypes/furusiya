@@ -19,3 +19,17 @@ class TdlAdapter:
         # wait for response
         key = tdl.event.key_wait()
         return key
+
+    # Ask for input. If none, returns None.
+    def get_input(self):
+        keypress = False
+        for event in tdl.event.get():
+            if event.type == 'KEYDOWN':
+                print("KEY DOWN: {0}".format(event))
+                return event # contains key pressed
+            if event.type == 'MOUSEMOTION':
+                print("MOUSE: {0}".format(event))
+                return event.cell
+    
+        if not keypress:
+            return None

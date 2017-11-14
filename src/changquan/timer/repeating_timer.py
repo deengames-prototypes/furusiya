@@ -7,15 +7,16 @@ from threading import Event
 # Stoppable timer, runs in a separate thread
 class RepeatingTimer(Thread):
     def __init__(self, interval_seconds, callback):
-        Thread.__init__(self)
+        super().__init__()
         self.stop_event = Event()
         self.interval_seconds = interval_seconds
         self.callback = callback
         self.setDaemon(True)
 
-    def start(self):
+    def run(self):
         while not self.stop_event.wait(self.interval_seconds):
             self.callback()
+            time.sleep(0)
     
     def stop(self):
         self.stop_event.set()
