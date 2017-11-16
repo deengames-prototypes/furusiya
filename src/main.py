@@ -7,18 +7,13 @@ import sys
 #actual size of the window
 SCREEN_WIDTH = 60
 SCREEN_HEIGHT = 40
-LIMIT_FPS = 20
+FPS_LIMIT = 20
 
-ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT)
+ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
 
 fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT, False)
 # Instead of doing this in one shot, do it in batches so we get copses of trees
-total = 1/6 * SCREEN_WIDTH * SCREEN_HEIGHT
-
-while total > 0:
-    batch = min(10, total)
-    total -= batch
-    fg.random_walk(batch, True)
+fg.generate_trees()
 
 # DRAW IT!
 for y in range(0, SCREEN_HEIGHT):

@@ -3,8 +3,12 @@ import random
 
 class ForestGenerator:
     DELETE_PERCENTAGE = 0.5
+    TREE_BATCH_SIZE = 10
+    TREE_PERCENTAGE = 1/6
 
     def __init__(self, width, height, is_walkable = True):
+        random.seed(1)
+        
         self.width = width
         self.height = height
         self.data = []
@@ -13,6 +17,16 @@ class ForestGenerator:
             for y in range(0, height):
                 self.data[x].append(is_walkable) # walkable
 
+    def generate_trees(self):
+        total = self.width * self.height * ForestGenerator.TREE_PERCENTAGE
+        
+        while total > 0:
+            # Creates little clusters of N trees
+            batch = min(ForestGenerator.TREE_BATCH_SIZE, total)
+            total -= batch
+            self.random_walk(batch, True)
+
+    # private
     def random_walk(self, num_tiles, is_walkable = False):
         # Pick a random point, walk to a random adjacent point.
         # If wall, make it floor, and decrement num_tiles.
