@@ -11,9 +11,7 @@ FPS_LIMIT = 20
 
 ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
 
-fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT, False)
-# Instead of doing this in one shot, do it in batches so we get copses of trees
-fg.generate_trees()
+fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # DRAW IT!
 for y in range(0, SCREEN_HEIGHT):
