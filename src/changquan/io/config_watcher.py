@@ -42,5 +42,8 @@ class ConfigWatcher:
                 #traceback.print_exc() # prints the stack-trace
                 # don't "raise", we want to keep retrying
 
+    def get(self, key):
+        return self.data[key]
+
     def dispose(self):
         self.timer.stop()

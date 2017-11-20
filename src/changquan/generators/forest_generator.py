@@ -1,15 +1,14 @@
 from random import randint
 import random
 
+# TODO: Convert into a REAL generator, not a mutator of sorts.
+# TODO: Figure out the best approximation of private methods in Python3
 class ForestGenerator:
     DELETE_PERCENTAGE = 0.5
     TREE_BATCH_SIZE = 10
     TREE_PERCENTAGE = 1/6
 
     def __init__(self, width, height):
-        # Hard-coded random seed for easier debugging
-        # random.seed(1)
-        
         self.width = width
         self.height = height
         self.data = [] # true if solid
@@ -71,7 +70,6 @@ class ForestGenerator:
                 if y < self.height - 1 and self.data[x][y+1] == False and (x, y+1) not in queue and (x, y+1) not in explored:
                     queue.append((x, y+1))
 
-        print("Done walking and found {0} unreachable tiles: {1}".format(len(unreachable), unreachable))
         while unreachable:
             (x, y) = unreachable.pop()
             self.data[x][y] = True # make it a tree

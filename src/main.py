@@ -1,8 +1,14 @@
 from changquan.io.adapters.tdl_adapter import TdlAdapter
 from changquan.io.config_watcher import ConfigWatcher
 from changquan.generators.forest_generator import ForestGenerator
+import random
 import time
 import sys
+
+config = ConfigWatcher()
+
+# Hard-coded random seed for easier debugging
+random.seed(config.get("randomsSeed"))
 
 #actual size of the window
 SCREEN_WIDTH = 60
@@ -26,7 +32,6 @@ for y in range(0, SCREEN_HEIGHT):
 
 ui_adapter.flush()
 
-config = ConfigWatcher()
 ui_adapter.wait_for_input()
 
 config.dispose()
