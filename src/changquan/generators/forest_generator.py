@@ -38,27 +38,29 @@ class ForestGenerator:
         return data
 
     def fill_ground_holes(self, data):
-        position = self.find_empty_ground(data)
-        queue = [position]
+        start_position = self.find_empty_ground(data)
         
-        # Add every ground tile to "unreachable"
-        unreachable = []
-        for x in range(0, self.width):
-            for y in range(0, self.height):
-                if data[x][y] == False: # walkable
-                    coordinates = (x, y)
-                    unreachable.append(coordinates)
+        all_ground_tiles = [(x, y) for y in range (0, self.height)
+            for x in range (0, self.width) if data[x][y] == False]
+        
+        reachable = self.breadth_first_search(data, start_position)
 
-        # Breadth-first search. Assuming "position" is reachable (empty 3x3),
+        unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
+
+        for (x, y) in unreachable:
+            data[x][y] = 'X' # make it a tree
+
+    # private
+    def breadth_first_search(self, data, start_position):
+        # Breadth-first search. Assuming "position" is reachable,
         # mark any other ground tiles that we can reach, as reachable.
         explored = []
+        queue = [start_position]
 
         while queue:
             position = queue.pop()
             (x, y) = position
             if data[x][y] == False: # ground tile
-                #print("Removing {0}; ex={1}".format(position, explored))
-                unreachable.remove(position)
                 explored.append(position)
                 # Check each adjacent tile. If it's on-map, walkable, and not queued/explored,
                 # then it's a candidate for an unwalkable tile.
@@ -71,9 +73,7 @@ class ForestGenerator:
                 if y < self.height - 1 and data[x][y+1] == False and (x, y+1) not in queue and (x, y+1) not in explored:
                     queue.append((x, y+1))
 
-        while unreachable:
-            (x, y) = unreachable.pop()
-            data[x][y] = 'X' # make it a tree
+        return explored
 
     # private
     def find_empty_ground(self, data):
