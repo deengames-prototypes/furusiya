@@ -24,7 +24,7 @@ class ForestGenerator:
         # Creates little clusters of N trees
         while total > 0:
             to_create = min(ForestGenerator.TREE_COPSE_SIZE, total)
-            self.random_walk(data, to_create)
+            self.__random_walk(data, to_create)
             total -= to_create
 
         # It's too bad those little clusters sometimes create "holes" that are
@@ -33,25 +33,11 @@ class ForestGenerator:
         #
         # Since mining is not part of the core experience, let's flood-fill the
         # ground, and any non-flood-filled ground tiles can turn into trees.
-        self.fill_ground_holes(data)
+        self.__fill_ground_holes(data)
 
         return data
 
-    def fill_ground_holes(self, data):
-        start_position = self.find_empty_ground(data)
-        
-        all_ground_tiles = [(x, y) for y in range (0, self.height)
-            for x in range (0, self.width) if data[x][y] == False]
-        
-        reachable = self.breadth_first_search(data, start_position)
-
-        unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
-
-        for (x, y) in unreachable:
-            data[x][y] = 'X' # make it a tree
-
-    # private
-    def breadth_first_search(self, data, start_position):
+    def __breadth_first_search(self, data, start_position):
         # Breadth-first search. Assuming "position" is reachable,
         # mark any other ground tiles that we can reach, as reachable.
         explored = []
@@ -75,8 +61,21 @@ class ForestGenerator:
 
         return explored
 
-    # private
-    def find_empty_ground(self, data):
+    def __fill_ground_holes(self, data):
+        start_position = self.__find_empty_ground(data)
+        
+        all_ground_tiles = [(x, y) for y in range (0, self.height)
+            for x in range (0, self.width) if data[x][y] == False]
+        
+        reachable = self.__breadth_first_search(data, start_position)
+
+        unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
+
+        for (x, y) in unreachable:
+            data[x][y] = 'X' # make it a tree
+
+
+    def __find_empty_ground(self, data):
         # Look for a 3x3 patch of ground. It's unlikely that this is contained
         # within a copse of trees as an enclosed area. If we're wrong ... well.
         # I suppose you can always exit and re-enter the dungeon if that happens.
@@ -91,8 +90,7 @@ class ForestGenerator:
 
         raise Exception("Can't find any empty ground with empty adjacent tiles!")
 
-    # private
-    def random_walk(self, data, num_tiles):
+    def __random_walk(self, data, num_tiles):
         # Pick a random point, walk to a random adjacent point.
         # If it's a floor tile, make it a wall tile, and decrement
         # the number of tiles we have to walk.
