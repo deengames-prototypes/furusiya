@@ -8,7 +8,7 @@ import sys
 config = ConfigWatcher()
 
 # Hard-coded random seed for easier debugging
-random.seed(config.get("randomsSeed"))
+# random.seed(config.get("randomsSeed"))
 
 #actual size of the window
 SCREEN_WIDTH = 60
@@ -18,13 +18,17 @@ FPS_LIMIT = 20
 ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
 
 fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT)
+data = fg.generate_trees()
 
 # DRAW IT!
 for y in range(0, SCREEN_HEIGHT):
     for x in range(0, SCREEN_WIDTH):
-        if fg.data[x][y] == True:
+        if data[x][y] == True:
             char = 'T'
             colour = (0, 96, 0)
+        elif data[x][y] == 'X':
+            char = 'X'
+            colour = (255, 0, 0)
         else:
             char = '.'
             colour = (64, 48, 0)
