@@ -1,6 +1,6 @@
 from changquan.io.adapters.tdl_adapter import TdlAdapter
 from changquan.io.config_watcher import ConfigWatcher
-from changquan.generators.forest_generator import ForestGenerator
+from changquan.maps.generators.forest_generator import ForestGenerator
 import random
 import time
 import sys
@@ -26,9 +26,6 @@ for y in range(0, SCREEN_HEIGHT):
         if data[x][y] == True:
             char = 'T'
             colour = (0, 96, 0)
-        elif data[x][y] == 'X':
-            char = 'X'
-            colour = (255, 0, 0)
         else:
             char = '.'
             colour = (64, 48, 0)

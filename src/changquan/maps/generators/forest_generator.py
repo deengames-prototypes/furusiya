@@ -1,8 +1,7 @@
 from random import randint
 import random
 
-# TODO: Convert into a REAL generator, not a mutator of sorts.
-# TODO: Figure out the best approximation of private methods in Python3
+# Generates a forest map in entirety.
 class ForestGenerator:
 
     TREE_PERCENTAGE = 1/6 # This percent of the map area should be trees
@@ -72,7 +71,7 @@ class ForestGenerator:
         unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
 
         for (x, y) in unreachable:
-            data[x][y] = 'X' # make it a tree
+            data[x][y] = True # make it a tree
 
 
     def __find_empty_ground(self, data):
