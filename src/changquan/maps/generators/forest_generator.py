@@ -17,6 +17,7 @@ class ForestGenerator:
         self.width = width
         self.height = height
 
+
     def generate_trees(self, map):        
         for x in range(0, map.width):
             for y in range(0, map.height):
@@ -37,6 +38,7 @@ class ForestGenerator:
         # Since mining is not part of the core experience, let's flood-fill the
         # ground, and any non-flood-filled ground tiles can turn into trees.
         self.__fill_ground_holes(map.tiles)
+
 
     def __breadth_first_search(self, map_tiles, start_position):
         # Breadth-first search. Assuming "position" is reachable,
@@ -62,6 +64,7 @@ class ForestGenerator:
 
         return explored
 
+
     def __fill_ground_holes(self, map_tiles):
         start_position = self.__find_empty_ground(map_tiles)
 
@@ -74,6 +77,7 @@ class ForestGenerator:
 
         for (x, y) in unreachable:
             self.__convert_to_tree(map_tiles[x][y])
+
 
     def __find_empty_ground(self, map_tiles):
         # Look for a 3x3 patch of ground. It's unlikely that this is contained
@@ -89,6 +93,7 @@ class ForestGenerator:
                     return (x, y)
 
         raise Exception("Can't find any empty ground with empty adjacent tiles!")
+
 
     def __random_walk(self, map_tiles, num_tiles):
         # Pick a random point, walk to a random adjacent point.
@@ -122,10 +127,12 @@ class ForestGenerator:
             if y < 0 or y >= self.height:
                 y = randint(0, self.height - 1)
 
+
     def __convert_to_ground(self, map_tile):
         map_tile.is_walkable = True
         map_tile.character = ForestGenerator.GROUND_CHARACTER
         map_tile.colour = ForestGenerator.GROUND_COLOUR
+
 
     def __convert_to_tree(self, map_tile):
         map_tile.is_walkable = False

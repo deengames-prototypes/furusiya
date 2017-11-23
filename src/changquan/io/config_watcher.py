@@ -26,11 +26,13 @@ class ConfigWatcher:
         self.timer = RepeatingTimer(1, self.poll_file_for_changes)
         self.timer.start()  
 
+
     def poll_file_for_changes(self):
         modified_on = os.path.getmtime(ConfigWatcher.CONFIG_FILE_NAME)
         if (modified_on != self.last_changed_on):
             self.last_changed_on = modified_on
             self.refresh_config()
+
 
     def refresh_config(self):
         with open(ConfigWatcher.CONFIG_FILE_NAME) as json_data:
@@ -42,8 +44,10 @@ class ConfigWatcher:
                 #traceback.print_exc() # prints the stack-trace
                 # don't "raise", we want to keep retrying
 
+
     def get(self, key):
         return self.data[key]
+
 
     def dispose(self):
         self.timer.stop()

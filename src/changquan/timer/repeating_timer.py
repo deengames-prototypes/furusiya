@@ -13,10 +13,12 @@ class RepeatingTimer(Thread):
         self.callback = callback
         self.setDaemon(True)
 
+
     def run(self):
         while not self.stop_event.wait(self.interval_seconds):
             self.callback()
             time.sleep(0)
+    
     
     def stop(self):
         self.stop_event.set()
