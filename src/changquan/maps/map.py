@@ -14,3 +14,5 @@ class Map:
 class MapTile:
     def __init__(self):
         self.is_walkable = True
+        self.character = '.'
+        self.colour = (128, 128, 128)

@@ -9,7 +9,7 @@ import sys
 config = ConfigWatcher()
 
 # Hard-coded random seed for easier debugging
-random.seed(config.get("randomsSeed"))
+random.seed(config.get("universeSeed"))
 
 #actual size of the window
 SCREEN_WIDTH = 60
@@ -22,22 +22,14 @@ map = Map(SCREEN_WIDTH, SCREEN_HEIGHT)
 fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT)
 fg.generate_trees(map)
 
-pass
-
 # DRAW IT!
 for y in range(0, map.height):
     for x in range(0, map.width):
-        if map.tiles[x][y].is_walkable == True:
-            char = '.'
-            colour = (64, 48, 0)
-        else:
-            char = 'T'
-            colour = (0, 96, 0)
-            
-        ui_adapter.draw(x, y, char, colour)
+        tile = map.tiles[x][y]
+        ui_adapter.draw(x, y, tile.character, tile.colour)
 
 ui_adapter.flush()
 
-ui_adapter.wait_for_input()
+print(ui_adapter.wait_for_input())
 
 config.dispose()

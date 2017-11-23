@@ -7,11 +7,21 @@ class ForestGenerator:
     TREE_PERCENTAGE = 1/6 # This percent of the map area should be trees
     TREE_COPSE_SIZE = 10 # Create copses of N trees at a time
 
+    GROUND_CHARACTER = '.'
+    GROUND_COLOUR = (64, 48, 0)
+
+    TREE_CHARACTER = 'T'
+    TREE_COLOUR = (0, 96, 0)
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
 
     def generate_trees(self, map):        
+        for x in range(0, map.width):
+            for y in range(0, map.height):
+                self.__convert_to_ground(map.tiles[x][y])
+
         total = self.width * self.height * ForestGenerator.TREE_PERCENTAGE
         
         # Creates little clusters of N trees
@@ -63,7 +73,7 @@ class ForestGenerator:
         unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
 
         for (x, y) in unreachable:
-            map_tiles[x][y].is_walkable = False # make it a tree
+            self.__convert_to_tree(map_tiles[x][y])
 
     def __find_empty_ground(self, map_tiles):
         # Look for a 3x3 patch of ground. It's unlikely that this is contained
@@ -102,7 +112,7 @@ class ForestGenerator:
                 raise "Invalid state!"
 
             if x >= 0 and x < self.width and y >= 0 and y < self.height and map_tiles[x][y].is_walkable:
-                map_tiles[x][y].is_walkable = False # tree
+                self.__convert_to_tree(map_tiles[x][y])
                 num_tiles -= 1
 
             # Stay in bounds.
@@ -111,3 +121,13 @@ class ForestGenerator:
             
             if y < 0 or y >= self.height:
                 y = randint(0, self.height - 1)
+
+    def __convert_to_ground(self, map_tile):
+        map_tile.is_walkable = True
+        map_tile.character = ForestGenerator.GROUND_CHARACTER
+        map_tile.colour = ForestGenerator.GROUND_COLOUR
+
+    def __convert_to_tree(self, map_tile):
+        map_tile.is_walkable = False
+        map_tile.character = ForestGenerator.TREE_CHARACTER
+        map_tile.colour = ForestGenerator.TREE_COLOUR
