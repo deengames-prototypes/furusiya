@@ -18,18 +18,23 @@ FPS_LIMIT = 20
 
 ui_adapter = TdlAdapter('Changquan Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
 
-map = Map(SCREEN_WIDTH, SCREEN_HEIGHT)
-fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT)
-fg.generate_trees(map)
+end_game = False
 
-# DRAW IT!
-for y in range(0, map.height):
-    for x in range(0, map.width):
-        tile = map.tiles[x][y]
-        ui_adapter.draw(x, y, tile.character, tile.colour)
+while not end_game:
+    map = Map(SCREEN_WIDTH, SCREEN_HEIGHT)
+    fg = ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT)
+    fg.generate_trees(map)
 
-ui_adapter.flush()
+    # DRAW IT!
+    for y in range(0, map.height):
+        for x in range(0, map.width):
+            tile = map.tiles[x][y]
+            ui_adapter.draw(x, y, tile.character, tile.colour)
 
-print(ui_adapter.wait_for_input())
+    ui_adapter.flush()
+
+    key = ui_adapter.wait_for_input()
+    if (key.key == "ESCAPE" or key.char.lower() == 'q'):
+        end_game = True
 
 config.dispose()
