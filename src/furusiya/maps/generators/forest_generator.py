@@ -1,7 +1,7 @@
 from random import randint
 import random
 
-# Generates a forest map in entirety by mutating map tiles.
+# Generates a scary autumn map in entirety, by mutating map tiles.
 class ForestGenerator:
 
     TREE_PERCENTAGE = 1/6 # This percent of the map area should be trees
@@ -11,7 +11,8 @@ class ForestGenerator:
     GROUND_COLOUR = (64, 48, 0)
 
     TREE_CHARACTER = 'T'
-    TREE_COLOUR = (0, 96, 0)
+    TREE_COLOURS = [(96, 96, 96), # grey
+                    (128, 64, 0)] # orange
 
     def __init__(self, width, height):
         self.width = width
@@ -137,4 +138,4 @@ class ForestGenerator:
     def __convert_to_tree(self, map_tile):
         map_tile.is_walkable = False
         map_tile.character = ForestGenerator.TREE_CHARACTER
-        map_tile.colour = ForestGenerator.TREE_COLOUR
+        map_tile.colour = random.choice(ForestGenerator.TREE_COLOURS)

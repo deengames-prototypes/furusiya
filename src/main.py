@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from furusiyya.io.adapters.tdl_adapter import TdlAdapter
-from furusiyya.io.config_watcher import ConfigWatcher
-from furusiyya.maps.map import Map
-from furusiyya.maps.generators.forest_generator import ForestGenerator
+from furusiya.io.adapters.tdl_adapter import TdlAdapter
+from furusiya.io.config_watcher import ConfigWatcher
+from furusiya.maps.map import Map
+from furusiya.maps.generators.forest_generator import ForestGenerator
 import random
 import time
 import sys
@@ -19,7 +19,7 @@ def main():
     SCREEN_HEIGHT = 40
     FPS_LIMIT = 20
 
-    ui_adapter = TdlAdapter('furusiyya Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
+    ui_adapter = TdlAdapter('furusiya Dad', SCREEN_WIDTH, SCREEN_HEIGHT, FPS_LIMIT)
 
     end_game = False
 

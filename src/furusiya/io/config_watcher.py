@@ -9,7 +9,7 @@ from json.decoder import JSONDecodeError
 import os
 import traceback
 
-from furusiyya.timer.repeating_timer import RepeatingTimer
+from furusiya.timer.repeating_timer import RepeatingTimer
 
 class ConfigWatcher:
 
