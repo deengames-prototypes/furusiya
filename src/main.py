@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from changquan.io.adapters.tdl_adapter import TdlAdapter
 from changquan.io.config_watcher import ConfigWatcher
 from changquan.maps.map import Map
