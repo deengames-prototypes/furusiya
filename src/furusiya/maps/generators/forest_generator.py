@@ -1,4 +1,5 @@
 from random import randint
+import math
 import random
 
 # Generates a scary autumn map in entirety, by mutating map tiles.
@@ -24,7 +25,7 @@ class ForestGenerator:
             for y in range(0, map.height):
                 self.__convert_to_ground(map.tiles[x][y])
 
-        total = self.width * self.height * ForestGenerator.TREE_PERCENTAGE
+        total = math.floor(self.width * self.height * ForestGenerator.TREE_PERCENTAGE)
         
         # Creates little clusters of N trees
         while total > 0:
