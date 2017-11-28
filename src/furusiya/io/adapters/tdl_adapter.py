@@ -17,6 +17,12 @@ class TdlAdapter:
         # draw on-screen
         tdl.flush()
 
+    def calculate_fov(self, origin_x, origin_y, is_tile_walkable_callback, algorithm, view_radius, should_light_walls):
+        return tdl.map.quickFOV(origin_x, origin_y,
+            is_tile_walkable_callback,
+            fov=algorithm,
+            radius=view_radius,
+            lightWalls=should_light_walls)
 
     def wait_for_input(self):
         # wait for response

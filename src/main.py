@@ -33,7 +33,7 @@ class Main:
 
         player = Player()
         map.place_on_random_ground(player)
-        renderer = MapRenderer(map, ui_adapter)
+        renderer = MapRenderer(map, player, ui_adapter)
 
         while not end_game:
             renderer.render()
@@ -42,11 +42,15 @@ class Main:
                 end_game = True
             elif (key.key == "UP" and map.is_walkable(player.x, player.y - 1)):
                 player.y -= 1
+                renderer.recompute_fov = True
             elif (key.key == "DOWN" and map.is_walkable(player.x, player.y + 1)):
+                renderer.recompute_fov = True
                 player.y += 1
             elif (key.key == "LEFT" and map.is_walkable(player.x - 1, player.y)):
+                renderer.recompute_fov = True
                 player.x -= 1
             elif (key.key == "RIGHT" and map.is_walkable(player.x + 1, player.y)):
+                renderer.recompute_fov = True
                 player.x += 1
 
         config.dispose()

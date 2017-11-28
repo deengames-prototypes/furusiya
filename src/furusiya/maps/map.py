@@ -37,3 +37,4 @@ class MapTile:
         self.is_walkable = True
         self.character = '.'
         self.colour = (128, 128, 128)
+        self.is_explored = False
