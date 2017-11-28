@@ -12,8 +12,8 @@ class ForestGenerator:
     GROUND_COLOUR = (64, 48, 0)
 
     TREE_CHARACTER = 'T'
-    TREE_COLOURS = [(96, 96, 96), # grey
-                    (128, 64, 0)] # orange
+    TREE_COLOURS = [(64, 128, 0),
+                    (0, 64, 0)]
 
     def __init__(self, width, height):
         self.width = width
