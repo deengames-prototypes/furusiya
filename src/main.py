@@ -24,14 +24,14 @@ class Main:
 
         end_game = False
 
+        map = Map(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
+        fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
+        fg.generate_trees(map)
+
+        player = Player()
+        map.place_on_random_ground(player)
+
         while not end_game:
-            map = Map(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
-            fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
-            fg.generate_trees(map)
-
-            player = Player()
-            map.place_on_random_ground(player)
-
             # DRAW IT!
             for y in range(0, map.height):
                 for x in range(0, map.width):
@@ -46,9 +46,16 @@ class Main:
             key = ui_adapter.wait_for_input()
             if (key.key == "ESCAPE" or key.char.lower() == 'q'):
                 end_game = True
+            elif (key.key == "UP" and map.is_walkable(player.x, player.y - 1)):
+                player.y -= 1
+            elif (key.key == "DOWN" and map.is_walkable(player.x, player.y + 1)):
+                player.y += 1
+            elif (key.key == "LEFT" and map.is_walkable(player.x - 1, player.y)):
+                player.x -= 1
+            elif (key.key == "RIGHT" and map.is_walkable(player.x + 1, player.y)):
+                player.x += 1
 
         config.dispose()
-
 
 if __name__ == "__main__":
     Main().main()
