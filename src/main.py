@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from furusiya.entities.player import Player
 from furusiya.io.adapters.tdl_adapter import TdlAdapter
 from furusiya.io.config_watcher import ConfigWatcher
 from furusiya.maps.map import Map
@@ -19,7 +20,7 @@ class Main:
 
         # Hard-coded random seed for easier debugging
         random.seed(config.get("universeSeed"))
-        ui_adapter = TdlAdapter('furusiya Dad', Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Main.FPS_LIMIT)
+        ui_adapter = TdlAdapter('Furusiya', Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Main.FPS_LIMIT)
 
         end_game = False
 
@@ -28,11 +29,17 @@ class Main:
             fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
             fg.generate_trees(map)
 
+            player = Player()
+            map.place_on_random_ground(player)
+
             # DRAW IT!
             for y in range(0, map.height):
                 for x in range(0, map.width):
                     tile = map.tiles[x][y]
                     ui_adapter.draw(x, y, tile.character, tile.colour)
+
+            for e in map.entities:
+                ui_adapter.draw(e.x, e.y, e.character, e.colour)
 
             ui_adapter.flush()
 

@@ -4,7 +4,7 @@ from src.ecs.entity import Entity
 
 class TestEntity(unittest.TestCase):
     def test_get_gets_last_set_component(self):
-        e = Entity()
+        e = Entity('b', (0, 0, 128))
         expected = HealthComponent(42)
         unexpected = HealthComponent(10)
 
