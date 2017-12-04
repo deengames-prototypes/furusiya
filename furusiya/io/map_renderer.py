@@ -2,7 +2,7 @@ class MapRenderer:
     
     # For explored/unexplored tiles
     UNEXPLORED_TILE_COLOUR = (0, 0, 0)
-    EXPLORED_TILE_COLOUR = (32, 32, 32)
+    EXPLORED_TILE_COLOUR = (64, 64, 64)
 
     # FOV constants
     FOV_ALGORITHM = 'BASIC'  #default FOV algorithm

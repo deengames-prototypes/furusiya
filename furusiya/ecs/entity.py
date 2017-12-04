@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 class Entity:
     def __init__(self, character, colour):
         self.components = {}
