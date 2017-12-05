@@ -3,7 +3,9 @@ import unittest
 from furusiya.ecs.entity import Entity
 from furusiya.entities.player import Player
 from furusiya.io.map_renderer import MapRenderer
+from furusiya.io.adapters.tdl_adapter import TdlAdapter
 from furusiya.maps.map import Map
+from unittest import mock
 
 class TestMapRenderer(unittest.TestCase):
 
@@ -12,29 +14,41 @@ class TestMapRenderer(unittest.TestCase):
         self.assertTrue(MapRenderer.SHOULD_LIGHT_WALLS)
         self.assertGreaterEqual(MapRenderer.VIEW_RADIUS, 5)
 
-    def test_render_marks_current_fov_as_explored(self):
-        map = Map(10, 10)
-        # Sanity check: it's not explored yet
-        self.assertFalse(map.tiles[0][0].is_explored)
+    @mock._patch_object(TdlAdapter, "calculate_fov")
+    def test_render_marks_current_fov_as_explored(self, mock_calculate_fov):
+        
+        map_width = 10
+        map_height = 10
+        map = Map(map_width, map_height)
+
         # Player is at (0, 0)
-        renderer = MapRenderer(map, Player(), MockUiAdapter())
-        renderer.render()
-        # Just check straight horizontal/vertical, no need to check all tiles in FOV
-        light_radius = MapRenderer.VIEW_RADIUS
+        player = Player()
+
+        # Mock the FOV tiles.
+        light_radius = 5
+        fov_tiles = []        
+
         for i in range(light_radius):
-            self.assertTrue(map.tiles[i][0].is_explored)
-            self.assertTrue(map.tiles[0][i].is_explored)
+            fov_tiles.append((i, 0)) # horizontal ray
+            fov_tiles.append((0, i)) # vertical ray
+
+        mock_calculate_fov.return_value = fov_tiles
+
+        # Sanity check: it's not explored yet
+        for (x, y) in fov_tiles:
+            self.assertFalse(map.tiles[x][y].is_explored)
+
+        tdl_adapter = TdlAdapter("Test Window", map_width, map_height)
+        renderer = MapRenderer(map, player, tdl_adapter)
+                
+        renderer.render()
+
+        # Just check straight horizontal/vertical, as per our expectation
+        for (x, y) in fov_tiles:
+            self.assertTrue(map.tiles[x][y].is_explored)
 
     def test_render_recalculates_fov_when_asked(self):
         pass
 
     def test_render_draws_tiles_in_fov(self):
-        pass
-
-# Once finished, replace with: https://docs.python.org/3/library/unittest.mock.html
-class MockUiAdapter:
-    def render(self):
-        pass
-
-    def calculate_fov(self, *args):
         pass
