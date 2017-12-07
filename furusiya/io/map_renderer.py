@@ -18,7 +18,13 @@ class MapRenderer:
 
     def render(self):
         if self.recompute_fov:
-            self.recompute_fov = False
+            self.recompute_fov = False            
+            # The current FOV is changing. Draw everything in it with the "explored"
+            # style (because it was in the FOV, so it is explored).
+            for (x, y) in self.visible_tile_coordinates:
+                tile = self.map.tiles[x][y]
+                self.ui_adapter.draw(x, y, tile.character, MapRenderer.EXPLORED_TILE_COLOUR)
+
             self.visible_tile_coordinates = self.ui_adapter.calculate_fov(
                 self.player.x, self.player.y,
                 # If it's walkable, it's visible!
@@ -27,21 +33,14 @@ class MapRenderer:
 
             for (x, y) in self.visible_tile_coordinates:
                 self.map.tiles[x][y].is_explored = True
-
-        # TODO: be smarter and only draw changed tiles
-        # Maybe keep a list of entities and redraw tiles if they moved
-        # (previously-occupied tile and new tile).
-        for y in range(0, self.map.height):
-            for x in range(0, self.map.width):
-                tile = self.map.tiles[x][y]
-                if (x, y) in self.visible_tile_coordinates:
-                    self.ui_adapter.draw(x, y, tile.character, tile.colour)
-                elif tile.is_explored:
-                    self.ui_adapter.draw(x, y, tile.character, MapRenderer.EXPLORED_TILE_COLOUR)
-                else:
-                    self.ui_adapter.draw(x, y, tile.character, MapRenderer.UNEXPLORED_TILE_COLOUR)
+        
+        # Draw everything in the current FOV
+        for (x, y) in self.visible_tile_coordinates:
+            tile = self.map.tiles[x][y]
+            self.ui_adapter.draw(x, y, tile.character, tile.colour)
 
         for e in self.map.entities:
-            self.ui_adapter.draw(e.x, e.y, e.character, e.colour)
+            if (e.x, e.y) in self.visible_tile_coordinates:
+                self.ui_adapter.draw(e.x, e.y, e.character, e.colour)
 
         self.ui_adapter.flush()
