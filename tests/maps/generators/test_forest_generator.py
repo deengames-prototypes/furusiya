@@ -6,13 +6,13 @@ from furusiya.maps.generators.forest_generator import ForestGenerator
 from furusiya.maps.map import Map
 
 class TestForestGenerator(unittest.TestCase):
-    def test_generate_trees_generates_trees(self):
+    def test_generate_generates_trees(self):
         width, height = (10, 10)
         map = Map(width, height)        
         fg = ForestGenerator(width, height)
         expected_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
-        fg.generate_trees(map)
+        fg.generate(map)
 
         actual_num_trees = 0
 
@@ -24,7 +24,7 @@ class TestForestGenerator(unittest.TestCase):
         # might be more trees because of filled gaps between trees
         self.assertGreaterEqual(actual_num_trees, expected_num_trees)
 
-    def test_generate_trees_fills_holes(self):
+    def test_generate_fills_holes(self):
         
         # Generate a bunch of trees with a known seed that generates holes.
         # This is fragile, but there's no other way to test this.
@@ -36,7 +36,7 @@ class TestForestGenerator(unittest.TestCase):
         pre_fill_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
         random.seed(1)
-        fg.generate_trees(map)
+        fg.generate(map)
 
         actual_num_trees = 0
 

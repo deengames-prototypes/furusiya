@@ -31,6 +31,9 @@ class MapRenderer:
                 self.map.is_walkable, MapRenderer.FOV_ALGORITHM,
                 MapRenderer.VIEW_RADIUS, MapRenderer.SHOULD_LIGHT_WALLS)
 
+            # Prune out things that are in our FOV but are out of bounds
+            self.visible_tile_coordinates = [(x, y) for (x, y) in self.visible_tile_coordinates if self.map.is_on_map(x, y)]
+
             for (x, y) in self.visible_tile_coordinates:
                 self.map.tiles[x][y].is_explored = True
         

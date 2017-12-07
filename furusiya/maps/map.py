@@ -14,6 +14,9 @@ class Map:
             for y in range(0, self.height):
                 self.tiles[x].append(MapTile())
 
+    def is_on_map(self, x, y):
+        return x >= 0 and x < self.width and y >= 0 and y < self.height
+
     def is_walkable(self, x, y):
         return x >= 0 and x < self.width and y >= 0 and y < self.height and \
         self.tiles[x][y].is_walkable and \

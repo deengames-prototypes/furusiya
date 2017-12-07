@@ -11,7 +11,7 @@ class TestMap(unittest.TestCase):
         width, height = (10, 10)
         map = Map(width, height)        
         fg = ForestGenerator(width, height)
-        fg.generate_trees(map)
+        fg.generate(map)
 
         e = Entity('a', (255, 0, 0))
         map.place_on_random_ground(e)

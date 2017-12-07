@@ -29,7 +29,7 @@ class Main:
 
         map = Map(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
         fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
-        fg.generate_trees(map)
+        fg.generate(map)
 
         player = Player()
         map.place_on_random_ground(player)
