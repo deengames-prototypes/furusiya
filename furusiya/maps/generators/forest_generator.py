@@ -162,7 +162,6 @@ class ForestGenerator:
             m.x = x
             m.y = y
             map.entities.append(m)
-            print("Generated a tiger at {}, {}".format(m.x, m.y))
             num_monsters -= 1
 
     def __find_empty_tile(self, map):

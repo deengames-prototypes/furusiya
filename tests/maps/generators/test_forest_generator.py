@@ -3,22 +3,22 @@ import random
 import unittest
 
 from furusiya.maps.generators.forest_generator import ForestGenerator
-from furusiya.maps.map import Map
+from furusiya.maps.area_map import AreaMap
 
 class TestForestGenerator(unittest.TestCase):
     def test_generate_generates_trees(self):
         width, height = (10, 10)
-        map = Map(width, height)        
+        area_map = AreaMap(width, height)        
         fg = ForestGenerator(width, height)
         expected_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
-        fg.generate(map)
+        fg.generate(area_map)
 
         actual_num_trees = 0
 
         for y in range(height):
             for x in range(width):
-                if map.tiles[x][y].is_walkable == False:
+                if area_map.tiles[x][y].is_walkable == False:
                     actual_num_trees += 1
 
         # might be more trees because of filled gaps between trees
@@ -31,20 +31,30 @@ class TestForestGenerator(unittest.TestCase):
         # This is valuable, because there's a ton of code/complexity behind
         # this (breadth-first search, etc.).
         width, height = (60, 40)
-        map = Map(width, height)        
+        area_map = AreaMap(width, height)        
         fg = ForestGenerator(width, height)
         pre_fill_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
         random.seed(1)
-        fg.generate(map)
+        fg.generate(area_map)
 
         actual_num_trees = 0
 
         for y in range(height):
             for x in range(width):
-                if map.tiles[x][y].is_walkable == False:
+                if not area_map.tiles[x][y].is_walkable:
                     actual_num_trees += 1
 
         # Strictly more trees because of filled holes
         # With 60x40 and seed=1, fills 6 gaps with trees
         self.assertGreater(actual_num_trees, pre_fill_num_trees)
+
+
+    def test_generate_generates_monsters(self):
+        width, height = 10, 10
+        area_map = AreaMap(width, height)
+        fg = ForestGenerator(width, height)
+
+        fg.generate(area_map)
+        min_monsters = ForestGenerator.NUM_MONSTERS[0]
+        self.assertGreater(len(area_map.entities), min_monsters)

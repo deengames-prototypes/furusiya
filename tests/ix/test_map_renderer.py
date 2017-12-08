@@ -4,7 +4,7 @@ from furusiya.ecs.entity import Entity
 from furusiya.entities.player import Player
 from furusiya.io.map_renderer import MapRenderer
 from furusiya.io.adapters.tdl_adapter import TdlAdapter
-from furusiya.maps.map import Map
+from furusiya.maps.area_map import AreaMap
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -18,7 +18,7 @@ class TestMapRenderer(unittest.TestCase):
     def test_render_marks_current_fov_as_explored(self):
         map_width = 10
         map_height = 10
-        map = Map(map_width, map_height)
+        map = AreaMap(map_width, map_height)
 
         # Player is at (0, 0)
         player = Player()
@@ -48,7 +48,7 @@ class TestMapRenderer(unittest.TestCase):
     def test_render_recalculates_fov_when_asked(self):
         map_width = 10
         map_height = 10
-        map = Map(map_width, map_height)
+        map = AreaMap(map_width, map_height)
 
         # Player is at (0, 0)
         player = Player()

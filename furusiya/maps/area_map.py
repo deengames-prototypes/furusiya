@@ -1,6 +1,6 @@
 import random
 
-class Map:
+class AreaMap:
     
     def __init__(self, width, height):
         self.width = width
