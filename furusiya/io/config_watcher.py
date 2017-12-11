@@ -45,6 +45,9 @@ class ConfigWatcher:
                 # don't "raise", we want to keep retrying
 
 
+    def has(self, key):
+        return key in self.data
+
     def get(self, key):
         return self.data[key]
 

@@ -1,7 +1,8 @@
+from furusiya.io.config_watcher import ConfigWatcher
+
 class MapRenderer:
     
     # For explored/unexplored tiles
-    UNEXPLORED_TILE_COLOUR = (0, 0, 0)
     EXPLORED_TILE_COLOUR = (64, 64, 64)
 
     # FOV constants
@@ -17,6 +18,11 @@ class MapRenderer:
         self.visible_tile_coordinates = []
 
     def render(self):
+        if ConfigWatcher.instance.has("seeAll"):
+            for x in range(self.area_map.width):
+                for y in range(self.area_map.height):
+                    self.ui_adapter.draw(x, y, self.area_map.tiles[x][y].character, (128, 128, 128))
+
         if self.recompute_fov:
             self.recompute_fov = False            
             # The current FOV is changing. Draw everything in it with the "explored"

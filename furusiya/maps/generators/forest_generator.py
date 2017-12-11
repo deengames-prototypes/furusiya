@@ -112,23 +112,24 @@ class ForestGenerator:
     the number of tiles we have to walk.
     Repeat until num_tiles is 0"""
     def __random_walk(self, map_tiles, num_tiles):
+        x = random.randint(0, self.width - 1)
+        y = random.randint(0, self.height - 1)
+
+        # This smells. We need a dummy entity.
+        e = Entity(None, None)
+        e.x, e.y = (x, y)
+        walker = RandomWalker(self._area_map, e)
+
         while (num_tiles > 0):
-            x = random.randint(0, self.width - 1)
-            y = random.randint(0, self.height - 1)
-
-            # This smells. We need a dummy entity.
-            e = Entity(None, None)
-            e.x, e.y = (x, y)
-
-            walker = RandomWalker(self._area_map, e)
-
             try:
                 walker.walk()
                 self.__convert_to_tree(map_tiles[e.x][e.y])
                 num_tiles -= 1
             except ValueError as no_walkable_adjacents_error:
                 # While loop will not terminate, we'll try elsewhere
-                pass
+                # Randomly move, even if there's a tree there. 
+                e.x += random.randint(-1, 1)
+                e.y += random.randint(-1, 1)
 
     def __convert_to_ground(self, map_tile):
         map_tile.is_walkable = True
