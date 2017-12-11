@@ -1,4 +1,6 @@
+from furusiya.ecs.entity import Entity
 from furusiya.entities.monster import Monster
+from furusiya.components.walkers.random_walker import RandomWalker
 import math
 import random
 
@@ -23,21 +25,22 @@ class ForestGenerator:
         self.height = height
 
 
-    def generate(self, map):
-        self.__generate_trees(map)
-        self.__generate_monsters(map)
+    def generate(self, area_map):
+        self._area_map = area_map
+        self.__generate_trees()
+        self.__generate_monsters()
 
-    def __generate_trees(self, map):        
-        for x in range(0, map.width):
-            for y in range(0, map.height):
-                self.__convert_to_ground(map.tiles[x][y])
+    def __generate_trees(self):        
+        for x in range(0, self._area_map.width):
+            for y in range(0, self._area_map.height):
+                self.__convert_to_ground(self._area_map.tiles[x][y])
 
         total = math.floor(self.width * self.height * ForestGenerator.TREE_PERCENTAGE)
         
         # Creates little clusters of N trees
         while total > 0:
             to_create = min(ForestGenerator.TREE_COPSE_SIZE, total)
-            self.__random_walk(map.tiles, to_create)
+            self.__random_walk(self._area_map.tiles, to_create)
             total -= to_create
 
         # It's too bad those little clusters sometimes create "holes" that are
@@ -46,7 +49,7 @@ class ForestGenerator:
         #
         # Since mining is not part of the core experience, let's flood-fill the
         # ground, and any non-flood-filled ground tiles can turn into trees.
-        self.__fill_ground_holes(map.tiles)
+        self.__fill_ground_holes(self._area_map.tiles)
 
 
     """Breadth-first search. Assuming "position" is reachable,
@@ -109,33 +112,23 @@ class ForestGenerator:
     the number of tiles we have to walk.
     Repeat until num_tiles is 0"""
     def __random_walk(self, map_tiles, num_tiles):
-        x = random.randint(0, self.width - 1)
-        y = random.randint(0, self.height - 1)
-
         while (num_tiles > 0):
-            n = random.randrange(0, 4)
-            if n == 0:
-                x += 1
-            elif n == 1:
-                x -= 1
-            elif n == 2:
-                y += 1
-            elif n == 3:
-                y -= 1
-            else:
-                raise "Invalid state!"
+            x = random.randint(0, self.width - 1)
+            y = random.randint(0, self.height - 1)
 
-            if x >= 0 and x < self.width and y >= 0 and y < self.height and map_tiles[x][y].is_walkable:
-                self.__convert_to_tree(map_tiles[x][y])
+            # This smells. We need a dummy entity.
+            e = Entity(None, None)
+            e.x, e.y = (x, y)
+
+            walker = RandomWalker(self._area_map, e)
+
+            try:
+                walker.walk()
+                self.__convert_to_tree(map_tiles[e.x][e.y])
                 num_tiles -= 1
-
-            # Stay in bounds.
-            if x < 0 or x >= self.width:
-                x = random.randint(0, self.width - 1)
-            
-            if y < 0 or y >= self.height:
-                y = random.randint(0, self.height - 1)
-
+            except ValueError as no_walkable_adjacents_error:
+                # While loop will not terminate, we'll try elsewhere
+                pass
 
     def __convert_to_ground(self, map_tile):
         map_tile.is_walkable = True
@@ -149,26 +142,26 @@ class ForestGenerator:
         map_tile.colour = random.choice(ForestGenerator.TREE_COLOURS)
 
     
-    def __generate_monsters(self, map):
+    def __generate_monsters(self):
         min_monsters, max_monsters = ForestGenerator.NUM_MONSTERS
         num_monsters = random.randint(min_monsters, max_monsters)
 
         while num_monsters > 0:
-            (x, y) = self.__find_empty_tile(map)
+            (x, y) = self.__find_empty_tile()
             monster_name = random.choice(ForestGenerator.MONSTERS)
 
             data = Monster.ALL_MONSTERS[monster_name]
             m = Monster(data[0], data[1]) # character/colour
             m.x = x
             m.y = y
-            map.entities.append(m)
+            self._area_map.entities.append(m)
             num_monsters -= 1
 
-    def __find_empty_tile(self, map):
+    def __find_empty_tile(self):
         while True:
-            x = random.randint(0, map.width - 1)
-            y  = random.randint(0, map.height - 1)
-            if map.tiles[x][y].is_walkable:
+            x = random.randint(0, self._area_map.width - 1)
+            y  = random.randint(0, self._area_map.height - 1)
+            if self._area_map.tiles[x][y].is_walkable:
                 break
         return (x, y)
         
