@@ -8,8 +8,8 @@ import random
 # Includes population of monsters, map items, etc.
 class ForestGenerator:
 
-    TREE_PERCENTAGE = 1/6 # This percent of the map area should be trees
-    TREE_COPSE_SIZE = 10 # Create copses of N trees at a time
+    TREE_PERCENTAGE = 1/4 # This percent of the map area should be trees
+    TREE_COPSE_SIZE = 5 # Create copses of N trees at a time
     NUM_MONSTERS = (5, 8) # min-max
     MONSTERS = ["tiger"]
 
