@@ -2,6 +2,7 @@ import unittest
 
 from furusiya.ecs.entity import Entity
 from furusiya.entities.player import Player
+from furusiya.io.config_watcher import ConfigWatcher
 from furusiya.io.map_renderer import MapRenderer
 from furusiya.io.adapters.tdl_adapter import TdlAdapter
 from furusiya.maps.area_map import AreaMap
@@ -10,6 +11,11 @@ from unittest.mock import patch
 
 class TestMapRenderer(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        # Initializes instances so prod code that uses it won't crash
+        config = ConfigWatcher()
+        
     def test_fov_constants_are_reasonable(self):
         self.assertEqual(MapRenderer.FOV_ALGORITHM, 'BASIC')
         self.assertTrue(MapRenderer.SHOULD_LIGHT_WALLS)
