@@ -29,10 +29,7 @@ class TestRandomWalker(unittest.TestCase):
 
     def test_walk_throws_if_all_adjacencies_are_unwalkable(self):
         area_map = AreaMap(5, 5)
-
-        for y in range(area_map.height):
-            for x in range(area_map.width):
-                area_map.tiles[x][y].is_walkable = False
+        self.__make_unwalkable(area_map)
 
         entity = Entity((255, 255, 255), '@')
         entity.x, entity.y = (3, 2)
@@ -41,3 +38,27 @@ class TestRandomWalker(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             r.walk()
+
+
+    def test_walk_doesnt_walk_off_the_map(self):
+        area_map = AreaMap(5, 5)
+        self.__make_unwalkable(area_map)
+
+        entity = Entity((255, 255, 255), '@')
+        r = RandomWalker(area_map, entity)
+
+        # Set position to (0, 0) and everything to solid: should throw (shouldn't walk off the LHS/top)
+        entity.x, entity.y = (0, 0)
+        with self.assertRaises(ValueError):
+            r.walk()
+
+        # Set position to (width, height) and everything to solid, should throw (shouldn't walk off the RHS)
+        entity.x, entity.y = (area_map.width - 1, area_map.height - 1)
+        with self.assertRaises(ValueError):
+            r.walk()
+
+    
+    def __make_unwalkable(self, area_map):
+        for y in range(area_map.height):
+            for x in range(area_map.width):
+                area_map.tiles[x][y].is_walkable = False
