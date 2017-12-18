@@ -9,10 +9,8 @@ class TestForestGenerator(unittest.TestCase):
     def test_generate_generates_trees(self):
         width, height = (10, 10)
         area_map = AreaMap(width, height)        
-        fg = ForestGenerator(width, height)
+        fg = ForestGenerator(width, height, area_map)
         expected_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
-
-        fg.generate(area_map)
 
         actual_num_trees = 0
 
@@ -32,11 +30,10 @@ class TestForestGenerator(unittest.TestCase):
         # this (breadth-first search, etc.).
         width, height = (60, 40)
         area_map = AreaMap(width, height)        
-        fg = ForestGenerator(width, height)
+        fg = ForestGenerator(width, height, area_map)
         pre_fill_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
         random.seed(1)
-        fg.generate(area_map)
 
         actual_num_trees = 0
 
@@ -53,8 +50,7 @@ class TestForestGenerator(unittest.TestCase):
     def test_generate_generates_monsters(self):
         width, height = 10, 10
         area_map = AreaMap(width, height)
-        fg = ForestGenerator(width, height)
+        fg = ForestGenerator(width, height, area_map)
 
-        fg.generate(area_map)
         min_monsters = ForestGenerator.NUM_MONSTERS[0]
         self.assertGreater(len(area_map.entities), min_monsters)

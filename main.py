@@ -34,8 +34,7 @@ class Main:
         self.ui_adapter = TdlAdapter('Furusiya', Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Main.FPS_LIMIT)
 
         self.area_map = AreaMap(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
-        fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
-        fg.generate(self.area_map)
+        fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, self.area_map)
 
         self.player = Player()
         self.area_map.place_on_random_ground(self.player)
@@ -71,9 +70,11 @@ class Main:
         for entity in self.area_map.entities:
             try:
                 entity.walk()
-            except AttributeError, ValueError:
+            except AttributeError:
                 # AttributeError => entity isn't walkable.                
                 # Ref: https://stackoverflow.com/questions/7580532/how-to-check-whether-a-method-exists-in-python
+                pass
+            except ValueError:
                 # ValueError => nothing adjacent to walk to.
                 pass
 

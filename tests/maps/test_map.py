@@ -10,8 +10,7 @@ class TestMap(unittest.TestCase):
     def test_place_on_random_ground_places_entity_on_random_ground(self):
         width, height = (10, 10)
         basic_map = AreaMap(width, height)        
-        fg = ForestGenerator(width, height)
-        fg.generate(basic_map)
+        fg = ForestGenerator(width, height, basic_map)
 
         e = Entity('a', (255, 0, 0))
         basic_map.place_on_random_ground(e)
