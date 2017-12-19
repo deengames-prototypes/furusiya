@@ -1,2 +1,4 @@
 #!/bin/sh
-python3 -m unittest discover tests
+
+# use of >... here suppresses print statements!
+python3 -m unittest discover tests >/dev/null

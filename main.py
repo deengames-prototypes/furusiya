@@ -70,13 +70,17 @@ class Main:
         for entity in self.area_map.entities:
             try:
                 entity.walk()
-            except AttributeError:
+            except AttributeError as a:
                 # AttributeError => entity isn't walkable.                
                 # Ref: https://stackoverflow.com/questions/7580532/how-to-check-whether-a-method-exists-in-python
-                pass
-            except ValueError:
+                message = str(a)
+                if not "object has no attribute 'walk'" in message:
+                    raise
+            except ValueError as v:
                 # ValueError => nothing adjacent to walk to.
-                pass
+                message = str(v)
+                if message is not "There are no available adjacent locations":
+                    raise
 
 
 if __name__ == "__main__":
