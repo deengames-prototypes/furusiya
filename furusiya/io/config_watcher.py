@@ -48,6 +48,7 @@ class ConfigWatcher:
     def has(self, key):
         return key in self._data
 
+
     def get(self, key):
         return self._data[key]
 

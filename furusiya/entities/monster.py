@@ -15,6 +15,7 @@ class Monster(Entity):
         self.set(RandomWalker(area_map, self))
         self.target = Player.INSTANCE
 
+
     def walk(self):
         distance_to_target = math.hypot(self.x - self.target.x, self.y - self.target.y)
         if distance_to_target == 1:

@@ -17,6 +17,7 @@ class MapRenderer:
         self._ui_adapter = ui_adapter
         self._visible_tile_coordinates = []
 
+
     def render(self):
         if ConfigWatcher.instance.has("seeAll"):
             for x in range(self._area_map.width):

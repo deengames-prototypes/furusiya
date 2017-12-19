@@ -156,6 +156,7 @@ class ForestGenerator:
             self._area_map.entities.append(m)
             num_monsters -= 1
 
+
     def _find_empty_tile(self):
         while True:
             x = random.randint(0, self._area_map.width - 1)
