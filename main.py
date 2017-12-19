@@ -33,10 +33,12 @@ class Main:
         # TODO: shouldn't use this directly here, probably.
         self.ui_adapter = TdlAdapter('Furusiya', Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, Main.FPS_LIMIT)
 
+        # Create the player first so monsters can refer to it
+        self.player = Player()
+
         self.area_map = AreaMap(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT)
         fg = ForestGenerator(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, self.area_map)
 
-        self.player = Player()
         self.area_map.place_on_random_ground(self.player)
         self.renderer = MapRenderer(self.area_map, self.player, self.ui_adapter)
 

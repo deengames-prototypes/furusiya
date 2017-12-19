@@ -18,8 +18,7 @@ class TestMonster(unittest.TestCase):
         m.walk()
         self.assertTrue(
             (m.x == 3 and m.y in [2, 4]) or
-            (m.x in [2, 4] and m.y == 3)
-        )
+            (m.x in [2, 4] and m.y == 3))
 
     def test_walk_throws_if_all_adjacencies_are_unwalkable(self):
         area_map = AreaMap(6, 6)

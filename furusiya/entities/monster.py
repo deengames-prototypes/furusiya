@@ -16,9 +16,6 @@ class Monster(Entity):
         self.target = Player.INSTANCE
 
     def walk(self):
-        if self.target is None:
-            self.target = Player.INSTANCE
-
         distance_to_target = math.hypot(self.x - self.target.x, self.y - self.target.y)
         if distance_to_target == 1:
             # FIGHT!
