@@ -2,12 +2,13 @@
  
 import tdl
 from tcod import image_load
+import random
 from random import randint
 import colors
 import math
 import textwrap
 import shelve
- 
+
 #actual size of the window
 SCREEN_WIDTH = 80
 SCREEN_HEIGHT = 50
@@ -29,6 +30,7 @@ INVENTORY_WIDTH = 50
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 6
 MAX_ROOMS = 30
+NUM_TREES = 1800
 MAX_ROOM_MONSTERS = 3
 MAX_ROOM_ITEMS = 2
  
@@ -41,20 +43,17 @@ CONFUSE_NUM_TURNS = 10
 FIREBALL_RADIUS = 3
 FIREBALL_DAMAGE = 12
  
- 
 FOV_ALGO = 'BASIC'
 FOV_LIGHT_WALLS = True
 TORCH_RADIUS = 10
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
  
- 
-color_dark_wall = (48, 48, 48)
-color_light_wall = (64, 128, 0)
 color_dark_ground = (32, 32, 32)
-color_light_ground = (64, 48, 0)
- 
- 
+color_dark_wall = (48, 48, 48)
+color_light_ground = (128, 128, 128)
+color_light_wall = (192, 192, 192)
+  
 class Tile:
     #a tile of the map and its properties
     def __init__(self, blocked, block_sight=None):
@@ -319,7 +318,48 @@ def make_map():
     my_map = [[ Tile(True)
         for y in range(MAP_HEIGHT) ]
             for x in range(MAP_WIDTH) ]
- 
+    
+    map_type = randint(0, 2)
+    if map_type == 0:
+       _make_dungeon()
+    elif map_type == 1:
+        _make_cave()
+
+def _make_cave():
+    global my_map, player
+    floor_tiles = []
+    
+    x = randint(0, MAP_WIDTH - 1)
+    y = randint(0, MAP_HEIGHT - 1)
+
+    to_make = NUM_TREES
+
+    while (to_make):
+        if my_map[x][y].blocked:
+            my_map[x][y].blocked = False
+            my_map[x][y].block_sight = False
+            floor_tiles.append((x, y))
+            to_make -= 1
+
+        dx = randint(-1, 1)
+        dy = randint(-1, 1) if dx == 0 else 0
+
+        x += dx
+        y += dy
+
+        if x < 0 or x >= MAP_WIDTH - 1 or y < 0 or y >= MAP_HEIGHT - 1:
+            # If stuck, restart at a random floor, so everything's connected.            
+            restart = random.choice(floor_tiles)
+            x = restart[0]
+            y = restart[1]
+
+    player_pos = random.choice(floor_tiles)
+    player.x = player_pos[0]
+    player.y = player_pos[1]
+
+def _make_dungeon():
+    global my_map
+
     rooms = []
     num_rooms = 0
  
@@ -502,12 +542,12 @@ def render_all():
                     #if it's explored
                     if my_map[x][y].explored:
                         if wall:
-                            con.draw_char(x, y, 'T', fg=color_dark_wall)
+                            con.draw_char(x, y, '#', fg=color_dark_wall)
                         else:
                             con.draw_char(x, y, '.', fg=color_dark_ground)
                 else:
                     if wall:
-                        con.draw_char(x, y, 'T', fg=color_light_wall)
+                        con.draw_char(x, y, '#', fg=color_light_wall)
                     else:
                         con.draw_char(x, y, '.', fg=color_light_ground)
                     #since it's visible, explore it
