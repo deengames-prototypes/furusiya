@@ -319,11 +319,11 @@ def make_map():
         for y in range(MAP_HEIGHT) ]
             for x in range(MAP_WIDTH) ]
     
-    map_type = randint(0, 2)
-    if map_type == 0:
-       _make_dungeon()
-    elif map_type == 1:
-        _make_cave()
+    # map_type = randint(0, 2)
+    # if map_type == 0:
+    #    _make_dungeon()
+    # elif map_type == 1:
+    _make_cave()
 
 def _make_cave():
     global my_map, player
@@ -356,6 +356,17 @@ def _make_cave():
     player_pos = random.choice(floor_tiles)
     player.x = player_pos[0]
     player.y = player_pos[1]
+
+    # Create objects/monsters by creating random "rooms"
+    target = randint(MAX_ROOMS//2, MAX_ROOMS)
+    while (target):
+        x = randint(0, MAP_WIDTH - ROOM_MAX_SIZE)
+        y = randint(0, MAP_HEIGHT - ROOM_MAX_SIZE)
+        w = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        h = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+        room = Rect(x, y, w, h)
+        place_objects(room)
+        target -= 1
 
 def _make_dungeon():
     global my_map
@@ -427,7 +438,6 @@ def place_objects(room):
         #choose random spot for this monster
         x = randint(room.x1+1, room.x2-1)
         y = randint(room.y1+1, room.y2-1)
- 
  
         #only place it if the tile is not blocked
         if not is_blocked(x, y):
