@@ -49,10 +49,10 @@ TORCH_RADIUS = 10
 LIMIT_FPS = 20  #20 frames-per-second maximum
  
  
-color_dark_wall = (0, 0, 100)
-color_light_wall = (130, 110, 50)
-color_dark_ground = (50, 50, 150)
-color_light_ground = (200, 180, 50)
+color_dark_wall = (48, 48, 48)
+color_light_wall = (64, 128, 0)
+color_dark_ground = (32, 32, 32)
+color_light_ground = (64, 48, 0)
  
  
 class Tile:
@@ -502,14 +502,14 @@ def render_all():
                     #if it's explored
                     if my_map[x][y].explored:
                         if wall:
-                            con.draw_char(x, y, None, fg=None, bg=color_dark_wall)
+                            con.draw_char(x, y, 'T', fg=color_dark_wall)
                         else:
-                            con.draw_char(x, y, None, fg=None, bg=color_dark_ground)
+                            con.draw_char(x, y, '.', fg=color_dark_ground)
                 else:
                     if wall:
-                        con.draw_char(x, y, None, fg=None, bg=color_light_wall)
+                        con.draw_char(x, y, 'T', fg=color_light_wall)
                     else:
-                        con.draw_char(x, y, None, fg=None, bg=color_light_ground)
+                        con.draw_char(x, y, '.', fg=color_light_ground)
                     #since it's visible, explore it
                     my_map[x][y].explored = True
  
