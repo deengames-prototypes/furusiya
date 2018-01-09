@@ -953,6 +953,9 @@ def new_game():
  
     #a warm welcoming message!
     message('Another brave knight yearns to bring peace to the land.', colors.red)
+    
+    # Gain four levels
+    player.gain_xp(40 + 80 + 160 + 320)    
  
 def play_game():
     global mouse_coord, fov_recompute
