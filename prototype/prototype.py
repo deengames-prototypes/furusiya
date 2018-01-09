@@ -265,10 +265,15 @@ class Player(GameObject):
     def __init__(self):
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
             blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, death_function=player_death))
+
+        self.level = 1
     
     def gain_xp(self, amount):
-        self.fighter.xp += amount
-        print("Player gains {} XP! Total is {}!!".format(amount, self.fighter.xp))
+        self.fighter.xp += amount        
+        # XP doubles every level. 40, 80, 160, ...
+        # First level = after four orcs. Yeah, low standards.
+        xp_next_level = 2**(self.level + 1) * 10
+        print("Player gains {} XP! {}/{}!".format(amount, self.fighter.xp, xp_next_level))
 
 def is_blocked(x, y):
     #first test the map tile
@@ -937,7 +942,7 @@ def new_game():
     game_msgs = []
  
     #a warm welcoming message!
-    message('Welcome stranger! Prepare to perish in the Tombs of the Ancient Kings.', colors.red)
+    message('Another brave knight yearns to bring peace to the land.', colors.red)
  
 def play_game():
     global mouse_coord, fov_recompute
@@ -977,11 +982,11 @@ def main_menu():
         img.blit_2x(root, 0, 0)
  
         #show the game's title, and some credits!
-        title = 'TOMBS OF THE ANCIENT KINGS'
+        title = 'FURUSIYA'
         center = (SCREEN_WIDTH - len(title)) // 2
         root.draw_str(center, SCREEN_HEIGHT//2-4, title, bg=None, fg=colors.light_yellow)
  
-        title = 'By Jotaf'
+        title = 'By nightblade9'
         center = (SCREEN_WIDTH - len(title)) // 2
         root.draw_str(center, SCREEN_HEIGHT-2, title, bg=None, fg=colors.light_yellow)
  
