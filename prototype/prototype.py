@@ -158,11 +158,12 @@ class GameObject:
  
 class Fighter:
     #combat-related properties and methods (monster, player, NPC).
-    def __init__(self, hp, defense, power, death_function=None):
+    def __init__(self, hp, defense, power, xp, death_function=None):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
+        self.xp = xp
         self.death_function = death_function
  
     def take_damage(self, damage):
@@ -260,6 +261,15 @@ class Item:
                 inventory.remove(self.owner)  #destroy after use, unless it was 
                                               #cancelled for some reason
  
+class Player(GameObject):
+    def __init__(self):
+        super(Player, self).__init__(0, 0, '@', 'player', colors.white,
+            blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, death_function=player_death))
+    
+    def gain_xp(self, amount):
+        self.fighter.xp += amount
+        print("Player gains {} XP! Total is {}!!".format(amount, self.fighter.xp))
+
 def is_blocked(x, y):
     #first test the map tile
     if my_map[x][y].blocked:
@@ -443,7 +453,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=10, defense=0, power=3, 
+                fighter_component = Fighter(hp=10, defense=0, power=3, xp=10,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -451,7 +461,7 @@ def place_objects(room):
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=16, defense=1, power=4,
+                fighter_component = Fighter(hp=16, defense=1, power=4, xp=25,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -763,12 +773,14 @@ def player_death(player):
     player.color = colors.dark_red
  
 def monster_death(monster):
+    global player
     #transform it into a nasty corpse! it doesn't block, can't be
     #attacked and doesn't move
     message(monster.name.capitalize() + ' is dead!', colors.orange)
     monster.char = '%'
     monster.color = colors.dark_red
     monster.blocks = False
+    player.gain_xp(monster.fighter.xp)    
     monster.fighter = None
     monster.ai = None
     monster.name = 'remains of ' + monster.name
@@ -913,12 +925,7 @@ def load_game():
 def new_game():
     global player, inventory, game_msgs, game_state
  
-    #create object representing the player
-    fighter_component = Fighter(hp=30, defense=2, power=5, 
-                                death_function=player_death)
- 
-    player = GameObject(0, 0, '@', 'player', colors.white, blocks=True, 
-                    fighter=fighter_component)
+    player = Player()
  
     #generate map (at this point it's not drawn to the screen)
     make_map()
