@@ -48,6 +48,9 @@ FOV_LIGHT_WALLS = True
 TORCH_RADIUS = 10
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
+
+# PLAYER
+STATS_POINTS_PER_LEVEL = 5
  
 color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
@@ -267,13 +270,20 @@ class Player(GameObject):
             blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, death_function=player_death))
 
         self.level = 1
+        self.stats_points = 0
     
     def gain_xp(self, amount):
         self.fighter.xp += amount        
         # XP doubles every level. 40, 80, 160, ...
         # First level = after four orcs. Yeah, low standards.
         xp_next_level = 2**(self.level + 1) * 10
-        print("Player gains {} XP! {}/{}!".format(amount, self.fighter.xp, xp_next_level))
+        # DRY ya'ne
+        while self.fighter.xp >= xp_next_level:
+            self.level += 1
+            self.stats_points += STATS_POINTS_PER_LEVEL
+            xp_next_level = 2**(self.level + 1) * 10
+            message("You are now level {}!".format(self.level))
+            self.fighter.heal(self.fighter.max_hp)
 
 def is_blocked(x, y):
     #first test the map tile
