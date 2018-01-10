@@ -49,9 +49,13 @@ TORCH_RADIUS = 10
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
 
-# PLAYER
+# Player stuff
 STATS_POINTS_PER_LEVEL = 5
- 
+
+# Weapons
+SWORD_STUN_PERCENT = 20
+STUNNED_NUM_TURNS = 3
+
 color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
 color_light_ground = (128, 128, 128)
@@ -161,13 +165,14 @@ class GameObject:
  
 class Fighter:
     #combat-related properties and methods (monster, player, NPC).
-    def __init__(self, hp, defense, power, xp, death_function=None):
+    def __init__(self, hp, defense, power, xp, weapon = None, death_function=None):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
         self.xp = xp
         self.death_function = death_function
+        self.weapon = weapon
  
     def take_damage(self, damage):
         #apply damage if possible
@@ -192,6 +197,10 @@ class Fighter:
         else:
             message(self.owner.name.capitalize() + ' attacks ' + target.name + 
                   ' but it has no effect!')
+
+        # Regardless of damage, apply weapon effects
+        if self.weapon:
+            self.weapon.attack(target)
  
     def heal(self, amount):
         #heal by the given amount, without going over the maximum
@@ -213,7 +222,24 @@ class BasicMonster:
             #close enough, attack! (if the player is still alive.)
             elif player.fighter.hp > 0:
                 monster.fighter.attack(player)
+
+class StunnedMonster:
+    #AI for a temporarily stunned monster (reverts to previous AI after a while).
+    def __init__(self, old_ai, num_turns=STUNNED_NUM_TURNS):
+        self.old_ai = old_ai
+        self.num_turns = num_turns
  
+    def take_turn(self):
+        if self.num_turns > 0:  #still stunned ...
+            self.num_turns -= 1
+ 
+        else:  
+            #restore the previous AI (this one will be deleted because it's not 
+            #referenced anymore)
+            self.owner.ai = self.old_ai
+            message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
+ 
+
 class ConfusedMonster:
     #AI for a temporarily confused monster (reverts to previous AI after a while).
     def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
@@ -267,7 +293,8 @@ class Item:
 class Player(GameObject):
     def __init__(self):
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-            blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, death_function=player_death))
+            blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, 
+            weapon=Sword(), death_function=player_death))
 
         self.level = 1
         self.stats_points = 0
@@ -284,6 +311,16 @@ class Player(GameObject):
             xp_next_level = 2**(self.level + 1) * 10
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
+
+class Sword:
+    def attack(self, target):
+        if randint(0, 100) <= SWORD_STUN_PERCENT:
+            old_ai = target.ai
+            target.ai = StunnedMonster(old_ai)
+            target.ai.owner = target
+            message('{} looks stunned!'.format(target.name), colors.light_green)
+
+############################### class boundary ###############################
 
 def is_blocked(x, y):
     #first test the map tile
