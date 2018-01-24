@@ -8,6 +8,8 @@ import colors
 import math
 import textwrap
 import shelve
+import config
+import file_watcher
 
 #actual size of the window
 SCREEN_WIDTH = 80
@@ -1063,5 +1065,11 @@ root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike",
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
 panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
- 
+
+print("Config test: {}".format(config.get("sampleValue"))) 
+
 main_menu()
+
+print("Terminating ...")
+
+file_watcher.stop()
