@@ -296,7 +296,12 @@ class Player(GameObject):
     def __init__(self):
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
             blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, 
-            weapon=Sword(), death_function=player_death))
+            weapon=None, death_function=player_death))
+
+        # Eval is evil if misused. Here, the config tells me the constructor
+        # method to call to create my weapon. Don't try this in prod, folks.
+        weapon_name = config.get("player")["weapon"]
+        self.weapon = eval(weapon_name)() # public parameterless constructor
 
         self.level = 1
         self.stats_points = 0
@@ -1065,8 +1070,6 @@ root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike",
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
 panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
-
-print("Config test: {}".format(config.get("sampleValue"))) 
 
 main_menu()
 

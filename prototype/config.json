@@ -1,3 +1,5 @@
 {
-    "sampleValue": "IT'S ALIVE!!"
+    "player": {
+        "weapon": "Sword"
+    }
 }
