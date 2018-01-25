@@ -105,6 +105,7 @@ class GameObject:
         self.ai = ai
         if self.ai:  #let the AI component know who owns it
             self.ai.owner = self
+            self.original_ai = self.ai
  
         self.item = item
         if self.item:  #let the Item component know who owns it
@@ -219,8 +220,7 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, old_ai, num_turns=config.get("weapons")["numTurnsStunned"]):
-        self.old_ai = old_ai
+    def __init__(self, num_turns=config.get("weapons")["numTurnsStunned"]):
         self.num_turns = num_turns
  
     def take_turn(self):
@@ -230,15 +230,14 @@ class StunnedMonster:
         else:  
             #restore the previous AI (this one will be deleted because it's not 
             #referenced anymore)
-            self.owner.ai = self.old_ai
+            self.owner.ai = self.owner.original_ai
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
             self.owner.char = self.owner.name[0]
  
 
 class ConfusedMonster:
     #AI for a temporarily confused monster (reverts to previous AI after a while).
-    def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
-        self.old_ai = old_ai
+    def __init__(self, num_turns=CONFUSE_NUM_TURNS):
         self.num_turns = num_turns
  
     def take_turn(self):
@@ -250,7 +249,7 @@ class ConfusedMonster:
         else:  
             #restore the previous AI (this one will be deleted because it's not 
             #referenced anymore)
-            self.owner.ai = self.old_ai
+            self.owner.ai = self.original_ai
             message('The ' + self.owner.name + ' is no longer confused!', colors.red)
  
 class Item:
@@ -315,15 +314,20 @@ class Player(GameObject):
 
 class Sword:
     def attack(self, target):
-        if randint(0, 100) <= config.get("weapons")["swordStunPercent"]:
-            old_ai = target.ai
-            if isinstance(target.ai, StunnedMonster):
-                # Stack the stun
-                target.ai.num_turns += config.get("weapons")["swordStunPercent"]
-            else:
-                target.ai = StunnedMonster(old_ai)
-                target.ai.owner = target                
-            message('{} looks stunned!'.format(target.name), colors.light_green)
+        if config.get("features")["swordStuns"]:
+            if randint(0, 100) <= config.get("weapons")["swordStunPercent"]:
+                if config.get("features")["stunsStack"]:
+                    if isinstance(target.ai, StunnedMonster):
+                        # Stack the stun
+                        target.ai.num_turns += config.get("weapons")["numTurnsStunned"]
+                    else:
+                        target.ai = StunnedMonster()
+                        target.ai.owner = target
+                else:
+                    # Copy-pasta from two lines above
+                    target.ai = StunnedMonster()
+                    target.ai.owner = target
+                message('{} looks stunned!'.format(target.name), colors.light_green)
 
 ############################### class boundary ###############################
 
@@ -510,7 +514,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=10, defense=0, power=3, xp=10,
+                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -518,11 +522,11 @@ def place_objects(room):
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=16, defense=1, power=4, xp=25,
+                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
-                monster = GameObject(x, y, 'T', 'troll', colors.darker_green,
+                monster = GameObject(x, y, 'T', 'Troll', colors.darker_green,
                     blocks=True, fighter=fighter_component, ai=ai_component)
  
             objects.append(monster)
@@ -840,6 +844,7 @@ def monster_death(monster):
     player.gain_xp(monster.fighter.xp)    
     monster.fighter = None
     monster.ai = None
+    monster.original_ai = None
     monster.name = 'remains of ' + monster.name
     monster.send_to_back()
  
@@ -931,8 +936,7 @@ def cast_confuse():
  
     #replace the monster's AI with a "confused" one; after some turns it will 
     #restore the old AI
-    old_ai = monster.ai
-    monster.ai = ConfusedMonster(old_ai)
+    monster.ai = ConfusedMonster()
     monster.ai.owner = monster  #tell the new component who owns it
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)

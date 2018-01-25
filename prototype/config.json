@@ -1,4 +1,8 @@
 {
+    "features": {
+        "swordStuns": true,
+        "stunsStack": true
+    },
     "player": {
         "startingHealth": 20,
         "startingDefense": 2,
@@ -9,7 +13,7 @@
         "statsPointsOnLevelUp": 5
     },
     "weapons": {
-        "swordStunPercent": 20,
-        "numTurnsStunned": 3
+        "swordStunPercent": 20 ,
+        "numTurnsStunned": 5
     }
 }
