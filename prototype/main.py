@@ -47,12 +47,8 @@ FIREBALL_DAMAGE = 12
  
 FOV_ALGO = 'BASIC'
 FOV_LIGHT_WALLS = True
-TORCH_RADIUS = 10
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
-
-# Player stuff
-STATS_POINTS_PER_LEVEL = 5
 
 # Weapons
 color_dark_ground = (32, 32, 32)
@@ -310,7 +306,7 @@ class Player(GameObject):
         # DRY ya'ne
         while self.fighter.xp >= xp_next_level:
             self.level += 1
-            self.stats_points += STATS_POINTS_PER_LEVEL
+            self.stats_points += config.get("player")["statsPointsOnLevelUp"]
             xp_next_level = 2**(self.level + 1) * 10
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
@@ -604,7 +600,7 @@ def render_all():
         visible_tiles = tdl.map.quickFOV(player.x, player.y,
                                          is_visible_tile,
                                          fov=FOV_ALGO,
-                                         radius=TORCH_RADIUS,
+                                         radius=config.get("player")["lightRadius"],
                                          lightWalls=FOV_LIGHT_WALLS)
  
         #go through all tiles, and set their background color according to the FOV

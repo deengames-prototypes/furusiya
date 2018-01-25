@@ -1,6 +1,8 @@
 {
     "player": {
-        "weapon": "Sword"
+        "weapon": "Sword",
+        "lightRadius": 5,
+        "statsPointsOnLevelUp": 5
     },
     "weapons": {
         "swordStunPercent": 20,
