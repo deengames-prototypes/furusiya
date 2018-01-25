@@ -327,7 +327,7 @@ class Sword:
                     # Copy-pasta from two lines above
                     target.ai = StunnedMonster()
                     target.ai.owner = target
-                message('{} looks stunned!'.format(target.name), colors.light_green)
+                message('{} looks incapacitated!'.format(target.name), colors.light_green)
 
 ############################### class boundary ###############################
 
@@ -514,7 +514,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
+                fighter_component = Fighter(hp=10, defense=0, power=3, xp=10,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -522,7 +522,7 @@ def place_objects(room):
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
+                fighter_component = Fighter(hp=16, defense=1, power=4, xp=25,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
