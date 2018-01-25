@@ -287,9 +287,8 @@ class Item:
  
 class Player(GameObject):
     def __init__(self):
-        super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-            blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, 
-            weapon=None, death_function=player_death))
+        super(Player, self).__init__(0, 0, '@', 'player', colors.white, blocks=True,
+            fighter=Fighter(hp=30, defense=2, power=5, xp=0, weapon=None, death_function=player_death))
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
@@ -307,7 +306,7 @@ class Player(GameObject):
         while self.fighter.xp >= xp_next_level:
             self.level += 1
             self.stats_points += config.get("player")["statsPointsOnLevelUp"]
-            xp_next_level = 2**(self.level + 1) * 10
+            xp_next_level = 2**(self.level + 1) * config.get("player")["expRequiredBase"]
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
 

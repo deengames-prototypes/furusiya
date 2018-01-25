@@ -1,5 +1,6 @@
 {
     "player": {
+        "expRequiredBase": 10, # formula: 2^(n+1) * this
         "weapon": "Sword",
         "lightRadius": 5,
         "statsPointsOnLevelUp": 5
