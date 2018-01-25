@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
- 
+
 import tdl
 from tcod import image_load
 import random
@@ -55,9 +55,6 @@ LIMIT_FPS = 20  #20 frames-per-second maximum
 STATS_POINTS_PER_LEVEL = 5
 
 # Weapons
-SWORD_STUN_PERCENT = 20
-STUNNED_NUM_TURNS = 3
-
 color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
 color_light_ground = (128, 128, 128)
@@ -227,7 +224,7 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, old_ai, num_turns=STUNNED_NUM_TURNS):
+    def __init__(self, old_ai, num_turns=config.get("weapons")["numTurnsStunned"]):
         self.old_ai = old_ai
         self.num_turns = num_turns
  
@@ -301,8 +298,7 @@ class Player(GameObject):
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
         weapon_name = config.get("player")["weapon"]
-        self.weapon = eval(weapon_name)() # public parameterless constructor
-
+        self.fighter.weapon = eval(weapon_name)() # public parameterless constructor
         self.level = 1
         self.stats_points = 0
     
@@ -321,7 +317,7 @@ class Player(GameObject):
 
 class Sword:
     def attack(self, target):
-        if randint(0, 100) <= SWORD_STUN_PERCENT:
+        if randint(0, 100) <= config.get("weapons")["swordStunPercent"]:
             old_ai = target.ai
             target.ai = StunnedMonster(old_ai)
             target.ai.owner = target

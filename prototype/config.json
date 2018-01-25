@@ -1,5 +1,9 @@
 {
     "player": {
         "weapon": "Sword"
+    },
+    "weapons": {
+        "swordStunPercent": 20,
+        "numTurnsStunned": 3
     }
 }
