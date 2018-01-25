@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+ 
 import tdl
 from tcod import image_load
 import random
@@ -50,7 +50,6 @@ FOV_LIGHT_WALLS = True
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
 
-# Weapons
 color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
 color_light_ground = (128, 128, 128)
@@ -225,14 +224,15 @@ class StunnedMonster:
         self.num_turns = num_turns
  
     def take_turn(self):
-        if self.num_turns > 0:  #still stunned ...
+        if self.num_turns > 0:  # still stunned ...
             self.num_turns -= 1
- 
+            self.owner.char = str(self.num_turns)[0] # last digit
         else:  
             #restore the previous AI (this one will be deleted because it's not 
             #referenced anymore)
             self.owner.ai = self.old_ai
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
+            self.owner.char = self.owner.name[0]
  
 
 class ConfusedMonster:
@@ -287,13 +287,16 @@ class Item:
  
 class Player(GameObject):
     def __init__(self):
-        super(Player, self).__init__(0, 0, '@', 'player', colors.white, blocks=True,
-            fighter=Fighter(hp=30, defense=2, power=5, xp=0, weapon=None, death_function=player_death))
+        super(Player, self).__init__(0, 0, '@', 'player', colors.white,
+            blocks=True, fighter=Fighter(hp=config.get("player")["startingHealth"],
+            defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
+            weapon=None, death_function=player_death))
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
         weapon_name = config.get("player")["weapon"]
         self.fighter.weapon = eval(weapon_name)() # public parameterless constructor
+
         self.level = 1
         self.stats_points = 0
     
@@ -314,8 +317,12 @@ class Sword:
     def attack(self, target):
         if randint(0, 100) <= config.get("weapons")["swordStunPercent"]:
             old_ai = target.ai
-            target.ai = StunnedMonster(old_ai)
-            target.ai.owner = target
+            if isinstance(target.ai, StunnedMonster):
+                # Stack the stun
+                target.ai.num_turns += config.get("weapons")["swordStunPercent"]
+            else:
+                target.ai = StunnedMonster(old_ai)
+                target.ai.owner = target                
             message('{} looks stunned!'.format(target.name), colors.light_green)
 
 ############################### class boundary ###############################

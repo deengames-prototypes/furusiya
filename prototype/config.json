@@ -1,6 +1,9 @@
 {
     "player": {
-        "expRequiredBase": 10, # formula: 2^(n+1) * this
+        "startingHealth": 20,
+        "startingDefense": 2,
+        "startingPower": 5,
+        "expRequiredBase": 10, // formula: 2^(n+1) * this
         "weapon": "Sword",
         "lightRadius": 5,
         "statsPointsOnLevelUp": 5

@@ -8,7 +8,7 @@ _data = {}
 
 def load(raw_json):
     # remove comments (JSON doesn't officially support comments)
-    raw_json = re.sub(r"#.*", "", raw_json)
+    raw_json = re.sub(r"//.*", "", raw_json)
     global _data
     _data = json.loads(raw_json)
 
