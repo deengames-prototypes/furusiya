@@ -347,22 +347,24 @@ class Hammer:
         self.owner = owner
         
     def attack(self, target):
-        # The directional vector of knockback is (defender - attacker)
-        dx = target.x - self.owner.x
-        dy = target.y - self.owner.y 
-        # One of these should be zero. Meh.
-        knockback_amount = config.get("weapons")["hammerKnockBackRange"]
-        # copysign gets the sign of dx/dy. We just need that, not the magnitude
-        if dx != 0:
-            dx = int(math.copysign(1, dx)) * knockback_amount
-            axis = "x"
-        elif dy != 0:
-            dy = int(math.copysign(1, dy)) * knockback_amount 
-            axis = "y"
-            
-        target.x += dx
-        target.y += dy
-############################### class boundary ###############################
+        if config.get("features")["hammerKnocksBack"]:
+            # The directional vector of knockback is (defender - attacker)
+            dx = target.x - self.owner.x
+            dy = target.y - self.owner.y 
+            # One of these should be zero. Meh.
+            knockback_amount = config.get("weapons")["hammerKnockBackRange"]
+            # copysign gets the sign of dx/dy. We just need that, not the magnitude
+            if dx != 0:
+                dx = int(math.copysign(1, dx)) * knockback_amount
+                axis = "x"
+            elif dy != 0:
+                dy = int(math.copysign(1, dy)) * knockback_amount 
+                axis = "y"
+
+            target.x += dx
+            target.y += dy
+
+############################## classes boundary ###############################
 
 def is_blocked(x, y):
     #first test the map tile
