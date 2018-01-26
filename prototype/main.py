@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
  
-import tdl
-from tcod import image_load
-import random
-from random import randint
 import colors
-import math
-import textwrap
-import shelve
 import config
 import file_watcher
+import math
+import random
+from random import randint
+import shelve
+from tcod import image_load
+import tdl
+import textwrap
 
 #actual size of the window
 SCREEN_WIDTH = 80
@@ -160,7 +160,7 @@ class GameObject:
  
 class Fighter:
     #combat-related properties and methods (monster, player, NPC).
-    def __init__(self, hp, defense, power, xp, weapon = None, death_function=None):
+    def __init__(self, hp, defense, power, xp, weapon=None, death_function=None):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
@@ -287,17 +287,21 @@ class Item:
 class Player(GameObject):
     def __init__(self):
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-            blocks=True, fighter=Fighter(hp=config.get("player")["startingHealth"],
+            blocks=True,
+            
+            fighter=Fighter(hp=config.get("player")["startingHealth"],
             defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
             weapon=None, death_function=player_death))
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
-        weapon_name = config.get("player")["weapon"]
-        self.fighter.weapon = eval(weapon_name)() # public parameterless constructor
+        weapon_name = config.get("player")["startingWeapon"]
+        initializer = eval(weapon_name)
+        self.fighter.weapon = initializer(self) # __init__(owner)
 
         self.level = 1
         self.stats_points = 0
+        print("You hold your wicked-looking {} at the ready!".format(weapon_name))
     
     def gain_xp(self, amount):
         self.fighter.xp += amount        
@@ -312,10 +316,18 @@ class Player(GameObject):
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
 
+"""
+A sword. It sometimes incapacitates (stuns) the opponent due to damage
+inflicted. As a class, it doesn't calculate or deal damage; merely adds
+effects on top of the combat algorithms. (This is true of all weapons.)
+"""
 class Sword:
+    def __init__(self, owner):
+        self.owner = owner
+
     def attack(self, target):
         if config.get("features")["swordStuns"]:
-            if randint(0, 100) <= config.get("weapons")["swordStunPercent"]:
+            if randint(0, 100) <= config.get("weapons")["swordStunProbability"]:
                 if config.get("features")["stunsStack"]:
                     if isinstance(target.ai, StunnedMonster):
                         # Stack the stun
@@ -329,6 +341,26 @@ class Sword:
                     target.ai.owner = target
                 message('{} looks incapacitated!'.format(target.name), colors.light_green)
 
+
+class Hammer:
+    def __init__(self, owner):
+        self.owner = owner
+        
+    def attack(self, target):
+        # The directional vector of knockback is (defender - attacker)
+        dx = target.x - self.owner.x
+        dy = target.y - self.owner.y 
+        # One of these should be zero. Meh.
+        knockback_amount = config.get("weapons")["hammerKnockBackRange"]
+        # copysign gets the sign of dx/dy. We just need that, not the magnitude
+        dx = int(math.copysign(1, dx)) * knockback_amount if dx != 0 else 0
+        dy = int(math.copysign(1, dy)) * knockback_amount if dy != 0 else 0
+        # TODO: iterate over those tiles and stop knockback short if occupied.
+        # Also, apply additional damage in this case to one or both things.
+        #
+        # For now, just knock back. Through walls. Yes, really.
+        target.x += dx
+        target.y += dy
 ############################### class boundary ###############################
 
 def is_blocked(x, y):
@@ -653,8 +685,9 @@ def render_all():
         y += 1
  
     #show the player's stats
-    render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
-        colors.light_red, colors.darker_red)
+    panel.draw_str(1, 1, "HP: {}/{}".format(player.fighter.hp, player.fighter.max_hp))
+    # render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
+    #     colors.light_red, colors.darker_red)
  
     #display names of objects under the mouse
     panel.draw_str(1, 0, get_names_under_mouse(), bg=None, fg=colors.light_gray)
@@ -845,7 +878,7 @@ def monster_death(monster):
     monster.fighter = None
     monster.ai = None
     monster.original_ai = None
-    monster.name = 'remains of ' + monster.name
+    monster.name = "{} remains".format(monster.name)
     monster.send_to_back()
  
 def target_tile(max_range=None):

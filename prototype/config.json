@@ -8,12 +8,14 @@
         "startingDefense": 2,
         "startingPower": 5,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
-        "weapon": "Sword",
+        "startingWeapon": "Hammer",
         "lightRadius": 5,
         "statsPointsOnLevelUp": 5
     },
     "weapons": {
-        "swordStunPercent": 20 ,
-        "numTurnsStunned": 5
+        "swordStunProbability": 20,
+        "numTurnsStunned": 3,
+        "hammerKnockBackProbability": 20,
+        "hammerKnockBackRange": 4 // knock back N tiles
     }
 }
