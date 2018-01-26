@@ -353,12 +353,13 @@ class Hammer:
         # One of these should be zero. Meh.
         knockback_amount = config.get("weapons")["hammerKnockBackRange"]
         # copysign gets the sign of dx/dy. We just need that, not the magnitude
-        dx = int(math.copysign(1, dx)) * knockback_amount if dx != 0 else 0
-        dy = int(math.copysign(1, dy)) * knockback_amount if dy != 0 else 0
-        # TODO: iterate over those tiles and stop knockback short if occupied.
-        # Also, apply additional damage in this case to one or both things.
-        #
-        # For now, just knock back. Through walls. Yes, really.
+        if dx != 0:
+            dx = int(math.copysign(1, dx)) * knockback_amount
+            axis = "x"
+        elif dy != 0:
+            dy = int(math.copysign(1, dy)) * knockback_amount 
+            axis = "y"
+            
         target.x += dx
         target.y += dy
 ############################### class boundary ###############################
