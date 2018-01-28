@@ -16,7 +16,7 @@
     "weapons": {
         "swordStunProbability": 20,
         "numTurnsStunned": 3,
-        "hammerKnockBackProbability": 20,
+        "hammerKnockBackProbability": 200,
         "hammerKnockBackRange": 4 // knock back N tiles
     }
 }

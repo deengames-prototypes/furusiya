@@ -220,8 +220,9 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, num_turns=config.get("weapons")["numTurnsStunned"]):
+    def __init__(self, owner, num_turns=config.get("weapons")["numTurnsStunned"]):
         self.num_turns = num_turns
+        self.owner = owner
  
     def take_turn(self):
         if self.num_turns > 0:  # still stunned ...
@@ -333,12 +334,10 @@ class Sword:
                         # Stack the stun
                         target.ai.num_turns += config.get("weapons")["numTurnsStunned"]
                     else:
-                        target.ai = StunnedMonster()
-                        target.ai.owner = target
+                        target.ai = StunnedMonster(target)
                 else:
                     # Copy-pasta from two lines above
-                    target.ai = StunnedMonster()
-                    target.ai.owner = target
+                    target.ai = StunnedMonster(target)
                 message('{} looks incapacitated!'.format(target.name), colors.light_green)
 
 
@@ -351,18 +350,26 @@ class Hammer:
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y 
-            # One of these should be zero. Meh.
             knockback_amount = config.get("weapons")["hammerKnockBackRange"]
             # copysign gets the sign of dx/dy. We just need that, not the magnitude
             if dx != 0:
                 dx = int(math.copysign(1, dx)) * knockback_amount
-                axis = "x"
+                dy = 0
             elif dy != 0:
                 dy = int(math.copysign(1, dy)) * knockback_amount 
-                axis = "y"
+                dx = 0
 
-            target.x += dx
-            target.y += dy
+            goal_x = target.x + dx
+            goal_y = target.y + dy
+
+            while target.x != goal_x or target.y != goal_y:
+                (old_x, old_y) = (target.x, target.y)
+                target.move_towards(goal_x, goal_y)
+                if target.x == old_x and target.y == old_y:
+                    # Didn't move: hit a solid wall
+                    target.ai = StunnedMonster(target)
+                    message('{} hits something and falls over!'.format(target.name), colors.light_green)
+                    break
 
 ############################## classes boundary ###############################
 
@@ -549,7 +556,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=10, defense=0, power=3, xp=10,
+                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -557,7 +564,7 @@ def place_objects(room):
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=16, defense=1, power=4, xp=25,
+                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -812,7 +819,7 @@ def handle_keys():
             mouse_coord = event.cell
  
     if not keypress:
-        return 'didnt-take-turn' #TODO: Add to tutorial
+        return 'didnt-take-turn'
  
     if user_input.key == 'ENTER' and user_input.alt:
         #Alt+Enter: toggle fullscreen
