@@ -2,7 +2,8 @@
     "features": {
         "swordStuns": true,
         "stunsStack": true,
-        "hammerKnocksBack": true
+        "hammerKnocksBack": true,
+        "knockBackDamagesOnCollision": true
     },
     "player": {
         "startingHealth": 20,

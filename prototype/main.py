@@ -373,7 +373,7 @@ class Hammer:
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
-                    if knockback_distance:
+                    if config.get("features")["knockBackDamagesOnCollision"] and knockback_distance:
                         damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
                         knockback_damage = damage_percent * target.fighter.max_hp
                         target.fighter.take_damage(knockback_damage)
