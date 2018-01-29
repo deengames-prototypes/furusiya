@@ -361,6 +361,8 @@ class Hammer:
 
             goal_x = target.x + dx
             goal_y = target.y + dy
+            knockback_distance = 0
+            display_message = "{} hits something and falls over!".format(target.name)
 
             while target.x != goal_x or target.y != goal_y:
                 (old_x, old_y) = (target.x, target.y)
@@ -368,8 +370,19 @@ class Hammer:
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
                     target.ai = StunnedMonster(target)
-                    message('{} hits something and falls over!'.format(target.name), colors.light_green)
+
+                    # Take additional damage for hitting something; if (and only
+                    # if) we actually flew backward one or more spaces.
+                    if knockback_distance:
+                        damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
+                        knockback_damage = damage_percent * target.fighter.max_hp
+                        target.fighter.take_damage(knockback_damage)
+                        display_message += ' Takes {} additional damage!'.format(knockback_damage)
                     break
+                else:
+                    knockback_distance += 1
+            
+            message(display_message, colors.light_green)
 
 ############################## classes boundary ###############################
 
