@@ -116,6 +116,8 @@ class GameObject:
         if not is_blocked(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
+        else:
+            return get_blocking_object_at(self.x + dx, self.y + dy)
  
     def move_towards(self, target_x, target_y):
         #vector from this object to the target, and distance
@@ -127,7 +129,7 @@ class GameObject:
         #convert to integer so the movement is restricted to the map grid
         dx = int(round(dx / distance))
         dy = int(round(dy / distance))
-        self.move(dx, dy)
+        return self.move(dx, dy)
  
     def distance_to(self, other):
         #return the distance to another object
@@ -363,10 +365,11 @@ class Hammer:
             goal_y = target.y + dy
             knockback_distance = 0
             display_message = "{} hits something and falls over!".format(target.name)
+            extra_message = None
 
             while target.x != goal_x or target.y != goal_y:
                 (old_x, old_y) = (target.x, target.y)
-                target.move_towards(goal_x, goal_y)
+                hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
                     target.ai = StunnedMonster(target)
@@ -378,11 +381,20 @@ class Hammer:
                         knockback_damage = damage_percent * target.fighter.max_hp
                         target.fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
+
+                        # Did we hit someone?
+                        hit_someone = hit_something.fighter if hit_something else None
+                        if hit_someone:
+                            knockback_damage = damage_percent * hit_someone.max_hp
+                            hit_someone.take_damage(knockback_damage)
+                            extra_message = "{} looks injured!".format(hit_something.name)
                     break
                 else:
                     knockback_distance += 1
             
             message(display_message, colors.light_green)
+            if extra_message:
+                message(extra_message, colors.light_green)
 
 ############################## classes boundary ###############################
 
@@ -397,7 +409,14 @@ def is_blocked(x, y):
             return True
  
     return False
- 
+
+def get_blocking_object_at(x, y):
+    for obj in objects:
+        if obj.blocks and obj.x == x and obj.y == y:
+            return obj
+
+    return None
+
 def create_room(room):
     global my_map
     #go through the tiles in the rectangle and make them passable
