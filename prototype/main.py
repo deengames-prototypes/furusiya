@@ -378,14 +378,14 @@ class Hammer:
                     # if) we actually flew backward one or more spaces.
                     if config.get("features")["knockBackDamagesOnCollision"] and knockback_distance:
                         damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
-                        knockback_damage = damage_percent * target.fighter.max_hp
+                        knockback_damage = int(damage_percent * target.fighter.max_hp)
                         target.fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
 
                         # Did we hit someone?
                         hit_someone = hit_something.fighter if hit_something else None
                         if hit_someone:
-                            knockback_damage = damage_percent * hit_someone.max_hp
+                            knockback_damage = int(damage_percent * hit_someone.max_hp)
                             hit_someone.take_damage(knockback_damage)
                             extra_message = "{} looks injured!".format(hit_something.name)
                     break
