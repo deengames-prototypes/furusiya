@@ -714,6 +714,7 @@ def render_all():
         if obj != player:
             obj.draw()
     player.draw()
+
     #blit the contents of "con" to the root console and present it
     root.blit(con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
  
@@ -733,10 +734,17 @@ def render_all():
  
     #display names of objects under the mouse
     panel.draw_str(1, 0, get_names_under_mouse(), bg=None, fg=colors.light_gray)
- 
+
     #blit the contents of "panel" to the root console
     root.blit(panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
- 
+
+    x1, y1 = player.x, player.y
+    x2, y2 = mouse_coord
+    line = tdl.map.bresenham(x1, y1, x2, y2)
+    for pos in line:
+        con.draw_char(pos[0], pos[1], '*', colors.red, bg=None)
+
+    
 def message(new_msg, color = colors.white):
     #split the message if necessary, among multiple lines
     new_msg_lines = textwrap.wrap(new_msg, MSG_WIDTH)
