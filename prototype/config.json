@@ -10,7 +10,7 @@
         "startingDefense": 2,
         "startingPower": 5,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
-        "startingWeapon": "Hammer",
+        "startingWeapon": "Bow",
         "lightRadius": 5,
         "statsPointsOnLevelUp": 5
     },

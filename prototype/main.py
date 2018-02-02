@@ -2,6 +2,7 @@
  
 import colors
 import config
+import datetime
 import file_watcher
 import math
 import random
@@ -287,14 +288,18 @@ class Item:
                 inventory.remove(self.owner)  #destroy after use, unless it was 
                                               #cancelled for some reason
  
-class Player(GameObject):
+class Player(GameObject):    
     def __init__(self):
+
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
             blocks=True,
             
             fighter=Fighter(hp=config.get("player")["startingHealth"],
             defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
             weapon=None, death_function=player_death))
+
+        global draw_bowsight
+        draw_bowsight = False
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
@@ -395,6 +400,10 @@ class Hammer:
             message(display_message, colors.light_green)
             if extra_message:
                 message(extra_message, colors.light_green)
+
+class Bow:
+    def __init__(self, owner):
+        pass
 
 ############################## classes boundary ###############################
 
@@ -678,6 +687,7 @@ def get_names_under_mouse():
 def render_all():
     global fov_recompute
     global visible_tiles
+    global draw_bowsight
  
     if fov_recompute:
         fov_recompute = False
@@ -700,7 +710,7 @@ def render_all():
                             con.draw_char(x, y, '#', fg=color_dark_wall)
                         else:
                             con.draw_char(x, y, '.', fg=color_dark_ground)
-                else:
+                elif:
                     if wall:
                         con.draw_char(x, y, '#', fg=color_light_wall)
                     else:
@@ -717,7 +727,16 @@ def render_all():
 
     #blit the contents of "con" to the root console and present it
     root.blit(con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
- 
+
+    if draw_bowsight:
+        x1, y1 = player.x, player.y
+        x2, y2 = mouse_coord
+        line = tdl.map.bresenham(x1, y1, x2, y2)
+        for pos in line:
+            con.draw_char(pos[0], pos[1], '*', colors.red, bg=None)
+        tdl.flush()
+        return
+
     #prepare to render the GUI panel
     panel.clear(fg=colors.white, bg=colors.black)
  
@@ -737,13 +756,6 @@ def render_all():
 
     #blit the contents of "panel" to the root console
     root.blit(panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
-
-    x1, y1 = player.x, player.y
-    x2, y2 = mouse_coord
-    line = tdl.map.bresenham(x1, y1, x2, y2)
-    for pos in line:
-        con.draw_char(pos[0], pos[1], '*', colors.red, bg=None)
-
     
 def message(new_msg, color = colors.white):
     #split the message if necessary, among multiple lines
@@ -846,9 +858,11 @@ def msgbox(text, width=50):
     menu(text, [], width)  #use menu() as a sort of "message box"
  
 def handle_keys():
+    global player
     global playerx, playery
     global fov_recompute
     global mouse_coord
+    global draw_bowsight
  
     keypress = False
     for event in tdl.event.get():
@@ -903,7 +917,22 @@ def handle_keys():
                 'drop it, or any other to cancel.\n')
                 if chosen_item is not None:
                     chosen_item.drop()
- 
+
+            if user_input.text == 'f' and isinstance(player.fighter.weapon, Bow):
+                is_fired = False
+                is_cancelled = False
+                draw_bowsight = True
+                while not is_fired and not is_cancelled:
+                    for event in tdl.event.get():
+                        if event.type == 'MOUSEMOTION':
+                            mouse_coord = event.cell
+                            fov_recompute = True
+                            render_all()
+                        elif event.type == 'KEYDOWN' and event.key == 'ESCAPE':
+                            draw_bowsight = False
+                            is_cancelled = True
+
+
             return 'didnt-take-turn'
  
 def player_death(player):
