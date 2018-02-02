@@ -693,7 +693,6 @@ def render_all():
     global draw_bowsight
     global mouse_coord
     global auto_target
-
  
     if fov_recompute:
         fov_recompute = False
@@ -726,6 +725,12 @@ def render_all():
  
  
     if draw_bowsight:
+        # Horrible, terrible, crazy hack. Can't figure out why visible tiles
+        # just never seem to redraw as '.' or '#' on top of bow rays.
+        for (x, y) in visible_tiles:
+            char = '#' if my_map[x][y].block_sight else '.'
+            con.draw_char(x, y, char, fg=color_light_ground)
+
         if auto_target:
             target = closest_monster(config.get("player")["lightRadius"])
             x2, y2 = (target.x, target.y)
