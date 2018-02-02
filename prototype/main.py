@@ -688,6 +688,7 @@ def render_all():
     global fov_recompute
     global visible_tiles
     global draw_bowsight
+    global mouse_coord
  
     if fov_recompute:
         fov_recompute = False
@@ -710,7 +711,7 @@ def render_all():
                             con.draw_char(x, y, '#', fg=color_dark_wall)
                         else:
                             con.draw_char(x, y, '.', fg=color_dark_ground)
-                elif:
+                elif not draw_bowsight:
                     if wall:
                         con.draw_char(x, y, '#', fg=color_light_wall)
                     else:
@@ -722,7 +723,10 @@ def render_all():
     #draw all objects in the list
     for obj in objects:
         if obj != player:
-            obj.draw()
+            if draw_bowsight and (obj.x, obj.y) == mouse_coord:
+                con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
+            else:
+                obj.draw()
     player.draw()
 
     #blit the contents of "con" to the root console and present it
