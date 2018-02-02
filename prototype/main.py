@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
  
-import tdl
-from tcod import image_load
-import random
-from random import randint
 import colors
-import math
-import textwrap
-import shelve
 import config
 import file_watcher
+import math
+import random
+from random import randint
+import shelve
+from tcod import image_load
+import tdl
+import textwrap
 
 #actual size of the window
 SCREEN_WIDTH = 80
@@ -47,16 +47,8 @@ FIREBALL_DAMAGE = 12
  
 FOV_ALGO = 'BASIC'
 FOV_LIGHT_WALLS = True
-TORCH_RADIUS = 10
  
 LIMIT_FPS = 20  #20 frames-per-second maximum
-
-# Player stuff
-STATS_POINTS_PER_LEVEL = 5
-
-# Weapons
-SWORD_STUN_PERCENT = 20
-STUNNED_NUM_TURNS = 3
 
 color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
@@ -113,6 +105,7 @@ class GameObject:
         self.ai = ai
         if self.ai:  #let the AI component know who owns it
             self.ai.owner = self
+            self.original_ai = self.ai
  
         self.item = item
         if self.item:  #let the Item component know who owns it
@@ -123,6 +116,8 @@ class GameObject:
         if not is_blocked(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
+        else:
+            return get_blocking_object_at(self.x + dx, self.y + dy)
  
     def move_towards(self, target_x, target_y):
         #vector from this object to the target, and distance
@@ -134,7 +129,7 @@ class GameObject:
         #convert to integer so the movement is restricted to the map grid
         dx = int(round(dx / distance))
         dy = int(round(dy / distance))
-        self.move(dx, dy)
+        return self.move(dx, dy)
  
     def distance_to(self, other):
         #return the distance to another object
@@ -167,7 +162,7 @@ class GameObject:
  
 class Fighter:
     #combat-related properties and methods (monster, player, NPC).
-    def __init__(self, hp, defense, power, xp, weapon = None, death_function=None):
+    def __init__(self, hp, defense, power, xp, weapon=None, death_function=None):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
@@ -227,25 +222,25 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, old_ai, num_turns=STUNNED_NUM_TURNS):
-        self.old_ai = old_ai
+    def __init__(self, owner, num_turns=config.get("weapons")["numTurnsStunned"]):
         self.num_turns = num_turns
+        self.owner = owner
  
     def take_turn(self):
-        if self.num_turns > 0:  #still stunned ...
+        if self.num_turns > 0:  # still stunned ...
             self.num_turns -= 1
- 
+            self.owner.char = str(self.num_turns)[0] # last digit
         else:  
             #restore the previous AI (this one will be deleted because it's not 
             #referenced anymore)
-            self.owner.ai = self.old_ai
+            self.owner.ai = self.owner.original_ai
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
+            self.owner.char = self.owner.name[0]
  
 
 class ConfusedMonster:
     #AI for a temporarily confused monster (reverts to previous AI after a while).
-    def __init__(self, old_ai, num_turns=CONFUSE_NUM_TURNS):
-        self.old_ai = old_ai
+    def __init__(self, num_turns=CONFUSE_NUM_TURNS):
         self.num_turns = num_turns
  
     def take_turn(self):
@@ -257,7 +252,7 @@ class ConfusedMonster:
         else:  
             #restore the previous AI (this one will be deleted because it's not 
             #referenced anymore)
-            self.owner.ai = self.old_ai
+            self.owner.ai = self.original_ai
             message('The ' + self.owner.name + ' is no longer confused!', colors.red)
  
 class Item:
@@ -295,11 +290,21 @@ class Item:
 class Player(GameObject):
     def __init__(self):
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-            blocks=True, fighter=Fighter(hp=30, defense=2, power=5, xp=0, 
-            weapon=Sword(), death_function=player_death))
+            blocks=True,
+            
+            fighter=Fighter(hp=config.get("player")["startingHealth"],
+            defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
+            weapon=None, death_function=player_death))
+
+        # Eval is evil if misused. Here, the config tells me the constructor
+        # method to call to create my weapon. Don't try this in prod, folks.
+        weapon_name = config.get("player")["startingWeapon"]
+        initializer = eval(weapon_name)
+        self.fighter.weapon = initializer(self) # __init__(owner)
 
         self.level = 1
         self.stats_points = 0
+        print("You hold your wicked-looking {} at the ready!".format(weapon_name))
     
     def gain_xp(self, amount):
         self.fighter.xp += amount        
@@ -309,20 +314,89 @@ class Player(GameObject):
         # DRY ya'ne
         while self.fighter.xp >= xp_next_level:
             self.level += 1
-            self.stats_points += STATS_POINTS_PER_LEVEL
-            xp_next_level = 2**(self.level + 1) * 10
+            self.stats_points += config.get("player")["statsPointsOnLevelUp"]
+            xp_next_level = 2**(self.level + 1) * config.get("player")["expRequiredBase"]
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
 
+"""
+A sword. It sometimes incapacitates (stuns) the opponent due to damage
+inflicted. As a class, it doesn't calculate or deal damage; merely adds
+effects on top of the combat algorithms. (This is true of all weapons.)
+"""
 class Sword:
-    def attack(self, target):
-        if randint(0, 100) <= SWORD_STUN_PERCENT:
-            old_ai = target.ai
-            target.ai = StunnedMonster(old_ai)
-            target.ai.owner = target
-            message('{} looks stunned!'.format(target.name), colors.light_green)
+    def __init__(self, owner):
+        self.owner = owner
 
-############################### class boundary ###############################
+    def attack(self, target):
+        if config.get("features")["swordStuns"]:
+            if randint(0, 100) <= config.get("weapons")["swordStunProbability"]:
+                if config.get("features")["stunsStack"]:
+                    if isinstance(target.ai, StunnedMonster):
+                        # Stack the stun
+                        target.ai.num_turns += config.get("weapons")["numTurnsStunned"]
+                    else:
+                        target.ai = StunnedMonster(target)
+                else:
+                    # Copy-pasta from two lines above
+                    target.ai = StunnedMonster(target)
+                message('{} looks incapacitated!'.format(target.name), colors.light_green)
+
+
+class Hammer:
+    def __init__(self, owner):
+        self.owner = owner
+        
+    def attack(self, target):
+        if config.get("features")["hammerKnocksBack"]:
+            # The directional vector of knockback is (defender - attacker)
+            dx = target.x - self.owner.x
+            dy = target.y - self.owner.y 
+            knockback_amount = config.get("weapons")["hammerKnockBackRange"]
+            # copysign gets the sign of dx/dy. We just need that, not the magnitude
+            if dx != 0:
+                dx = int(math.copysign(1, dx)) * knockback_amount
+                dy = 0
+            elif dy != 0:
+                dy = int(math.copysign(1, dy)) * knockback_amount 
+                dx = 0
+
+            goal_x = target.x + dx
+            goal_y = target.y + dy
+            knockback_distance = 0
+            display_message = "{} hits something and falls over!".format(target.name)
+            extra_message = None
+
+            while target.x != goal_x or target.y != goal_y:
+                (old_x, old_y) = (target.x, target.y)
+                hit_something = target.move_towards(goal_x, goal_y)
+                if target.x == old_x and target.y == old_y:
+                    # Didn't move: hit a solid wall
+                    target.ai = StunnedMonster(target)
+
+                    # Take additional damage for hitting something; if (and only
+                    # if) we actually flew backward one or more spaces.
+                    if config.get("features")["knockBackDamagesOnCollision"] and knockback_distance:
+                        damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
+                        knockback_damage = damage_percent * target.fighter.max_hp
+                        target.fighter.take_damage(knockback_damage)
+                        display_message += ' Takes {} additional damage!'.format(knockback_damage)
+
+                        # Did we hit someone?
+                        hit_someone = hit_something.fighter if hit_something else None
+                        if hit_someone:
+                            knockback_damage = damage_percent * hit_someone.max_hp
+                            hit_someone.take_damage(knockback_damage)
+                            extra_message = "{} looks injured!".format(hit_something.name)
+                    break
+                else:
+                    knockback_distance += 1
+            
+            message(display_message, colors.light_green)
+            if extra_message:
+                message(extra_message, colors.light_green)
+
+############################## classes boundary ###############################
 
 def is_blocked(x, y):
     #first test the map tile
@@ -335,7 +409,14 @@ def is_blocked(x, y):
             return True
  
     return False
- 
+
+def get_blocking_object_at(x, y):
+    for obj in objects:
+        if obj.blocks and obj.x == x and obj.y == y:
+            return obj
+
+    return None
+
 def create_room(room):
     global my_map
     #go through the tiles in the rectangle and make them passable
@@ -507,7 +588,7 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=10, defense=0, power=3, xp=10,
+                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
@@ -515,11 +596,11 @@ def place_objects(room):
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=16, defense=1, power=4, xp=25,
+                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
                                             death_function=monster_death)
                 ai_component = BasicMonster()
  
-                monster = GameObject(x, y, 'T', 'troll', colors.darker_green,
+                monster = GameObject(x, y, 'T', 'Troll', colors.darker_green,
                     blocks=True, fighter=fighter_component, ai=ai_component)
  
             objects.append(monster)
@@ -603,7 +684,7 @@ def render_all():
         visible_tiles = tdl.map.quickFOV(player.x, player.y,
                                          is_visible_tile,
                                          fov=FOV_ALGO,
-                                         radius=TORCH_RADIUS,
+                                         radius=config.get("player")["lightRadius"],
                                          lightWalls=FOV_LIGHT_WALLS)
  
         #go through all tiles, and set their background color according to the FOV
@@ -646,8 +727,9 @@ def render_all():
         y += 1
  
     #show the player's stats
-    render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
-        colors.light_red, colors.darker_red)
+    panel.draw_str(1, 1, "HP: {}/{}".format(player.fighter.hp, player.fighter.max_hp))
+    # render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
+    #     colors.light_red, colors.darker_red)
  
     #display names of objects under the mouse
     panel.draw_str(1, 0, get_names_under_mouse(), bg=None, fg=colors.light_gray)
@@ -769,7 +851,7 @@ def handle_keys():
             mouse_coord = event.cell
  
     if not keypress:
-        return 'didnt-take-turn' #TODO: Add to tutorial
+        return 'didnt-take-turn'
  
     if user_input.key == 'ENTER' and user_input.alt:
         #Alt+Enter: toggle fullscreen
@@ -837,7 +919,8 @@ def monster_death(monster):
     player.gain_xp(monster.fighter.xp)    
     monster.fighter = None
     monster.ai = None
-    monster.name = 'remains of ' + monster.name
+    monster.original_ai = None
+    monster.name = "{} remains".format(monster.name)
     monster.send_to_back()
  
 def target_tile(max_range=None):
@@ -928,8 +1011,7 @@ def cast_confuse():
  
     #replace the monster's AI with a "confused" one; after some turns it will 
     #restore the old AI
-    old_ai = monster.ai
-    monster.ai = ConfusedMonster(old_ai)
+    monster.ai = ConfusedMonster()
     monster.ai.owner = monster  #tell the new component who owns it
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
@@ -1065,8 +1147,6 @@ root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike",
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
 panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
-
-print("Config test: {}".format(config.get("sampleValue"))) 
 
 main_menu()
 

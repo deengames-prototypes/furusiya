@@ -1,3 +1,25 @@
 {
-    "sampleValue": "IT'S ALIVE!!"
+    "features": {
+        "swordStuns": true,
+        "stunsStack": true,
+        "hammerKnocksBack": true,
+        "knockBackDamagesOnCollision": true
+    },
+    "player": {
+        "startingHealth": 20,
+        "startingDefense": 2,
+        "startingPower": 5,
+        "expRequiredBase": 10, // formula: 2^(n+1) * this
+        "startingWeapon": "Hammer",
+        "lightRadius": 5,
+        "statsPointsOnLevelUp": 5
+    },
+    "weapons": {
+        "swordStunProbability": 20,
+        "numTurnsStunned": 3,
+        "hammerKnockBackProbability": 200,
+        "hammerKnockBackRange": 4, // knock back N tiles
+        // what percentage of health monsters lose when knocked back into something
+        "hammerKnockBackDamagePercent": 20
+    }
 }
