@@ -404,6 +404,9 @@ class Hammer:
 class Bow:
     def __init__(self, owner):
         pass
+    
+    def attack(self, target):
+        pass
 
 ############################## classes boundary ###############################
 
@@ -720,10 +723,25 @@ def render_all():
                     my_map[x][y].explored = True
  
  
+    if draw_bowsight:
+        m = closest_monster(config.get("player")["lightRadius"])
+        x1, y1 = player.x, player.y        
+        x2, y2 = (m.x, m.y) if m is not None else mouse_coord
+        line = tdl.map.bresenham(x1, y1, x2, y2)
+        for pos in line:
+            con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
+        tdl.flush()
+
+        # Undo drawing tiles outside sight
+        for pos in line:
+            if not pos in visible_tiles:
+                con.draw_char(pos[0], pos[1], '#', colors.black)
+
     #draw all objects in the list
     for obj in objects:
         if obj != player:
-            if draw_bowsight and (obj.x, obj.y) in visible_tiles and (obj.x, obj.y) == mouse_coord:
+            if draw_bowsight and (obj.x, obj.y) in visible_tiles and \
+                (obj.x, obj.y) == (m.x, m.y) and obj.fighter is not None:
                 con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
@@ -731,15 +749,6 @@ def render_all():
 
     #blit the contents of "con" to the root console and present it
     root.blit(con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
-
-    if draw_bowsight:
-        x1, y1 = player.x, player.y
-        x2, y2 = mouse_coord
-        line = tdl.map.bresenham(x1, y1, x2, y2)
-        for pos in line:
-            con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
-        tdl.flush()
-        return
 
     #prepare to render the GUI panel
     panel.clear(fg=colors.white, bg=colors.black)
@@ -760,6 +769,8 @@ def render_all():
 
     #blit the contents of "panel" to the root console
     root.blit(panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
+
+    tdl.flush()
     
 def message(new_msg, color = colors.white):
     #split the message if necessary, among multiple lines
@@ -926,11 +937,11 @@ def handle_keys():
                 is_fired = False
                 is_cancelled = False
                 draw_bowsight = True
+                render_all() # show default targetting
                 while not is_fired and not is_cancelled:
                     for event in tdl.event.get():
                         if event.type == 'MOUSEMOTION':
-                            mouse_coord = event.cell
-                            fov_recompute = True
+                            mouse_coord = event.cell                            
                             render_all()
                         elif event.type == 'KEYDOWN' and event.key == 'ESCAPE':
                             draw_bowsight = False
@@ -1131,7 +1142,6 @@ def play_game():
  
         #draw all objects in the list
         render_all()
-        tdl.flush()
  
         #erase all objects at their old locations, before they move
         for obj in objects:
