@@ -692,6 +692,8 @@ def render_all():
     global visible_tiles
     global draw_bowsight
     global mouse_coord
+    global auto_target
+
  
     if fov_recompute:
         fov_recompute = False
@@ -724,9 +726,12 @@ def render_all():
  
  
     if draw_bowsight:
-        m = closest_monster(config.get("player")["lightRadius"])
+        if auto_target:
+            target = closest_monster(config.get("player")["lightRadius"])
+            x2, y2 = (target.x, target.y)
+        else:
+            x2, y2 = mouse_coord
         x1, y1 = player.x, player.y        
-        x2, y2 = (m.x, m.y) if m is not None else mouse_coord
         line = tdl.map.bresenham(x1, y1, x2, y2)
         for pos in line:
             con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
@@ -741,7 +746,7 @@ def render_all():
     for obj in objects:
         if obj != player:
             if draw_bowsight and (obj.x, obj.y) in visible_tiles and \
-                (obj.x, obj.y) == (m.x, m.y) and obj.fighter is not None:
+                (obj.x, obj.y) == (x2, y2) and obj.fighter is not None:
                 con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
@@ -878,6 +883,7 @@ def handle_keys():
     global fov_recompute
     global mouse_coord
     global draw_bowsight
+    global auto_target
  
     keypress = False
     for event in tdl.event.get():
@@ -937,11 +943,13 @@ def handle_keys():
                 is_fired = False
                 is_cancelled = False
                 draw_bowsight = True
+                auto_target = True
                 render_all() # show default targetting
                 while not is_fired and not is_cancelled:
                     for event in tdl.event.get():
                         if event.type == 'MOUSEMOTION':
-                            mouse_coord = event.cell                            
+                            mouse_coord = event.cell
+                            auto_target = False                    
                             render_all()
                         elif event.type == 'KEYDOWN' and event.key == 'ESCAPE':
                             draw_bowsight = False
