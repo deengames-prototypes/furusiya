@@ -723,7 +723,7 @@ def render_all():
     #draw all objects in the list
     for obj in objects:
         if obj != player:
-            if draw_bowsight and (obj.x, obj.y) == mouse_coord:
+            if draw_bowsight and (obj.x, obj.y) in visible_tiles and (obj.x, obj.y) == mouse_coord:
                 con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
@@ -737,7 +737,7 @@ def render_all():
         x2, y2 = mouse_coord
         line = tdl.map.bresenham(x1, y1, x2, y2)
         for pos in line:
-            con.draw_char(pos[0], pos[1], '*', colors.red, bg=None)
+            con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
         tdl.flush()
         return
 
