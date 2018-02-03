@@ -223,7 +223,7 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, owner, num_turns=config.get("weapons")["numTurnsStunned"]):
+    def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
         self.num_turns = num_turns
         self.owner = owner
  
@@ -290,12 +290,12 @@ class Item:
  
 class Player(GameObject):    
     def __init__(self):
-
+        data = config.data.player
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
             blocks=True,
             
-            fighter=Fighter(hp=config.get("player")["startingHealth"],
-            defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
+            fighter=Fighter(hp=data.startingHealth,
+            defense=data.startingDefense, power=data.startingPower, xp=0, 
             weapon=None, death_function=player_death))
 
         global draw_bowsight
@@ -303,7 +303,7 @@ class Player(GameObject):
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
-        weapon_name = config.get("player")["startingWeapon"]
+        weapon_name = data.startingWeapon
         initializer = eval(weapon_name)
         self.fighter.weapon = initializer(self) # __init__(owner)
 
@@ -319,8 +319,8 @@ class Player(GameObject):
         # DRY ya'ne
         while self.fighter.xp >= xp_next_level:
             self.level += 1
-            self.stats_points += config.get("player")["statsPointsOnLevelUp"]
-            xp_next_level = 2**(self.level + 1) * config.get("player")["expRequiredBase"]
+            self.stats_points += config.data.player.statsPointsOnLevelUp
+            xp_next_level = 2**(self.level + 1) * config.data.player.expRequiredBase
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
 
@@ -334,12 +334,12 @@ class Sword:
         self.owner = owner
 
     def attack(self, target):
-        if config.get("features")["swordStuns"]:
-            if randint(0, 100) <= config.get("weapons")["swordStunProbability"]:
-                if config.get("features")["stunsStack"]:
+        if config.data.features.swordStuns:
+            if randint(0, 100) <= config.data.weapons.swordStunProbability:
+                if config.data.features.stunsStack:
                     if isinstance(target.ai, StunnedMonster):
                         # Stack the stun
-                        target.ai.num_turns += config.get("weapons")["numTurnsStunned"]
+                        target.ai.num_turns += config.data.weapons.numTurnsStunned
                     else:
                         target.ai = StunnedMonster(target)
                 else:
@@ -353,11 +353,11 @@ class Hammer:
         self.owner = owner
         
     def attack(self, target):
-        if config.get("features")["hammerKnocksBack"]:
+        if config.data.features.hammerKnocksBack:
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y 
-            knockback_amount = config.get("weapons")["hammerKnockBackRange"]
+            knockback_amount = config.data.weapons.hammerKnockBackRange
             # copysign gets the sign of dx/dy. We just need that, not the magnitude
             if dx != 0:
                 dx = int(math.copysign(1, dx)) * knockback_amount
@@ -381,8 +381,8 @@ class Hammer:
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
-                    if config.get("features")["knockBackDamagesOnCollision"] and knockback_distance:
-                        damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
+                    if config.data.features.knockBackDamagesOnCollision and knockback_distance:
+                        damage_percent = config.data.weapons.hammerKnockBackDamagePercent / 100
                         knockback_damage = int(damage_percent * target.fighter.max_hp)
                         target.fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
@@ -708,7 +708,7 @@ def render_all():
         visible_tiles = tdl.map.quickFOV(player.x, player.y,
                                          is_visible_tile,
                                          fov=FOV_ALGO,
-                                         radius=config.get("player")["lightRadius"],
+                                         radius=config.data.player.lightRadius,
                                          lightWalls=FOV_LIGHT_WALLS)
  
         #go through all tiles, and set their background color according to the FOV
@@ -741,7 +741,7 @@ def render_all():
             con.draw_char(x, y, char, fg=color_light_ground)
 
         if auto_target:
-            target = closest_monster(config.get("player")["lightRadius"])
+            target = closest_monster(config.data.player.lightRadius)
             x2, y2 = (target.x, target.y) if target is not None else mouse_coord
         else:
             target = None
