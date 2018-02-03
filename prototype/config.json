@@ -35,6 +35,7 @@
         "bowCriticalDamageMultiplier": 0.25 // 0.1 => (1.0 + 0.1)x damage on crit
     },
     "enemies": {
+        "arrowDropsOnKill": 3,
         "orc": {
             "attack": 3,
             "defense": 0,

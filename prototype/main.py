@@ -180,10 +180,18 @@ class Fighter:
  
             #check for death. if there's a death function, call it
             if self.hp <= 0:
+                # Drop arrows if necessary
+                if config.data.features.limitedArrows and self.owner.ai: # It's a monster
+                    num_arrows = config.data.enemies.arrowDropsOnKill
+                    arrows = GameObject(self.owner.x, self.owner.y, '|', 
+                        '{} arrows'.format(num_arrows), colors.brass, blocks=False, item=Item())
+                    objects.append(arrows)
+                    arrows.send_to_back()
+ 
                 function = self.death_function
                 if function is not None:
                     function(self.owner)
- 
+
     def attack(self, target, damage_multiplier=1, is_critical=False):
         #a simple formula for attack damage
         damage = int(self.power * damage_multiplier) - target.fighter.defense
@@ -267,6 +275,13 @@ class Item:
         if len(inventory) >= 26:
             message('Your inventory is full, cannot pick up ' + 
                     self.owner.name + '.', colors.red)
+        elif "arrows" in self.owner.name:
+            global player                        
+            # eg. 13 arrows
+            num_arrows = int(self.owner.name[0:self.owner.name.index(' ')])
+            player.arrows += num_arrows
+            message("Picked up {} arrows. Total={}".format(num_arrows, player.arrows))
+            objects.remove(self.owner)
         else:
             inventory.append(self.owner)
             objects.remove(self.owner)
@@ -966,7 +981,9 @@ def handle_keys():
                     chosen_item.drop()
 
             if user_input.text == 'f' and isinstance(player.fighter.weapon, Bow):
-                if config.data.features.limitedArrows and player.arrows > 0:
+                # Unlimited arrows, or limited but we have arrows
+                if not config.data.features.limitedArrows or \
+                    (config.data.features.limitedArrows and player.arrows > 0):
                     is_fired = False
                     is_cancelled = False
                     draw_bowsight = True
@@ -990,16 +1007,13 @@ def handle_keys():
                                             damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
                                             if config.data.features.bowCritsStack:
                                                 damage_multiplier += (config.data.weapons.bowCriticalDamageMultiplier * target.fighter.bow_crits)
-                                                print("FINAL DM={}".format(damage_multiplier))                                            
                                                 target.fighter.bow_crits += 1
                                             is_critical = True
                                         player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
                                         player.arrows -= 1
                                         is_fired = True
                                         draw_bowsight = False
-                                        return ""
-                else:
-                    message("You're out of arrows, knight.")
+                                        return ""                
 
             return 'didnt-take-turn'
  
