@@ -183,9 +183,9 @@ class Fighter:
                 if function is not None:
                     function(self.owner)
  
-    def attack(self, target):
+    def attack(self, target, damage_multiplier=1):
         #a simple formula for attack damage
-        damage = self.power - target.fighter.defense
+        damage = int(self.power * damage_multiplier) - target.fighter.defense
  
         if damage > 0:
             #make the target take some damage
@@ -980,7 +980,7 @@ def handle_keys():
                                 is_cancelled = True
                             elif event.char == 'f':
                                 if target and target.fighter:
-                                    player.fighter.attack(target)
+                                    player.fighter.attack(target, damage_multiplier=config.data.weapons.arrowDamageMultiplier)
                                     is_fired = True
                                     draw_bowsight = False
                                     return ""

@@ -3,7 +3,8 @@
         "swordStuns": true,
         "stunsStack": true,
         "hammerKnocksBack": true,
-        "knockBackDamagesOnCollision": true
+        "knockBackDamagesOnCollision": true,
+        "bowCrits": true
     },
     "player": {
         "startingHealth": 20,
@@ -11,7 +12,7 @@
         "startingPower": 5,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
-        "lightRadius": 5,
+        "lightRadius": 15,
         "statsPointsOnLevelUp": 5
     },
     "weapons": {
@@ -20,7 +21,9 @@
         "hammerKnockBackProbability": 200,
         "hammerKnockBackRange": 4, // knock back N tiles
         // what percentage of health monsters lose when knocked back into something
-        "hammerKnockBackDamagePercent": 20
+        "hammerKnockBackDamagePercent": 20,
+        "arrowDamageMultiplier": 0.5, // 0.5 => arrows do 0.5x damage
+        "bowCriticalProbability": 50
     },
     "enemies": {
         "orc": {
