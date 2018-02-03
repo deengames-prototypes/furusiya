@@ -14,7 +14,7 @@
         "startingPower": 5,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
-        "lightRadius": 15,
+        "lightRadius": 10,
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10
     },
