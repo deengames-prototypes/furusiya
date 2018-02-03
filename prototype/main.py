@@ -171,6 +171,7 @@ class Fighter:
         self.xp = xp
         self.death_function = death_function
         self.weapon = weapon
+        self.bow_crits = 0
  
     def take_damage(self, damage):
         #apply damage if possible
@@ -984,6 +985,10 @@ def handle_keys():
                                     damage_multiplier = config.data.weapons.arrowDamageMultiplier
                                     if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
                                         damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
+                                        if config.data.features.bowCritsStack:
+                                            damage_multiplier += (config.data.weapons.bowCriticalDamageMultiplier * target.fighter.bow_crits)
+                                            print("FINAL DM={}".format(damage_multiplier))                                            
+                                            target.fighter.bow_crits += 1
                                         is_critical = True
                                     player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
                                     is_fired = True
