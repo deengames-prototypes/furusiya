@@ -183,14 +183,14 @@ class Fighter:
                 if function is not None:
                     function(self.owner)
  
-    def attack(self, target, damage_multiplier=1):
+    def attack(self, target, damage_multiplier=1, is_critical=False):
         #a simple formula for attack damage
         damage = int(self.power * damage_multiplier) - target.fighter.defense
  
         if damage > 0:
             #make the target take some damage
             message(self.owner.name.capitalize() + ' attacks ' + target.name + 
-                  ' for ' + str(damage) + ' hit points.')
+                  ' for ' + str(damage) + ' hit points. {}'.format("Critical strike!" if is_critical else ""))
             target.fighter.take_damage(damage)
         else:
             message(self.owner.name.capitalize() + ' attacks ' + target.name + 
@@ -978,9 +978,14 @@ def handle_keys():
                             if event.key == 'ESCAPE':
                                 draw_bowsight = False
                                 is_cancelled = True
-                            elif event.char == 'f':
+                            elif event.char == 'f':                                
                                 if target and target.fighter:
-                                    player.fighter.attack(target, damage_multiplier=config.data.weapons.arrowDamageMultiplier)
+                                    is_critical = False
+                                    damage_multiplier = config.data.weapons.arrowDamageMultiplier
+                                    if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
+                                        damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
+                                        is_critical = True
+                                    player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
                                     is_fired = True
                                     draw_bowsight = False
                                     return ""
