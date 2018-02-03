@@ -675,18 +675,24 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     x_centered = x + (total_width-len(text))//2
     panel.draw_str(x_centered, y, text, fg=colors.white, bg=None)
  
-def get_names_under_mouse():
- 
-    #return a string with the names of all objects under the mouse
+def get_objects_under_mouse():
+    global objects
+
     (x, y) = mouse_coord
  
     #create a list with the names of all objects at the mouse's coordinates and in FOV
-    names = [obj.name for obj in objects
+    stuff = [obj for obj in objects
         if obj.x == x and obj.y == y and (obj.x, obj.y) in visible_tiles]
+ 
+    return stuff
+
+def get_names_under_mouse():
+    #create a list with the names of all objects at the mouse's coordinates and in FOV
+    names = [obj.name for obj in get_objects_under_mouse()]
  
     names = ', '.join(names)  #join the names, separated by commas
     return names.capitalize()
- 
+
 def render_all():
     print("RENDER")
     global fov_recompute
@@ -694,6 +700,7 @@ def render_all():
     global draw_bowsight
     global mouse_coord
     global auto_target
+    global target
  
     if fov_recompute:
         fov_recompute = False
@@ -736,6 +743,7 @@ def render_all():
             target = closest_monster(config.get("player")["lightRadius"])
             x2, y2 = (target.x, target.y) if target is not None else mouse_coord
         else:
+            target = None
             x2, y2 = mouse_coord
         x1, y1 = player.x, player.y        
         line = tdl.map.bresenham(x1, y1, x2, y2)
@@ -753,6 +761,7 @@ def render_all():
         if obj != player:
             if draw_bowsight and (obj.x, obj.y) in visible_tiles and \
                 (obj.x, obj.y) == (x2, y2) and obj.fighter is not None:
+                target = obj
                 con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
@@ -888,8 +897,9 @@ def handle_keys():
     global playerx, playery
     global fov_recompute
     global mouse_coord
-    global draw_bowsight
-    global auto_target
+    global draw_bowsight # should we draw the bow sight?
+    global auto_target # should we auto-target someone?
+    global target # who we're aiming at
  
     keypress = False
     user_input = None
@@ -963,9 +973,14 @@ def handle_keys():
                             mouse_coord = event.cell
                             auto_target = False                    
                             render_all()
-                        elif event.type == 'KEYDOWN' and event.key == 'ESCAPE':
-                            draw_bowsight = False
-                            is_cancelled = True
+                        elif event.type == 'KEYDOWN':
+                            if event.key == 'ESCAPE':
+                                draw_bowsight = False
+                                is_cancelled = True
+                            elif event.char == 'f':
+                                print("EFF")
+                                if target and target.fighter:
+                                    print("BURN!!! {}".format(target.name))
 
 
             return 'didnt-take-turn'
