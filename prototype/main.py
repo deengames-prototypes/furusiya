@@ -600,17 +600,18 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                orc_data = config.data.enemies.orc
-                fighter_component = Fighter(hp=orc_data.health, defense=orc_data.defense,
-                    power=orc_data.attack, xp=orc_data.xp, death_function=monster_death)
+                data = config.data.enemies.orc
+                fighter_component = Fighter(hp=data.health, defense=data.defense,
+                    power=data.attack, xp=data.xp, death_function=monster_death)
                 ai_component = BasicMonster()
  
                 monster = GameObject(x, y, 'o', 'orc', colors.desaturated_green,
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
-                                            death_function=monster_death)
+                data = config.data.enemies.troll
+                fighter_component = Fighter(hp=data.health, defense=data.defense,
+                    power=data.attack, xp=data.xp, death_function=monster_death)
                 ai_component = BasicMonster()
  
                 monster = GameObject(x, y, 'T', 'Troll', colors.darker_green,

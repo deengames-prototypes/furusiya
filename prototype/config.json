@@ -28,6 +28,12 @@
             "defense": 0,
             "health": 10,
             "xp": 10
+        },
+        "troll": {
+            "attack": 4,
+            "defense": 1,
+            "health": 16,
+            "xp": 25
         }
     }
 }
