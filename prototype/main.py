@@ -688,6 +688,7 @@ def get_names_under_mouse():
     return names.capitalize()
  
 def render_all():
+    print("RENDER")
     global fov_recompute
     global visible_tiles
     global draw_bowsight
@@ -733,7 +734,7 @@ def render_all():
 
         if auto_target:
             target = closest_monster(config.get("player")["lightRadius"])
-            x2, y2 = (target.x, target.y)
+            x2, y2 = (target.x, target.y) if target is not None else mouse_coord
         else:
             x2, y2 = mouse_coord
         x1, y1 = player.x, player.y        
@@ -891,12 +892,18 @@ def handle_keys():
     global auto_target
  
     keypress = False
-    for event in tdl.event.get():
-        if event.type == 'KEYDOWN':
-            user_input = event
-            keypress = True
-        if event.type == 'MOUSEMOTION':
-            mouse_coord = event.cell
+    user_input = None
+    while user_input is None:
+        # Synchronously wait
+        for event in tdl.event.get():
+            if event != None:
+                user_input = event
+
+    if event.type == 'KEYDOWN':
+        user_input = event
+        keypress = True
+    if event.type == 'MOUSEMOTION':
+        mouse_coord = event.cell
  
     if not keypress:
         return 'didnt-take-turn'
