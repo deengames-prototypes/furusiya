@@ -600,8 +600,9 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
-                                            death_function=monster_death)
+                orc_data = config.data.enemies.orc
+                fighter_component = Fighter(hp=orc_data.health, defense=orc_data.defense,
+                    power=orc_data.attack, xp=orc_data.xp, death_function=monster_death)
                 ai_component = BasicMonster()
  
                 monster = GameObject(x, y, 'o', 'orc', colors.desaturated_green,
@@ -694,7 +695,6 @@ def get_names_under_mouse():
     return names.capitalize()
 
 def render_all():
-    print("RENDER")
     global fov_recompute
     global visible_tiles
     global draw_bowsight
@@ -978,10 +978,11 @@ def handle_keys():
                                 draw_bowsight = False
                                 is_cancelled = True
                             elif event.char == 'f':
-                                print("EFF")
                                 if target and target.fighter:
-                                    print("BURN!!! {}".format(target.name))
-
+                                    player.fighter.attack(target)
+                                    is_fired = True
+                                    draw_bowsight = False
+                                    return ""
 
             return 'didnt-take-turn'
  

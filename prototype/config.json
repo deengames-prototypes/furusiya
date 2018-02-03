@@ -21,5 +21,13 @@
         "hammerKnockBackRange": 4, // knock back N tiles
         // what percentage of health monsters lose when knocked back into something
         "hammerKnockBackDamagePercent": 20
+    },
+    "enemies": {
+        "orc": {
+            "attack": 3,
+            "defense": 0,
+            "health": 10,
+            "xp": 10
+        }
     }
 }
