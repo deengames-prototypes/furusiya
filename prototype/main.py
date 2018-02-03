@@ -310,6 +310,8 @@ class Player(GameObject):
 
         self.level = 1
         self.stats_points = 0
+        self.arrows = config.data.player.startingArrows
+
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
     
     def gain_xp(self, amount):
@@ -964,36 +966,40 @@ def handle_keys():
                     chosen_item.drop()
 
             if user_input.text == 'f' and isinstance(player.fighter.weapon, Bow):
-                is_fired = False
-                is_cancelled = False
-                draw_bowsight = True
-                auto_target = True
-                render_all() # show default targetting
-                while not is_fired and not is_cancelled:
-                    for event in tdl.event.get():
-                        if event.type == 'MOUSEMOTION':
-                            mouse_coord = event.cell
-                            auto_target = False                    
-                            render_all()
-                        elif event.type == 'KEYDOWN':
-                            if event.key == 'ESCAPE':
-                                draw_bowsight = False
-                                is_cancelled = True
-                            elif event.char == 'f':                                
-                                if target and target.fighter:
-                                    is_critical = False
-                                    damage_multiplier = config.data.weapons.arrowDamageMultiplier
-                                    if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
-                                        damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
-                                        if config.data.features.bowCritsStack:
-                                            damage_multiplier += (config.data.weapons.bowCriticalDamageMultiplier * target.fighter.bow_crits)
-                                            print("FINAL DM={}".format(damage_multiplier))                                            
-                                            target.fighter.bow_crits += 1
-                                        is_critical = True
-                                    player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
-                                    is_fired = True
+                if config.data.features.limitedArrows and player.arrows > 0:
+                    is_fired = False
+                    is_cancelled = False
+                    draw_bowsight = True
+                    auto_target = True
+                    render_all() # show default targetting
+                    while not is_fired and not is_cancelled:
+                        for event in tdl.event.get():
+                            if event.type == 'MOUSEMOTION':
+                                mouse_coord = event.cell
+                                auto_target = False                    
+                                render_all()
+                            elif event.type == 'KEYDOWN':
+                                if event.key == 'ESCAPE':
                                     draw_bowsight = False
-                                    return ""
+                                    is_cancelled = True
+                                elif event.char == 'f':                                
+                                    if target and target.fighter:
+                                        is_critical = False
+                                        damage_multiplier = config.data.weapons.arrowDamageMultiplier
+                                        if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
+                                            damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
+                                            if config.data.features.bowCritsStack:
+                                                damage_multiplier += (config.data.weapons.bowCriticalDamageMultiplier * target.fighter.bow_crits)
+                                                print("FINAL DM={}".format(damage_multiplier))                                            
+                                                target.fighter.bow_crits += 1
+                                            is_critical = True
+                                        player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
+                                        player.arrows -= 1
+                                        is_fired = True
+                                        draw_bowsight = False
+                                        return ""
+                else:
+                    message("You're out of arrows, knight.")
 
             return 'didnt-take-turn'
  

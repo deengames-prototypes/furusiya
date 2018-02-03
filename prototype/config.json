@@ -5,7 +5,8 @@
         "hammerKnocksBack": true,
         "knockBackDamagesOnCollision": true,
         "bowCrits": true,
-        "bowCritsStack": true        
+        "bowCritsStack": true,
+        "limitedArrows": true   
     },
     "player": {
         "startingHealth": 20,
@@ -14,7 +15,8 @@
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
         "lightRadius": 15,
-        "statsPointsOnLevelUp": 5
+        "statsPointsOnLevelUp": 5,
+        "startingArrows": 10
     },
     "weapons": {
         // Sword
