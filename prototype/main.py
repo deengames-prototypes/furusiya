@@ -2,6 +2,7 @@
  
 import colors
 import config
+import datetime
 import file_watcher
 import math
 import random
@@ -170,6 +171,7 @@ class Fighter:
         self.xp = xp
         self.death_function = death_function
         self.weapon = weapon
+        self.bow_crits = 0
  
     def take_damage(self, damage):
         #apply damage if possible
@@ -178,18 +180,26 @@ class Fighter:
  
             #check for death. if there's a death function, call it
             if self.hp <= 0:
+                # Drop arrows if necessary
+                if config.data.features.limitedArrows and self.owner.ai: # It's a monster
+                    num_arrows = config.data.enemies.arrowDropsOnKill
+                    arrows = GameObject(self.owner.x, self.owner.y, '|', 
+                        '{} arrows'.format(num_arrows), colors.brass, blocks=False, item=Item())
+                    objects.append(arrows)
+                    arrows.send_to_back()
+ 
                 function = self.death_function
                 if function is not None:
                     function(self.owner)
- 
-    def attack(self, target):
+
+    def attack(self, target, damage_multiplier=1, is_critical=False):
         #a simple formula for attack damage
-        damage = self.power - target.fighter.defense
+        damage = int(self.power * damage_multiplier) - target.fighter.defense
  
         if damage > 0:
             #make the target take some damage
             message(self.owner.name.capitalize() + ' attacks ' + target.name + 
-                  ' for ' + str(damage) + ' hit points.')
+                  ' for ' + str(damage) + ' hit points. {}'.format("Critical strike!" if is_critical else ""))
             target.fighter.take_damage(damage)
         else:
             message(self.owner.name.capitalize() + ' attacks ' + target.name + 
@@ -222,7 +232,7 @@ class BasicMonster:
 
 class StunnedMonster:
     #AI for a temporarily stunned monster (reverts to previous AI after a while).
-    def __init__(self, owner, num_turns=config.get("weapons")["numTurnsStunned"]):
+    def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
         self.num_turns = num_turns
         self.owner = owner
  
@@ -265,6 +275,13 @@ class Item:
         if len(inventory) >= 26:
             message('Your inventory is full, cannot pick up ' + 
                     self.owner.name + '.', colors.red)
+        elif "arrows" in self.owner.name:
+            global player                        
+            # eg. 13 arrows
+            num_arrows = int(self.owner.name[0:self.owner.name.index(' ')])
+            player.arrows += num_arrows
+            message("Picked up {} arrows. Total={}".format(num_arrows, player.arrows))
+            objects.remove(self.owner)
         else:
             inventory.append(self.owner)
             objects.remove(self.owner)
@@ -287,23 +304,29 @@ class Item:
                 inventory.remove(self.owner)  #destroy after use, unless it was 
                                               #cancelled for some reason
  
-class Player(GameObject):
+class Player(GameObject):    
     def __init__(self):
+        data = config.data.player
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
             blocks=True,
             
-            fighter=Fighter(hp=config.get("player")["startingHealth"],
-            defense=config.get("player")["startingDefense"], power=config.get("player")["startingPower"], xp=0, 
+            fighter=Fighter(hp=data.startingHealth,
+            defense=data.startingDefense, power=data.startingPower, xp=0, 
             weapon=None, death_function=player_death))
+
+        global draw_bowsight
+        draw_bowsight = False
 
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
-        weapon_name = config.get("player")["startingWeapon"]
+        weapon_name = data.startingWeapon
         initializer = eval(weapon_name)
         self.fighter.weapon = initializer(self) # __init__(owner)
 
         self.level = 1
         self.stats_points = 0
+        self.arrows = config.data.player.startingArrows
+
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
     
     def gain_xp(self, amount):
@@ -314,8 +337,8 @@ class Player(GameObject):
         # DRY ya'ne
         while self.fighter.xp >= xp_next_level:
             self.level += 1
-            self.stats_points += config.get("player")["statsPointsOnLevelUp"]
-            xp_next_level = 2**(self.level + 1) * config.get("player")["expRequiredBase"]
+            self.stats_points += config.data.player.statsPointsOnLevelUp
+            xp_next_level = 2**(self.level + 1) * config.data.player.expRequiredBase
             message("You are now level {}!".format(self.level))
             self.fighter.heal(self.fighter.max_hp)
 
@@ -329,12 +352,12 @@ class Sword:
         self.owner = owner
 
     def attack(self, target):
-        if config.get("features")["swordStuns"]:
-            if randint(0, 100) <= config.get("weapons")["swordStunProbability"]:
-                if config.get("features")["stunsStack"]:
+        if config.data.features.swordStuns:
+            if randint(0, 100) <= config.data.weapons.swordStunProbability:
+                if config.data.features.stunsStack:
                     if isinstance(target.ai, StunnedMonster):
                         # Stack the stun
-                        target.ai.num_turns += config.get("weapons")["numTurnsStunned"]
+                        target.ai.num_turns += config.data.weapons.numTurnsStunned
                     else:
                         target.ai = StunnedMonster(target)
                 else:
@@ -348,11 +371,11 @@ class Hammer:
         self.owner = owner
         
     def attack(self, target):
-        if config.get("features")["hammerKnocksBack"]:
+        if config.data.features.hammerKnocksBack:
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y 
-            knockback_amount = config.get("weapons")["hammerKnockBackRange"]
+            knockback_amount = config.data.weapons.hammerKnockBackRange
             # copysign gets the sign of dx/dy. We just need that, not the magnitude
             if dx != 0:
                 dx = int(math.copysign(1, dx)) * knockback_amount
@@ -376,16 +399,16 @@ class Hammer:
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
-                    if config.get("features")["knockBackDamagesOnCollision"] and knockback_distance:
-                        damage_percent = config.get("weapons")["hammerKnockBackDamagePercent"] / 100
-                        knockback_damage = damage_percent * target.fighter.max_hp
+                    if config.data.features.knockBackDamagesOnCollision and knockback_distance:
+                        damage_percent = config.data.weapons.hammerKnockBackDamagePercent / 100
+                        knockback_damage = int(damage_percent * target.fighter.max_hp)
                         target.fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
 
                         # Did we hit someone?
                         hit_someone = hit_something.fighter if hit_something else None
                         if hit_someone:
-                            knockback_damage = damage_percent * hit_someone.max_hp
+                            knockback_damage = int(damage_percent * hit_someone.max_hp)
                             hit_someone.take_damage(knockback_damage)
                             extra_message = "{} looks injured!".format(hit_something.name)
                     break
@@ -395,6 +418,13 @@ class Hammer:
             message(display_message, colors.light_green)
             if extra_message:
                 message(extra_message, colors.light_green)
+
+class Bow:
+    def __init__(self, owner):
+        pass
+    
+    def attack(self, target):
+        pass
 
 ############################## classes boundary ###############################
 
@@ -588,16 +618,18 @@ def place_objects(room):
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  #80% chance of getting an orc
                 #create an orc
-                fighter_component = Fighter(hp=100, defense=0, power=3, xp=10,
-                                            death_function=monster_death)
+                data = config.data.enemies.orc
+                fighter_component = Fighter(hp=data.health, defense=data.defense,
+                    power=data.attack, xp=data.xp, death_function=monster_death)
                 ai_component = BasicMonster()
  
                 monster = GameObject(x, y, 'o', 'orc', colors.desaturated_green,
                     blocks=True, fighter=fighter_component, ai=ai_component)
             else:
                 #create a troll
-                fighter_component = Fighter(hp=160, defense=1, power=4, xp=25,
-                                            death_function=monster_death)
+                data = config.data.enemies.troll
+                fighter_component = Fighter(hp=data.health, defense=data.defense,
+                    power=data.attack, xp=data.xp, death_function=monster_death)
                 ai_component = BasicMonster()
  
                 monster = GameObject(x, y, 'T', 'Troll', colors.darker_green,
@@ -663,28 +695,38 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     x_centered = x + (total_width-len(text))//2
     panel.draw_str(x_centered, y, text, fg=colors.white, bg=None)
  
-def get_names_under_mouse():
- 
-    #return a string with the names of all objects under the mouse
+def get_objects_under_mouse():
+    global objects
+
     (x, y) = mouse_coord
  
     #create a list with the names of all objects at the mouse's coordinates and in FOV
-    names = [obj.name for obj in objects
+    stuff = [obj for obj in objects
         if obj.x == x and obj.y == y and (obj.x, obj.y) in visible_tiles]
+ 
+    return stuff
+
+def get_names_under_mouse():
+    #create a list with the names of all objects at the mouse's coordinates and in FOV
+    names = [obj.name for obj in get_objects_under_mouse()]
  
     names = ', '.join(names)  #join the names, separated by commas
     return names.capitalize()
- 
+
 def render_all():
     global fov_recompute
     global visible_tiles
+    global draw_bowsight
+    global mouse_coord
+    global auto_target
+    global target
  
     if fov_recompute:
         fov_recompute = False
         visible_tiles = tdl.map.quickFOV(player.x, player.y,
                                          is_visible_tile,
                                          fov=FOV_ALGO,
-                                         radius=config.get("player")["lightRadius"],
+                                         radius=config.data.player.lightRadius,
                                          lightWalls=FOV_LIGHT_WALLS)
  
         #go through all tiles, and set their background color according to the FOV
@@ -700,7 +742,7 @@ def render_all():
                             con.draw_char(x, y, '#', fg=color_dark_wall)
                         else:
                             con.draw_char(x, y, '.', fg=color_dark_ground)
-                else:
+                elif not draw_bowsight:
                     if wall:
                         con.draw_char(x, y, '#', fg=color_light_wall)
                     else:
@@ -709,14 +751,44 @@ def render_all():
                     my_map[x][y].explored = True
  
  
+    if draw_bowsight:
+        # Horrible, terrible, crazy hack. Can't figure out why visible tiles
+        # just never seem to redraw as '.' or '#' on top of bow rays.
+        for (x, y) in visible_tiles:
+            char = '#' if my_map[x][y].block_sight else '.'
+            con.draw_char(x, y, char, fg=color_light_ground)
+
+        if auto_target:
+            target = closest_monster(config.data.player.lightRadius)
+            x2, y2 = (target.x, target.y) if target is not None else mouse_coord
+        else:
+            target = None
+            x2, y2 = mouse_coord
+        x1, y1 = player.x, player.y        
+        line = tdl.map.bresenham(x1, y1, x2, y2)
+        for pos in line:
+            con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
+        tdl.flush()
+
+        # Undo drawing tiles outside sight
+        for pos in line:
+            if not pos in visible_tiles:
+                con.draw_char(pos[0], pos[1], '#', colors.black)
+
     #draw all objects in the list
     for obj in objects:
         if obj != player:
-            obj.draw()
+            if draw_bowsight and (obj.x, obj.y) in visible_tiles and \
+                (obj.x, obj.y) == (x2, y2) and obj.fighter is not None:
+                target = obj
+                con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
+            else:
+                obj.draw()
     player.draw()
+
     #blit the contents of "con" to the root console and present it
     root.blit(con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
- 
+
     #prepare to render the GUI panel
     panel.clear(fg=colors.white, bg=colors.black)
  
@@ -733,10 +805,12 @@ def render_all():
  
     #display names of objects under the mouse
     panel.draw_str(1, 0, get_names_under_mouse(), bg=None, fg=colors.light_gray)
- 
+
     #blit the contents of "panel" to the root console
     root.blit(panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
- 
+
+    tdl.flush()
+    
 def message(new_msg, color = colors.white):
     #split the message if necessary, among multiple lines
     new_msg_lines = textwrap.wrap(new_msg, MSG_WIDTH)
@@ -838,17 +912,27 @@ def msgbox(text, width=50):
     menu(text, [], width)  #use menu() as a sort of "message box"
  
 def handle_keys():
+    global player
     global playerx, playery
     global fov_recompute
     global mouse_coord
+    global draw_bowsight # should we draw the bow sight?
+    global auto_target # should we auto-target someone?
+    global target # who we're aiming at
  
     keypress = False
-    for event in tdl.event.get():
-        if event.type == 'KEYDOWN':
-            user_input = event
-            keypress = True
-        if event.type == 'MOUSEMOTION':
-            mouse_coord = event.cell
+    user_input = None
+    while user_input is None:
+        # Synchronously wait
+        for event in tdl.event.get():
+            if event != None:
+                user_input = event
+
+    if event.type == 'KEYDOWN':
+        user_input = event
+        keypress = True
+    if event.type == 'MOUSEMOTION':
+        mouse_coord = event.cell
  
     if not keypress:
         return 'didnt-take-turn'
@@ -895,7 +979,42 @@ def handle_keys():
                 'drop it, or any other to cancel.\n')
                 if chosen_item is not None:
                     chosen_item.drop()
- 
+
+            if user_input.text == 'f' and isinstance(player.fighter.weapon, Bow):
+                # Unlimited arrows, or limited but we have arrows
+                if not config.data.features.limitedArrows or \
+                    (config.data.features.limitedArrows and player.arrows > 0):
+                    is_fired = False
+                    is_cancelled = False
+                    draw_bowsight = True
+                    auto_target = True
+                    render_all() # show default targetting
+                    while not is_fired and not is_cancelled:
+                        for event in tdl.event.get():
+                            if event.type == 'MOUSEMOTION':
+                                mouse_coord = event.cell
+                                auto_target = False                    
+                                render_all()
+                            elif event.type == 'KEYDOWN':
+                                if event.key == 'ESCAPE':
+                                    draw_bowsight = False
+                                    is_cancelled = True
+                                elif event.char == 'f':                                
+                                    if target and target.fighter:
+                                        is_critical = False
+                                        damage_multiplier = config.data.weapons.arrowDamageMultiplier
+                                        if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
+                                            damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
+                                            if config.data.features.bowCritsStack:
+                                                damage_multiplier += (config.data.weapons.bowCriticalDamageMultiplier * target.fighter.bow_crits)
+                                                target.fighter.bow_crits += 1
+                                            is_critical = True
+                                        player.fighter.attack(target, damage_multiplier=damage_multiplier, is_critical=is_critical)
+                                        player.arrows -= 1
+                                        is_fired = True
+                                        draw_bowsight = False
+                                        return ""                
+
             return 'didnt-take-turn'
  
 def player_death(player):
@@ -1090,7 +1209,6 @@ def play_game():
  
         #draw all objects in the list
         render_all()
-        tdl.flush()
  
         #erase all objects at their old locations, before they move
         for obj in objects:
