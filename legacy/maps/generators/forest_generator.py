@@ -1,6 +1,6 @@
-from furusiya.ecs.entity import Entity
-from furusiya.entities.monster import Monster
-from furusiya.components.walkers.random_walker import RandomWalker
+from legacy.ecs.entity import Entity
+from legacy.entities.monster import Monster
+from legacy.components.walkers.random_walker import RandomWalker
 import math
 import random
 

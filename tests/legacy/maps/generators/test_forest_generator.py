@@ -2,8 +2,8 @@ import math
 import random
 import unittest
 
-from furusiya.maps.generators.forest_generator import ForestGenerator
-from furusiya.maps.area_map import AreaMap
+from legacy.maps.generators.forest_generator import ForestGenerator
+from legacy.maps.area_map import AreaMap
 
 
 class TestForestGenerator(unittest.TestCase):

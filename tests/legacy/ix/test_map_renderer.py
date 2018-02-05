@@ -1,10 +1,10 @@
 import unittest
 
-from furusiya.entities.player import Player
-from furusiya.io.config_watcher import ConfigWatcher
-from furusiya.io.map_renderer import MapRenderer
-from furusiya.io.adapters.tdl_adapter import TdlAdapter
-from furusiya.maps.area_map import AreaMap
+from legacy.entities.player import Player
+from legacy.io.config_watcher import ConfigWatcher
+from legacy.io.map_renderer import MapRenderer
+from legacy.io.adapters.tdl_adapter import TdlAdapter
+from legacy.maps.area_map import AreaMap
 from unittest.mock import MagicMock
 
 

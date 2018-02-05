@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from furusiya.entities.player import Player
-from furusiya.io.adapters.tdl_adapter import TdlAdapter
-from furusiya.io.config_watcher import ConfigWatcher
-from furusiya.io.map_renderer import MapRenderer
-from furusiya.maps.area_map import AreaMap
-from furusiya.maps.generators.forest_generator import ForestGenerator
+from legacy.entities.player import Player
+from legacy.io.adapters.tdl_adapter import TdlAdapter
+from legacy.io.config_watcher import ConfigWatcher
+from legacy.io.map_renderer import MapRenderer
+from legacy.maps.area_map import AreaMap
+from legacy.maps.generators.forest_generator import ForestGenerator
 import random
 
 

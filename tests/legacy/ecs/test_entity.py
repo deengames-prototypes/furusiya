@@ -1,6 +1,6 @@
 import unittest
 
-from furusiya.ecs.entity import Entity
+from legacy.ecs.entity import Entity
 
 
 class TestEntity(unittest.TestCase):

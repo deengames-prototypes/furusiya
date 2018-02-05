@@ -1,4 +1,4 @@
-from furusiya.entities.player import Player
+from legacy.entities.player import Player
 import unittest
 
 

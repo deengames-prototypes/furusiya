@@ -8,7 +8,7 @@ import json
 from json.decoder import JSONDecodeError
 import os
 
-from furusiya.timer.repeating_timer import RepeatingTimer
+from legacy.timer.repeating_timer import RepeatingTimer
 
 
 class ConfigWatcher:

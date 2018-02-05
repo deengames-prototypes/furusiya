@@ -1,8 +1,8 @@
 import unittest
 
-from furusiya.ecs.entity import Entity
-from furusiya.maps.area_map import AreaMap
-from furusiya.maps.generators.forest_generator import ForestGenerator
+from legacy.ecs.entity import Entity
+from legacy.maps.area_map import AreaMap
+from legacy.maps.generators.forest_generator import ForestGenerator
 
 
 class TestMap(unittest.TestCase):

@@ -1,4 +1,4 @@
-from furusiya.io.config_watcher import ConfigWatcher
+from legacy.io.config_watcher import ConfigWatcher
 
 
 class MapRenderer:

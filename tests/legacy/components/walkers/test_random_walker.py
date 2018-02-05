@@ -1,8 +1,8 @@
 import unittest
 
-from furusiya.maps.area_map import AreaMap
-from furusiya.ecs.entity import Entity
-from furusiya.components.walkers.random_walker import RandomWalker
+from legacy.maps.area_map import AreaMap
+from legacy.ecs.entity import Entity
+from legacy.components.walkers.random_walker import RandomWalker
 
 
 class TestRandomWalker(unittest.TestCase):

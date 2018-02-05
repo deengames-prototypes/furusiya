@@ -1,6 +1,6 @@
-from furusiya.maps.area_map import AreaMap
-from furusiya.entities.monster import Monster
-from furusiya.entities.player import Player
+from legacy.maps.area_map import AreaMap
+from legacy.entities.monster import Monster
+from legacy.entities.player import Player
 import unittest
 
 

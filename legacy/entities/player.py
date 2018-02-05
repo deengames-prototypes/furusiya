@@ -1,4 +1,4 @@
-from furusiya.ecs.entity import Entity
+from legacy.ecs.entity import Entity
 
 
 class Player(Entity):
