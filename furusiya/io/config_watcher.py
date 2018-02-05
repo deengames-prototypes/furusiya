@@ -7,9 +7,9 @@
 import json
 from json.decoder import JSONDecodeError
 import os
-import traceback
 
 from furusiya.timer.repeating_timer import RepeatingTimer
+
 
 class ConfigWatcher:
 
@@ -26,13 +26,11 @@ class ConfigWatcher:
         self._timer = RepeatingTimer(1, self.poll_file_for_changes)
         self._timer.start()  
 
-
     def poll_file_for_changes(self):
         modified_on = os.path.getmtime(ConfigWatcher.CONFIG_FILE_NAME)
-        if (modified_on != self._last_changed_on):
+        if modified_on != self._last_changed_on:
             self._last_changed_on = modified_on
             self.refresh_config()
-
 
     def refresh_config(self):
         with open(ConfigWatcher.CONFIG_FILE_NAME) as json_data:
@@ -41,17 +39,14 @@ class ConfigWatcher:
                 print("Config.json updated: {0}".format(self._data))
             except JSONDecodeError as ex:
                 print("Error updating config.json: {0}".format(ex))
-                #traceback.print_exc() # prints the stack-trace
+                # traceback.print_exc() # prints the stack-trace
                 # don't "raise", we want to keep retrying
-
 
     def has(self, key):
         return key in self._data
 
-
     def get(self, key):
         return self._data[key]
-
 
     def dispose(self):
         self._timer.stop()

@@ -7,15 +7,17 @@ import file_watcher
 
 data = {}
 
+
 def load(raw_json):
     # remove comments (JSON doesn't officially support comments)
     raw_json = re.sub(r"//.*", "", raw_json)
     global data
     data = AttrDict(json.loads(raw_json))
 
+
 def get(key):
     global data
-    if not key in data:
+    if key not in data:
         raise(Exception("There's no key called '{0}'. Keys: {1}".format(key, data.items())))
     else:
         return data[key]

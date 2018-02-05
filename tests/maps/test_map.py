@@ -1,10 +1,9 @@
-import math
-import random
 import unittest
 
 from furusiya.ecs.entity import Entity
 from furusiya.maps.area_map import AreaMap
 from furusiya.maps.generators.forest_generator import ForestGenerator
+
 
 class TestMap(unittest.TestCase):
     def test_place_on_random_ground_places_entity_on_random_ground(self):

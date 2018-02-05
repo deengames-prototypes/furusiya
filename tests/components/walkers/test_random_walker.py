@@ -4,6 +4,7 @@ from furusiya.maps.area_map import AreaMap
 from furusiya.ecs.entity import Entity
 from furusiya.components.walkers.random_walker import RandomWalker
 
+
 class TestRandomWalker(unittest.TestCase):
 
     def test_walk_walks_to_all_adjacencies(self):
@@ -26,7 +27,6 @@ class TestRandomWalker(unittest.TestCase):
         self.assertGreater(iterations, 0, "1000 iterations and not all adjacencies were walked")
         self.assertEqual(len(expected), 0) # walked to all four adjacencies
 
-
     def test_walk_throws_if_all_adjacencies_are_unwalkable(self):
         area_map = AreaMap(5, 5)
         self.__make_unwalkable(area_map)
@@ -38,7 +38,6 @@ class TestRandomWalker(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             r.walk()
-
 
     def test_walk_doesnt_walk_off_the_map(self):
         area_map = AreaMap(5, 5)
@@ -57,7 +56,6 @@ class TestRandomWalker(unittest.TestCase):
         with self.assertRaises(ValueError):
             r.walk()
 
-    
     def __make_unwalkable(self, area_map):
         for y in range(area_map.height):
             for x in range(area_map.width):

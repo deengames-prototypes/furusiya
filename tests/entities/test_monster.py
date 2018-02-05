@@ -3,6 +3,7 @@ from furusiya.entities.monster import Monster
 from furusiya.entities.player import Player
 import unittest
 
+
 class TestMonster(unittest.TestCase):
     def setUp(self):
         p = Player() # sets up Player.INSTANCE
