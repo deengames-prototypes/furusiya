@@ -2,6 +2,7 @@ import unittest
 
 from furusiya.ecs.entity import Entity
 
+
 class TestEntity(unittest.TestCase):
     def test_get_gets_last_set_component(self):
         e = Entity('b', (0, 0, 128))

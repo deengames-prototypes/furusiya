@@ -1,5 +1,6 @@
 from furusiya.ecs.entity import Entity
 
+
 class Player(Entity):
     # Singleton-ish
     INSTANCE = None

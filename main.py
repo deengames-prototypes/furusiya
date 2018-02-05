@@ -7,8 +7,7 @@ from furusiya.io.map_renderer import MapRenderer
 from furusiya.maps.area_map import AreaMap
 from furusiya.maps.generators.forest_generator import ForestGenerator
 import random
-import time
-import sys
+
 
 class Main:
     # Actual size of the window
@@ -22,7 +21,6 @@ class Main:
         self.area_map = None
         self.player = None
         self.renderer = None
-
 
     def main(self):
         config = ConfigWatcher()
@@ -49,24 +47,22 @@ class Main:
 
         config.dispose()
 
-    
     def await_and_process_keyboard_input(self):
         key = self.ui_adapter.wait_for_input()
-        if (key.key == "ESCAPE" or key.char.lower() == 'q'):
+        if key.key == "ESCAPE" or key.char.lower() == 'q':
             self.end_game = True
-        elif (key.key == "UP" and self.area_map.is_walkable(self.player.x, self.player.y - 1)):
+        elif key.key == "UP" and self.area_map.is_walkable(self.player.x, self.player.y - 1):
             self.player.y -= 1
             self.renderer.recompute_fov = True
-        elif (key.key == "DOWN" and self.area_map.is_walkable(self.player.x, self.player.y + 1)):
+        elif key.key == "DOWN" and self.area_map.is_walkable(self.player.x, self.player.y + 1):
             self.renderer.recompute_fov = True
             self.player.y += 1
-        elif (key.key == "LEFT" and self.area_map.is_walkable(self.player.x - 1, self.player.y)):
+        elif key.key == "LEFT" and self.area_map.is_walkable(self.player.x - 1, self.player.y):
             self.renderer.recompute_fov = True
             self.player.x -= 1
-        elif (key.key == "RIGHT" and self.area_map.is_walkable(self.player.x + 1, self.player.y)):
+        elif key.key == "RIGHT" and self.area_map.is_walkable(self.player.x + 1, self.player.y):
             self.renderer.recompute_fov = True
             self.player.x += 1
-
 
     def move_enemies(self):
         for entity in self.area_map.entities:
@@ -76,7 +72,7 @@ class Main:
                 # AttributeError => entity isn't walkable.                
                 # Ref: https://stackoverflow.com/questions/7580532/how-to-check-whether-a-method-exists-in-python
                 message = str(a)
-                if not "object has no attribute 'walk'" in message:
+                if "object has no attribute 'walk'" not in message:
                     raise
             except ValueError as v:
                 # ValueError => nothing adjacent to walk to.

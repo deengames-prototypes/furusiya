@@ -3,6 +3,7 @@ from furusiya.ecs.entity import Entity
 from furusiya.entities.player import Player
 import math
 
+
 class Monster(Entity):
 
     # Tuple of monster data needed to construct a monster
@@ -14,7 +15,6 @@ class Monster(Entity):
         super().__init__(character, colour)
         self.set(RandomWalker(area_map, self))
         self.target = Player.INSTANCE
-
 
     def walk(self):
         distance_to_target = math.hypot(self.x - self.target.x, self.y - self.target.y)

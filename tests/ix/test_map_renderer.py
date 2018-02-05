@@ -1,13 +1,12 @@
 import unittest
 
-from furusiya.ecs.entity import Entity
 from furusiya.entities.player import Player
 from furusiya.io.config_watcher import ConfigWatcher
 from furusiya.io.map_renderer import MapRenderer
 from furusiya.io.adapters.tdl_adapter import TdlAdapter
 from furusiya.maps.area_map import AreaMap
 from unittest.mock import MagicMock
-from unittest.mock import patch
+
 
 class TestMapRenderer(unittest.TestCase):
 
@@ -42,7 +41,7 @@ class TestMapRenderer(unittest.TestCase):
             self.assertFalse(map.tiles[x][y].is_explored)
 
         tdl_adapter = TdlAdapter("Test Window", map_width, map_height)
-        tdl_adapter.calculate_fov = MagicMock(return_value = fov_tiles)
+        tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
         renderer = MapRenderer(map, player, tdl_adapter)
         renderer.render()
