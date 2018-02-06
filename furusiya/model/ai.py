@@ -29,8 +29,8 @@ class StunnedMonster:
     AI for a temporarily stunned monster (reverts to previous AI after a while).
     """
     def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
-        self.num_turns = num_turns
         self.owner = owner
+        self.num_turns = num_turns
 
     def take_turn(self):
         if self.num_turns > 0:  # still stunned ...
