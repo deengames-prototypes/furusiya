@@ -4,7 +4,7 @@ import tdl
 
 import colors
 import file_watcher
-from statics import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
 
 
 class Game:

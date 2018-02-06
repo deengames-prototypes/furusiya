@@ -2,8 +2,8 @@ import colors
 import config
 from main_interface import Game, message, player_death
 from model.gameobject import GameObject
-from model.component import Fighter
-from model.weapon import Sword, Bow, Hammer
+from model.fighter import Fighter
+from model.weapons import Sword, Bow, Hammer
 
 
 class Player(GameObject):

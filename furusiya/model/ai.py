@@ -2,7 +2,7 @@ from random import randint
 
 import colors
 import config
-from statics import CONFUSE_NUM_TURNS
+from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
 
 

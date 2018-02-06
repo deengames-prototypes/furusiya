@@ -8,13 +8,14 @@ import colors
 import config
 from main_interface import Game, menu, message, is_blocked
 from model.ai import BasicMonster, ConfusedMonster
-from model.component import Fighter
+from model.fighter import Fighter
 from model.gameobject import GameObject
 from model.item import Item
 from model.player import Player
-from model.rect import Rect, Tile
-from model.weapon import Bow
-from statics import *
+from model.rect import Rect
+from model.tile import Tile
+from model.weapons import Bow
+from constants import *
 
 
 def create_room(room):
