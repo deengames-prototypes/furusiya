@@ -9,9 +9,9 @@
         "limitedArrows": true   
     },
     "player": {
-        "startingHealth": 20,
+        "startingHealth": 30,
         "startingDefense": 2,
-        "startingPower": 5,
+        "startingPower": 6,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
         "lightRadius": 10,
@@ -36,17 +36,23 @@
     },
     "enemies": {
         "arrowDropsOnKill": 3,
-        "orc": {
+        "bushslime": {
             "attack": 3,
-            "defense": 0,
+            "defense": 3,
             "health": 10,
             "xp": 10
         },
-        "troll": {
-            "attack": 4,
+        "steelhawk": {
+            "attack": 5,
             "defense": 1,
-            "health": 16,
-            "xp": 25
+            "health": 15,
+            "xp": 20
+        },
+        "tigerslash": {
+            "attack": 7,
+            "defense": 0,
+            "health": 10,
+            "xp": 35
         }
     }
 }

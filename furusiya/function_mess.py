@@ -185,16 +185,19 @@ def place_objects(room):
 
         # only place it if the tile is not blocked
         if not is_blocked(x, y):
-            if randint(0, 100) < 80:  # 80% chance of getting an orc
-                # create an orc                
-                data = config.data.enemies.orc
+            choice = randint(0, 100)
+            if choice <= 55: # 55%
+                name = 'bushslime'
+                data = config.data.enemies.bushslime
                 colour = colors.desaturated_green
-                name = 'orc'
-            else:
-                # create a troll
-                data = config.data.enemies.troll
-                colour = colors.darker_green
-                name = 'troll'
+            elif choice <= 85: # 30%
+                name = 'steelhawk'
+                data = config.data.enemies.steelhawk
+                colour = colors.light_blue
+            else: # 15%
+                name = 'tigerslash'
+                data = config.data.enemies.tigerslash
+                colour = colors.orange
             
             monster = monster_factory.create_monster(data, x, y, colour, name, monster_death)
             Game.objects.append(monster)
