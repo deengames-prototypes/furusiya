@@ -11,8 +11,7 @@ We're still prototyping.
 - `git clone https://github.com/nightblade9/furusiya`
 - `cd furusiya`
 - `pip install -r requirements.txt`
-- `git checkout prototype`
-- `cd prototype`
+- `git checkout dev`
 - `python3 main.py` (or, on Windows: `python main.py`)
 
 ## How to Play

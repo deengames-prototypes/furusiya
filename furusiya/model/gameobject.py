@@ -18,6 +18,8 @@ class GameObject:
         self.blocks = blocks
         self.fighter = fighter
 
+        self._components = {}
+
         if self.fighter:  # let the fighter component know who owns it
             self.fighter.owner = self
 
@@ -29,6 +31,30 @@ class GameObject:
         self.item = item
         if self.item:  # let the Item component know who owns it
             self.item.owner = self
+
+    def _get_type(self, type_):
+        possible_matches = [
+            k
+            for k in self._components.keys()
+            if issubclass(k, type_)
+        ]
+
+        if len(possible_matches) == 0:
+            return None
+        else:
+            return possible_matches[0]
+
+    def set_component(self, component):
+        self._components[type(component)] = component
+
+    def get_component(self, type_):
+        return self._components.get(self._get_type(type_), None)
+
+    def del_component(self, type_):
+        try:
+            del self._components[self._get_type(type_)]
+        except KeyError:
+            pass
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked
