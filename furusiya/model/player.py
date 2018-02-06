@@ -3,7 +3,7 @@ import config
 from main_interface import Game, message, player_death
 from model.gameobject import GameObject
 from model.fighter import Fighter
-from model.weapons import Sword, Bow, Hammer
+import model.weapons
 
 
 class Player(GameObject):
@@ -20,7 +20,7 @@ class Player(GameObject):
         # Eval is evil if misused. Here, the config tells me the constructor
         # method to call to create my weapon. Don't try this in prod, folks.
         weapon_name = data.startingWeapon
-        initializer = eval(weapon_name)
+        initializer = getattr(model.weapons, weapon_name)
         self.fighter.weapon = initializer(self)  # __init__(owner)
 
         self.level = 1
