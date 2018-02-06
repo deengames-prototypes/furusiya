@@ -2,9 +2,8 @@ from random import randint
 
 import colors
 import config
-from function_mess import message
 from statics import CONFUSE_NUM_TURNS
-from main_interface import Game
+from main_interface import Game, message
 
 
 class BasicMonster:

@@ -1,9 +1,9 @@
 import colors
 import config
-from main_interface import Game
+from main_interface import Game, message, player_death
 from model.gameobject import GameObject
 from model.component import Fighter
-from function_mess import player_death, message
+from model.weapon import Sword, Bow, Hammer
 
 
 class Player(GameObject):

@@ -1,9 +1,8 @@
 import colors
 import config
-from function_mess import message
 from model.gameobject import GameObject
 from model.item import Item
-from main_interface import Game
+from main_interface import Game, message
 
 
 class Fighter:

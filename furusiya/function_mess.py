@@ -1,13 +1,12 @@
 import random
 import shelve
-import textwrap
 from random import randint
 
 import tdl
 
 import colors
 import config
-from main_interface import Game
+from main_interface import Game, menu, message, is_blocked
 from model.ai import BasicMonster, ConfusedMonster
 from model.component import Fighter
 from model.gameobject import GameObject
@@ -16,27 +15,6 @@ from model.player import Player
 from model.rect import Rect, Tile
 from model.weapon import Bow
 from statics import *
-
-
-def is_blocked(x, y):
-    # first test the map tile
-    if Game.my_map[x][y].blocked:
-        return True
-
-    # now check for any blocking objects
-    for obj in Game.objects:
-        if obj.blocks and obj.x == x and obj.y == y:
-            return True
-
-    return False
-
-
-def get_blocking_object_at(x, y):
-    for obj in Game.objects:
-        if obj.blocks and obj.x == x and obj.y == y:
-            return obj
-
-    return None
 
 
 def create_room(room):
@@ -398,19 +376,6 @@ def render_all():
     tdl.flush()
 
 
-def message(new_msg, color=colors.white):
-    # split the message if necessary, among multiple lines
-    new_msg_lines = textwrap.wrap(new_msg, MSG_WIDTH)
-
-    for line in new_msg_lines:
-        # if the buffer is full, remove the first line to make room for the new one
-        if len(Game.game_msgs) == MSG_HEIGHT:
-            del Game.game_msgs[0]
-
-        # add the new line as a tuple, with the text and the color
-        Game.game_msgs.append((line, color))
-
-
 def player_move_or_attack(dx, dy):
 
     # the coordinates the player is moving to/attacking
@@ -430,57 +395,6 @@ def player_move_or_attack(dx, dy):
     else:
         Game.player.move(dx, dy)
         Game.fov_recompute = True
-
-
-def menu(header, options, width):
-    if len(options) > 26:
-        raise ValueError('Cannot have a menu with more than 26 options.')
-
-    # calculate total height for the header (after textwrap) and one line per option
-    header_wrapped = textwrap.wrap(header, width)
-    header_height = len(header_wrapped)
-    if header == '':
-        header_height = 0
-    height = len(options) + header_height
-
-    # create an off-screen console that represents the menu's window
-    window = tdl.Console(width, height)
-
-    # print the header, with wrapped text
-    window.draw_rect(0, 0, width, height, None, fg=colors.white, bg=None)
-    for i, line in enumerate(header_wrapped):
-        window.draw_str(0, 0 + i, header_wrapped[i])
-
-    # print all the options
-    y = header_height
-    letter_index = ord('a')
-    for option_text in options:
-        text = '(' + chr(letter_index) + ') ' + option_text
-        window.draw_str(0, y, text, bg=None)
-        y += 1
-        letter_index += 1
-
-    # blit the contents of "window" to the Game.root console
-    x = SCREEN_WIDTH // 2 - width // 2
-    y = SCREEN_HEIGHT // 2 - height // 2
-    Game.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
-
-    # present the Game.root console to the player and wait for a key-press
-    tdl.flush()
-    key = tdl.event.key_wait()
-    key_char = key.char
-    if key_char == '':
-        key_char = ' '  # placeholder
-
-    if key.key == 'ENTER' and key.alt:
-        # Alt+Enter: toggle fullscreen
-        tdl.set_fullscreen(not tdl.get_fullscreen())
-
-    # convert the ASCII code to an index; if it corresponds to an option, return it
-    index = ord(key_char) - ord('a')
-    if index >= 0 and index < len(options):
-        return index
-    return None
 
 
 def inventory_menu(header):
@@ -602,16 +516,6 @@ def handle_keys():
                                         return ""
 
             return 'didnt-take-turn'
-
-
-def player_death(player):
-    # the game ended!
-    message('You died!', colors.red)
-    Game.game_state = 'dead'
-
-    # for added effect, transform the player into a corpse!
-    player.char = '%'
-    player.color = colors.dark_red
 
 
 def monster_death(monster):

@@ -1,6 +1,5 @@
 import colors
-from function_mess import message
-from main_interface import Game
+from main_interface import Game, message
 
 
 class Item:

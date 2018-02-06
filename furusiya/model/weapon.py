@@ -3,7 +3,7 @@ from random import randint
 
 import colors
 import config
-from function_mess import message
+from main_interface import message
 from model.ai import StunnedMonster
 
 

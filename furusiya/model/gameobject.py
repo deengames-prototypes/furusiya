@@ -1,7 +1,6 @@
 import math
 
-from function_mess import is_blocked, get_blocking_object_at
-from main_interface import Game
+from main_interface import Game, is_blocked, get_blocking_object_at
 
 
 class GameObject:
@@ -64,15 +63,12 @@ class GameObject:
     def send_to_back(self):
         # make this object be drawn first, so all others appear above it if
         # they're in the same tile.
-        global objects
-        objects.remove(self)
-        objects.insert(0, self)
+        Game.objects.remove(self)
+        Game.objects.insert(0, self)
 
     def draw(self):
-        global visible_tiles
-
         # only show if it's visible to the player
-        if (self.x, self.y) in visible_tiles:
+        if (self.x, self.y) in Game.visible_tiles:
             # draw the character that represents this object at its position
             Game.con.draw_char(self.x, self.y, self.char, self.color, bg=None)
 

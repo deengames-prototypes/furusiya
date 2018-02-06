@@ -3,8 +3,8 @@ import tdl
 from tcod import image_load
 
 import colors
-from function_mess import menu, new_game, play_game, load_game, msgbox
-from main_interface import Game
+from function_mess import new_game, play_game, load_game, msgbox
+from main_interface import Game, menu
 from statics import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
