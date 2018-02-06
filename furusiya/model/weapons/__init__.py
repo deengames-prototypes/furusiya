@@ -1,3 +1,3 @@
-from .bow import Bow
-from .hammer import Hammer
-from .sword import Sword
+from model.weapons.bow import Bow
+from model.weapons.hammer import Hammer
+from model.weapons.sword import Sword
