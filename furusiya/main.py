@@ -20,7 +20,7 @@ def main_menu():
         center = (SCREEN_WIDTH - len(title)) // 2
         Game.root.draw_str(center, SCREEN_HEIGHT // 2 - 4, title, bg=None, fg=colors.light_yellow)
 
-        title = 'By nightblade9'
+        title = 'By nightblade9 and NegativeScript'
         center = (SCREEN_WIDTH - len(title)) // 2
         Game.root.draw_str(center, SCREEN_HEIGHT - 2, title, bg=None, fg=colors.light_yellow)
 

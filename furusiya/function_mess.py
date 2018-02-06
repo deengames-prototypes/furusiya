@@ -1,11 +1,6 @@
-import random
-import shelve
-from random import randint
-
-import tdl
-
 import colors
 import config
+from constants import *
 from main_interface import Game, menu, message, is_blocked
 from model.ai import BasicMonster, ConfusedMonster
 from model.fighter import Fighter
@@ -15,8 +10,11 @@ from model.player import Player
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
-from constants import *
-
+from model.monsters import monster_factory
+from random import randint
+import random
+import shelve
+import tdl
 
 def create_room(room):
     # go through the tiles in the rectangle and make them passable
@@ -188,24 +186,17 @@ def place_objects(room):
         # only place it if the tile is not blocked
         if not is_blocked(x, y):
             if randint(0, 100) < 80:  # 80% chance of getting an orc
-                # create an orc
+                # create an orc                
                 data = config.data.enemies.orc
-                fighter_component = Fighter(hp=data.health, defense=data.defense,
-                                            power=data.attack, xp=data.xp, death_function=monster_death)
-                ai_component = BasicMonster()
-
-                monster = GameObject(x, y, 'o', 'orc', colors.desaturated_green,
-                                     blocks=True, fighter=fighter_component, ai=ai_component)
+                colour = colors.desaturated_green
+                name = 'orc'
             else:
                 # create a troll
                 data = config.data.enemies.troll
-                fighter_component = Fighter(hp=data.health, defense=data.defense,
-                                            power=data.attack, xp=data.xp, death_function=monster_death)
-                ai_component = BasicMonster()
-
-                monster = GameObject(x, y, 'T', 'Troll', colors.darker_green,
-                                     blocks=True, fighter=fighter_component, ai=ai_component)
-
+                colour = colors.darker_green
+                name = 'troll'
+            
+            monster = monster_factory.create_monster(data, x, y, colour, name, monster_death)
             Game.objects.append(monster)
 
     # choose random number of items
