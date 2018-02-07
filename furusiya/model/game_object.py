@@ -8,25 +8,18 @@ class GameObject:
     this is a generic object: the player, a monster, an item, the stairs...
     it's always represented by a character on screen.
     """
-    def __init__(self, x, y, char, name, color, blocks=False,
-                 fighter=None, ai=None, item=None):
+    def __init__(self, x, y, char, name, color, blocks=False, item=None):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
         self.name = name
         self.blocks = blocks
-        self.fighter = fighter
+
+        self.fighter = None
+        self.ai = None
 
         self._components = {}
-
-        if self.fighter:  # let the fighter component know who owns it
-            self.fighter.owner = self
-
-        self.ai = ai
-        if self.ai:  # let the AI component know who owns it
-            self.ai.owner = self
-            self.original_ai = self.ai
 
         self.item = item
         if self.item:  # let the Item component know who owns it
