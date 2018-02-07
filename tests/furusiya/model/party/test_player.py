@@ -10,7 +10,8 @@ config.load(raw_json)
 
 from model.party.player import Player
 
-class TestPlayer:      
+
+class TestPlayer:
 
     def test_initializer_sets_appropriate_attributes(self):
         pass

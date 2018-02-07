@@ -3,7 +3,8 @@ from random import randint
 import colors
 import config
 from main_interface import message
-from model.ai import StunnedMonster
+from model.components.ai.base import AI
+from model.components.ai.monster import StunnedMonster
 
 
 class Sword:
@@ -18,13 +19,14 @@ class Sword:
     def attack(self, target):
         if config.data.features.swordStuns:
             if randint(0, 100) <= config.data.weapons.swordStunProbability:
+                target_ai = target.get_component(AI)
                 if config.data.features.stunsStack:
-                    if isinstance(target.ai, StunnedMonster):
+                    if isinstance(target_ai, StunnedMonster):
                         # Stack the stun
-                        target.ai.num_turns += config.data.weapons.numTurnsStunned
+                        target_ai.num_turns += config.data.weapons.numTurnsStunned
                     else:
-                        target.ai = StunnedMonster(target)
+                        target.set_component(StunnedMonster(target))
                 else:
                     # Copy-pasta from two lines above
-                    target.ai = StunnedMonster(target)
+                    target.set_component(StunnedMonster(target))
                 message('{} looks incapacitated!'.format(target.name), colors.light_green)

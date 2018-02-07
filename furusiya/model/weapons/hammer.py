@@ -3,7 +3,8 @@ import math
 import colors
 import config
 from main_interface import message
-from model.ai import StunnedMonster
+from model.components.ai.monster import StunnedMonster
+from model.components.fighter import Fighter
 
 
 class Hammer:
@@ -35,18 +36,19 @@ class Hammer:
                 hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
-                    target.ai = StunnedMonster(target)
+                    target.set_component(StunnedMonster(target))
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
                     if config.data.features.knockBackDamagesOnCollision and knockback_distance:
                         damage_percent = config.data.weapons.hammerKnockBackDamagePercent / 100
-                        knockback_damage = int(damage_percent * target.fighter.max_hp)
-                        target.fighter.take_damage(knockback_damage)
+                        target_fighter = target.get_component(Fighter)
+                        knockback_damage = int(damage_percent * target_fighter.max_hp)
+                        target_fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
 
                         # Did we hit someone?
-                        hit_someone = hit_something.fighter if hit_something else None
+                        hit_someone = hit_something.get_component(Fighter) if hit_something else None
                         if hit_someone:
                             knockback_damage = int(damage_percent * hit_someone.max_hp)
                             hit_someone.take_damage(knockback_damage)

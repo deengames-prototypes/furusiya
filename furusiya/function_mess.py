@@ -1,21 +1,24 @@
+import random
+import shelve
+from random import randint
+
+import tdl
+
 import colors
 import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
-from model.ai import ConfusedMonster
-from model.fighter import Fighter
-from model.game_object import GameObject
+from model.components.ai.base import AI
+from model.components.ai.monster import ConfusedMonster
+from model.components.fighter import Fighter
+from model.factories import monster_factory, item_factory
 from model.item import Item
 from model.party.player import Player
 from model.party.stallion import Stallion
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
-from model.monsters import monster_factory
-from random import randint
-import random
-import shelve
-import tdl
+
 
 def create_room(room):
     # go through the tiles in the rectangle and make them passable
@@ -44,9 +47,9 @@ def is_visible_tile(x, y):
         return False
     elif y >= MAP_HEIGHT or y < 0:
         return False
-    elif Game.my_map[x][y].blocked == True:
+    elif Game.my_map[x][y].blocked:
         return False
-    elif Game.my_map[x][y].block_sight == True:
+    elif Game.my_map[x][y].block_sight:
         return False
     else:
         return True
@@ -191,15 +194,15 @@ def place_objects(room):
         # only place it if the tile is not blocked
         if not is_blocked(x, y):
             choice = randint(0, 100)
-            if choice <= 55: # 55%
+            if choice <= 55:  # 55%
                 name = 'bushslime'
                 data = config.data.enemies.bushslime
                 colour = colors.desaturated_green
-            elif choice <= 85: # 30%
+            elif choice <= 85:  # 30%
                 name = 'steelhawk'
                 data = config.data.enemies.steelhawk
                 colour = colors.light_blue
-            else: # 15%
+            else:  # 15%
                 name = 'tigerslash'
                 data = config.data.enemies.tigerslash
                 colour = colors.orange
@@ -220,31 +223,33 @@ def place_objects(room):
             dice = randint(0, 100)
             if dice < 70:
                 # create a healing potion (70% chance)
-                item_component = Item(use_function=cast_heal)
-
-                item = GameObject(x, y, '!', 'healing potion',
-                                  colors.violet, item=item_component)
+                char = '!'
+                name = 'healing potion'
+                color = colors.violet
+                use_func = cast_heal
 
             elif dice < 70 + 10:
                 # create a lightning bolt scroll (15% chance)
-                item_component = Item(use_function=cast_lightning)
-
-                item = GameObject(x, y, '#', 'scroll of lightning bolt',
-                                  colors.light_yellow, item=item_component)
+                char = '#'
+                name = 'scroll of lightning bolt'
+                color = colors.light_yellow
+                use_func = cast_lightning
 
             elif dice < 70 + 10 + 10:
                 # create a fireball scroll (10% chance)
-                item_component = Item(use_function=cast_fireball)
-
-                item = GameObject(x, y, '#', 'scroll of fireball',
-                                  colors.light_yellow, item=item_component)
+                char = '#'
+                name = 'scroll of fireball'
+                color = colors.light_yellow
+                use_func = cast_fireball
 
             else:
                 # create a confuse scroll (15% chance)
-                item_component = Item(use_function=cast_confuse)
+                char = '#'
+                name = 'scroll of confusion'
+                color = colors.light_yellow
+                use_func = cast_confuse
 
-                item = GameObject(x, y, '#', 'scroll of confusion',
-                                  colors.light_yellow, item=item_component)
+            item = item_factory.create_item(x, y, char, name, color, use_func)
 
             Game.objects.append(item)
             item.send_to_back()  # items appear below other objects
@@ -289,10 +294,10 @@ def render_all():
     if Game.fov_recompute:
         Game.fov_recompute = False
         Game.visible_tiles = tdl.map.quickFOV(Game.player.x, Game.player.y,
-                                         is_visible_tile,
-                                         fov=FOV_ALGO,
-                                         radius=config.data.player.lightRadius,
-                                         lightWalls=FOV_LIGHT_WALLS)
+                                              is_visible_tile,
+                                              fov=FOV_ALGO,
+                                              radius=config.data.player.lightRadius,
+                                              lightWalls=FOV_LIGHT_WALLS)
 
         # go through all tiles, and set their background color according to the FOV
         for y in range(MAP_HEIGHT):
@@ -343,7 +348,7 @@ def render_all():
     for obj in Game.objects:
         if obj != Game.player:
             if Game.draw_bowsight and (obj.x, obj.y) in Game.visible_tiles and \
-                            (obj.x, obj.y) == (x2, y2) and obj.fighter is not None:
+                            (obj.x, obj.y) == (x2, y2) and obj.get_component(Fighter) is not None:
                 Game.target = obj
                 Game.con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
@@ -365,7 +370,8 @@ def render_all():
         y += 1
 
     # show the player's stats
-    Game.panel.draw_str(1, 1, "HP: {}/{}".format(Game.player.fighter.hp, Game.player.fighter.max_hp))
+    player_fighter = Game.player.get_component(Fighter)
+    Game.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
     # render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
     #     colors.light_red, colors.darker_red)
 
@@ -387,13 +393,13 @@ def player_move_or_attack(dx, dy):
     # try to find an attackable object there
     Game.target = None
     for obj in Game.objects:
-        if obj.fighter and obj.x == x and obj.y == y:
+        if obj.get_component(Fighter) and obj.x == x and obj.y == y:
             Game.target = obj
             break
 
     # attack if target found, move otherwise
     if Game.target is not None:
-        Game.player.fighter.attack(Game.target)
+        Game.player.get_component(Fighter).attack(Game.target)
     else:
         Game.player.move(dx, dy)
         Game.fov_recompute = True
@@ -411,7 +417,7 @@ def inventory_menu(header):
     # if an item was chosen, return it
     if index is None or len(Game.inventory) == 0:
         return None
-    return Game.inventory[index].item
+    return Game.inventory[index].get_component(Item)
 
 
 def msgbox(text, width=50):
@@ -424,7 +430,7 @@ def handle_keys():
     while user_input is None:
         # Synchronously wait
         for event in tdl.event.get():
-            if event != None:
+            if event is not None:
                 user_input = event
 
     if event.type == 'KEYDOWN':
@@ -461,8 +467,9 @@ def handle_keys():
             if user_input.text == 'g':
                 # pick up an item
                 for obj in Game.objects:  # look for an item in the player's tile
-                    if obj.x == Game.player.x and obj.y == Game.player.y and obj.item:
-                        obj.item.pick_up()
+                    obj_item = obj.get_component(Item)
+                    if obj.x == Game.player.x and obj.y == Game.player.y and obj_item:
+                        obj_item.pick_up()
                         break
 
             if user_input.text == 'i':
@@ -479,7 +486,7 @@ def handle_keys():
                 if chosen_item is not None:
                     chosen_item.drop()
 
-            if user_input.text == 'f' and isinstance(Game.player.fighter.weapon, Bow):
+            if user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
                 # Unlimited arrows, or limited but we have arrows
                 if not config.data.features.limitedArrows or \
                         (config.data.features.limitedArrows and Game.player.arrows > 0):
@@ -499,18 +506,19 @@ def handle_keys():
                                     Game.draw_bowsight = False
                                     is_cancelled = True
                                 elif event.char == 'f':
-                                    if Game.target and Game.target.fighter:
+                                    if Game.target and Game.target.get_component(Fighter):
                                         is_critical = False
                                         damage_multiplier = config.data.weapons.arrowDamageMultiplier
                                         if config.data.features.bowCrits and randint(0,
                                                                                      100) <= config.data.weapons.bowCriticalProbability:
                                             damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
                                             if config.data.features.bowCritsStack:
+                                                target_fighter = Game.target.get_component(Fighter)
                                                 damage_multiplier += (
-                                                    config.data.weapons.bowCriticalDamageMultiplier * Game.target.fighter.bow_crits)
-                                                Game.target.fighter.bow_crits += 1
+                                                    config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
+                                                target_fighter.bow_crits += 1
                                             is_critical = True
-                                        Game.player.fighter.attack(Game.target, damage_multiplier=damage_multiplier,
+                                        Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
                                                               is_critical=is_critical)
                                         Game.player.arrows -= 1
                                         is_fired = True
@@ -518,6 +526,7 @@ def handle_keys():
                                         return ""
 
             return 'didnt-take-turn'
+
 
 def target_tile(max_range=None):
     # return the position of a tile left-clicked in player's FOV (optionally in
@@ -534,8 +543,8 @@ def target_tile(max_range=None):
             if event.type == 'MOUSEDOWN' and event.button == 'LEFT':
                 clicked = True
             elif ((event.type == 'MOUSEDOWN' and event.button == 'RIGHT') or
-                      (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
-                return (None, None)
+                  (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
+                return None, None
         render_all()
 
         # accept the target if the player clicked in FOV, and in case a range is
@@ -556,7 +565,7 @@ def target_monster(max_range=None):
 
         # return the first clicked monster, otherwise continue looping
         for obj in Game.objects:
-            if obj.x == x and obj.y == y and obj.fighter and obj != Game.player:
+            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
                 return obj
 
 
@@ -566,7 +575,7 @@ def closest_monster(max_range):
     closest_dist = max_range + 1  # start with (slightly more than) maximum range
 
     for obj in Game.objects:
-        if obj.fighter and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
+        if obj.get_component(Fighter) and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
             # calculate distance between this object and the player
             dist = Game.player.distance_to(obj)
             if dist < closest_dist:  # it's closer, so remember it
@@ -577,12 +586,13 @@ def closest_monster(max_range):
 
 def cast_heal():
     # heal the player
-    if Game.player.fighter.hp == Game.player.fighter.max_hp:
+    player_fighter = Game.player.get_component(Fighter)
+    if player_fighter.hp == player_fighter.max_hp:
         message('You are already at full health.', colors.red)
         return 'cancelled'
 
     message('Your wounds start to feel better!', colors.light_violet)
-    Game.player.fighter.heal(HEAL_AMOUNT)
+    player_fighter.heal(HEAL_AMOUNT)
 
 
 def cast_lightning():
@@ -597,7 +607,7 @@ def cast_lightning():
             'thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.',
             colors.light_blue)
 
-    monster.fighter.take_damage(LIGHTNING_DAMAGE)
+    monster.get_component(Fighter).take_damage(LIGHTNING_DAMAGE)
 
 
 def cast_confuse():
@@ -611,8 +621,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    monster.ai = ConfusedMonster()
-    monster.ai.owner = monster  # tell the new component who owns it
+    monster.set_component(ConfusedMonster(monster))
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 
@@ -630,11 +639,12 @@ def cast_fireball():
             str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
 
     for obj in Game.objects:  # damage every fighter in range, including the player
-        if obj.distance(x, y) <= FIREBALL_RADIUS and obj.fighter:
+        obj_fighter = obj.get_component(Fighter)
+        if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
             message('The ' + obj.name + ' gets burned for ' +
                     str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)
 
-            obj.fighter.take_damage(FIREBALL_DAMAGE)
+            obj_fighter.take_damage(FIREBALL_DAMAGE)
 
 
 def save_game():
@@ -706,5 +716,6 @@ def play_game():
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
             for obj in Game.objects:
-                if obj.ai:
-                    obj.ai.take_turn()
+                obj_ai = obj.get_component(AI)
+                if obj_ai:
+                    obj_ai.take_turn()

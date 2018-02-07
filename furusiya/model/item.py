@@ -1,12 +1,16 @@
 import colors
 from main_interface import Game, message
+from model.components.base import Component
 
 
-class Item:
+class Item(Component):
     """
     an item that can be picked up and used.
     """
-    def __init__(self, use_function=None):
+    component_type = 'Item'
+
+    def __init__(self, owner, use_function=None):
+        super().__init__(owner)
         self.use_function = use_function
 
     def pick_up(self):

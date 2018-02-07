@@ -8,35 +8,21 @@ class GameObject:
     this is a generic object: the player, a monster, an item, the stairs...
     it's always represented by a character on screen.
     """
-    def __init__(self, x, y, char, name, color, blocks=False,
-                 fighter=None, ai=None, item=None):
+    def __init__(self, x, y, char, name, color, blocks=False):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
         self.name = name
         self.blocks = blocks
-        self.fighter = fighter
 
         self._components = {}
-
-        if self.fighter:  # let the fighter component know who owns it
-            self.fighter.owner = self
-
-        self.ai = ai
-        if self.ai:  # let the AI component know who owns it
-            self.ai.owner = self
-            self.original_ai = self.ai
-
-        self.item = item
-        if self.item:  # let the Item component know who owns it
-            self.item.owner = self
 
     def _get_type(self, type_):
         possible_matches = [
             k
             for k in self._components.keys()
-            if issubclass(k, type_)
+            if k == type_.component_type
         ]
 
         if len(possible_matches) == 0:
@@ -45,7 +31,7 @@ class GameObject:
             return possible_matches[0]
 
     def set_component(self, component):
-        self._components[type(component)] = component
+        self._components[component.component_type] = component
 
     def get_component(self, type_):
         return self._components.get(self._get_type(type_), None)

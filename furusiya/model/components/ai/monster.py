@@ -4,9 +4,11 @@ import colors
 import config
 from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
+from model.components.ai.base import AI
+from model.components.fighter import Fighter
 
 
-class BasicMonster:
+class BasicMonster(AI):
     """
     AI for a basic monster.
     """
@@ -20,17 +22,26 @@ class BasicMonster:
                 monster.move_towards(Game.player.x, Game.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif Game.player.fighter.hp > 0:
-                monster.fighter.attack(Game.player)
+            elif Game.player.get_component(Fighter).hp > 0:
+                monster.get_component(Fighter).attack(Game.player)
 
 
-class StunnedMonster:
+class TemporaryAI(AI):
+    """
+    Base class for temporary AI's.
+    """
+    def __init__(self, owner, num_turns):
+        super().__init__(owner)
+        self.original_ai = owner.get_component(AI)
+        self.num_turns = num_turns
+
+
+class StunnedMonster(TemporaryAI):
     """
     AI for a temporarily stunned monster (reverts to previous AI after a while).
     """
     def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
-        self.owner = owner
-        self.num_turns = num_turns
+        super().__init__(owner, num_turns)
 
     def take_turn(self):
         if self.num_turns > 0:  # still stunned ...
@@ -39,17 +50,17 @@ class StunnedMonster:
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.ai = self.owner.original_ai
+            self.owner.set_component(self.original_ai)
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
             self.owner.char = self.owner.name[0]
 
 
-class ConfusedMonster:
+class ConfusedMonster(TemporaryAI):
     """
     AI for a temporarily confused monster (reverts to previous AI after a while).
     """
-    def __init__(self, num_turns=CONFUSE_NUM_TURNS):
-        self.num_turns = num_turns
+    def __init__(self, owner, num_turns=CONFUSE_NUM_TURNS):
+        super().__init__(owner, num_turns)
 
     def take_turn(self):
         if self.num_turns > 0:  # still confused...
@@ -60,5 +71,5 @@ class ConfusedMonster:
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.ai = self.original_ai
+            self.owner.set_component(self.original_ai)
             message('The ' + self.owner.name + ' is no longer confused!', colors.red)
