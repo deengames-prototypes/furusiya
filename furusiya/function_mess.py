@@ -2,8 +2,7 @@ import colors
 import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
-from model.ai import ConfusedMonster
-from model.fighter import Fighter
+from model.ai.monster import ConfusedMonster
 from model.game_object import GameObject
 from model.item import Item
 from model.party.player import Player
@@ -16,6 +15,7 @@ from random import randint
 import random
 import shelve
 import tdl
+
 
 def create_room(room):
     # go through the tiles in the rectangle and make them passable
@@ -44,9 +44,9 @@ def is_visible_tile(x, y):
         return False
     elif y >= MAP_HEIGHT or y < 0:
         return False
-    elif Game.my_map[x][y].blocked == True:
+    elif Game.my_map[x][y].blocked:
         return False
-    elif Game.my_map[x][y].block_sight == True:
+    elif Game.my_map[x][y].block_sight:
         return False
     else:
         return True
@@ -191,15 +191,15 @@ def place_objects(room):
         # only place it if the tile is not blocked
         if not is_blocked(x, y):
             choice = randint(0, 100)
-            if choice <= 55: # 55%
+            if choice <= 55:  # 55%
                 name = 'bushslime'
                 data = config.data.enemies.bushslime
                 colour = colors.desaturated_green
-            elif choice <= 85: # 30%
+            elif choice <= 85:  # 30%
                 name = 'steelhawk'
                 data = config.data.enemies.steelhawk
                 colour = colors.light_blue
-            else: # 15%
+            else:  # 15%
                 name = 'tigerslash'
                 data = config.data.enemies.tigerslash
                 colour = colors.orange
@@ -289,10 +289,10 @@ def render_all():
     if Game.fov_recompute:
         Game.fov_recompute = False
         Game.visible_tiles = tdl.map.quickFOV(Game.player.x, Game.player.y,
-                                         is_visible_tile,
-                                         fov=FOV_ALGO,
-                                         radius=config.data.player.lightRadius,
-                                         lightWalls=FOV_LIGHT_WALLS)
+                                              is_visible_tile,
+                                              fov=FOV_ALGO,
+                                              radius=config.data.player.lightRadius,
+                                              lightWalls=FOV_LIGHT_WALLS)
 
         # go through all tiles, and set their background color according to the FOV
         for y in range(MAP_HEIGHT):
@@ -424,7 +424,7 @@ def handle_keys():
     while user_input is None:
         # Synchronously wait
         for event in tdl.event.get():
-            if event != None:
+            if event is not None:
                 user_input = event
 
     if event.type == 'KEYDOWN':
@@ -519,6 +519,7 @@ def handle_keys():
 
             return 'didnt-take-turn'
 
+
 def target_tile(max_range=None):
     # return the position of a tile left-clicked in player's FOV (optionally in
     # a range), or (None,None) if right-clicked.
@@ -534,8 +535,8 @@ def target_tile(max_range=None):
             if event.type == 'MOUSEDOWN' and event.button == 'LEFT':
                 clicked = True
             elif ((event.type == 'MOUSEDOWN' and event.button == 'RIGHT') or
-                      (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
-                return (None, None)
+                  (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
+                return None, None
         render_all()
 
         # accept the target if the player clicked in FOV, and in case a range is
@@ -611,8 +612,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    monster.ai = ConfusedMonster()
-    monster.ai.owner = monster  # tell the new component who owns it
+    monster.ai = ConfusedMonster(monster)
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 

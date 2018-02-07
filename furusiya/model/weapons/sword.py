@@ -3,7 +3,7 @@ from random import randint
 import colors
 import config
 from main_interface import message
-from model.ai import StunnedMonster
+from model.ai.monster import StunnedMonster
 
 
 class Sword:
