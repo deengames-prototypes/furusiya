@@ -6,6 +6,7 @@ import colors
 import file_watcher
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH
 from constants import MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
+from model.maps.area_map import AreaMap
 
 
 class Game:
@@ -24,9 +25,7 @@ class Game:
     game_msgs = []
     game_state = None
 
-    entities = []
-    tiles = None
-    area_map = None
+    area_map = AreaMap(SCREEN_WIDTH, SCREEN_HEIGHT)
 
     @classmethod
     def run(cls, to_run):
@@ -110,11 +109,11 @@ def message(new_msg, color=colors.white):
 
 def is_blocked(x, y):
     # first test the map tile
-    if Game.tiles[x][y].blocked:
+    if not Game.area_map.tiles[x][y].is_walkable:
         return True
 
     # now check for any blocking objects
-    for obj in Game.entities:
+    for obj in Game.area_map.entities:
         if obj.blocks and obj.x == x and obj.y == y:
             return True
 
@@ -122,7 +121,7 @@ def is_blocked(x, y):
 
 
 def get_blocking_object_at(x, y):
-    for obj in Game.entities:
+    for obj in Game.area_map.entities:
         if obj.blocks and obj.x == x and obj.y == y:
             return obj
 
