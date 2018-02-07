@@ -18,8 +18,7 @@ class AreaMap:
         return 0 <= x < self.width and 0 <= y < self.height
 
     def is_walkable(self, x, y):
-        return (0 <= x < self.width
-                and 0 <= y < self.height
+        return (self.is_on_map(x, y)
                 and self.tiles[x][y].is_walkable
                 and len([
                             e

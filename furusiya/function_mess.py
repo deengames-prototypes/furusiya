@@ -100,9 +100,7 @@ def _make_cave():
             x = restart[0]
             y = restart[1]
 
-    player_pos = random.choice(floor_tiles)
-    Game.player.x = player_pos[0]
-    Game.player.y = player_pos[1]
+    Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/
     Game.stallion.x = Game.player.x + 1
     Game.stallion.y = Game.player.y + 1
@@ -678,7 +676,6 @@ def new_game():
     Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
-    Game.area_map.entities = [Game.player]
     _make_cave()
 
     Game.game_state = 'playing'
