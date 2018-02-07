@@ -9,6 +9,7 @@ import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
 from model.components.ai.monster import ConfusedMonster
+from model.components.fighter import Fighter
 from model.factories import monster_factory, item_factory
 from model.game_object import GameObject
 from model.item import Item
@@ -347,7 +348,7 @@ def render_all():
     for obj in Game.objects:
         if obj != Game.player:
             if Game.draw_bowsight and (obj.x, obj.y) in Game.visible_tiles and \
-                            (obj.x, obj.y) == (x2, y2) and obj.fighter is not None:
+                            (obj.x, obj.y) == (x2, y2) and obj.get_component(Fighter) is not None:
                 Game.target = obj
                 Game.con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
@@ -369,7 +370,8 @@ def render_all():
         y += 1
 
     # show the player's stats
-    Game.panel.draw_str(1, 1, "HP: {}/{}".format(Game.player.fighter.hp, Game.player.fighter.max_hp))
+    player_fighter = Game.player.get_component(Fighter)
+    Game.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
     # render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
     #     colors.light_red, colors.darker_red)
 
@@ -391,13 +393,13 @@ def player_move_or_attack(dx, dy):
     # try to find an attackable object there
     Game.target = None
     for obj in Game.objects:
-        if obj.fighter and obj.x == x and obj.y == y:
+        if obj.get_component(Fighter) and obj.x == x and obj.y == y:
             Game.target = obj
             break
 
     # attack if target found, move otherwise
     if Game.target is not None:
-        Game.player.fighter.attack(Game.target)
+        Game.player.get_component(Fighter).attack(Game.target)
     else:
         Game.player.move(dx, dy)
         Game.fov_recompute = True
@@ -483,7 +485,7 @@ def handle_keys():
                 if chosen_item is not None:
                     chosen_item.drop()
 
-            if user_input.text == 'f' and isinstance(Game.player.fighter.weapon, Bow):
+            if user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
                 # Unlimited arrows, or limited but we have arrows
                 if not config.data.features.limitedArrows or \
                         (config.data.features.limitedArrows and Game.player.arrows > 0):
@@ -503,18 +505,19 @@ def handle_keys():
                                     Game.draw_bowsight = False
                                     is_cancelled = True
                                 elif event.char == 'f':
-                                    if Game.target and Game.target.fighter:
+                                    if Game.target and Game.target.get_component(Fighter):
                                         is_critical = False
                                         damage_multiplier = config.data.weapons.arrowDamageMultiplier
                                         if config.data.features.bowCrits and randint(0,
                                                                                      100) <= config.data.weapons.bowCriticalProbability:
                                             damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
                                             if config.data.features.bowCritsStack:
+                                                target_fighter = Game.target.get_component(Fighter)
                                                 damage_multiplier += (
-                                                    config.data.weapons.bowCriticalDamageMultiplier * Game.target.fighter.bow_crits)
-                                                Game.target.fighter.bow_crits += 1
+                                                    config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
+                                                target_fighter.bow_crits += 1
                                             is_critical = True
-                                        Game.player.fighter.attack(Game.target, damage_multiplier=damage_multiplier,
+                                        Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
                                                               is_critical=is_critical)
                                         Game.player.arrows -= 1
                                         is_fired = True
@@ -561,7 +564,7 @@ def target_monster(max_range=None):
 
         # return the first clicked monster, otherwise continue looping
         for obj in Game.objects:
-            if obj.x == x and obj.y == y and obj.fighter and obj != Game.player:
+            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
                 return obj
 
 
@@ -571,7 +574,7 @@ def closest_monster(max_range):
     closest_dist = max_range + 1  # start with (slightly more than) maximum range
 
     for obj in Game.objects:
-        if obj.fighter and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
+        if obj.get_component(Fighter) and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
             # calculate distance between this object and the player
             dist = Game.player.distance_to(obj)
             if dist < closest_dist:  # it's closer, so remember it
@@ -582,12 +585,13 @@ def closest_monster(max_range):
 
 def cast_heal():
     # heal the player
-    if Game.player.fighter.hp == Game.player.fighter.max_hp:
+    player_fighter = Game.player.get_component(Fighter)
+    if player_fighter.hp == player_fighter.max_hp:
         message('You are already at full health.', colors.red)
         return 'cancelled'
 
     message('Your wounds start to feel better!', colors.light_violet)
-    Game.player.fighter.heal(HEAL_AMOUNT)
+    player_fighter.heal(HEAL_AMOUNT)
 
 
 def cast_lightning():
@@ -602,7 +606,7 @@ def cast_lightning():
             'thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.',
             colors.light_blue)
 
-    monster.fighter.take_damage(LIGHTNING_DAMAGE)
+    monster.get_component(Fighter).take_damage(LIGHTNING_DAMAGE)
 
 
 def cast_confuse():
@@ -634,11 +638,12 @@ def cast_fireball():
             str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
 
     for obj in Game.objects:  # damage every fighter in range, including the player
-        if obj.distance(x, y) <= FIREBALL_RADIUS and obj.fighter:
+        obj_fighter = obj.get_component(Fighter)
+        if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
             message('The ' + obj.name + ' gets burned for ' +
                     str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)
 
-            obj.fighter.take_damage(FIREBALL_DAMAGE)
+            obj_fighter.take_damage(FIREBALL_DAMAGE)
 
 
 def save_game():

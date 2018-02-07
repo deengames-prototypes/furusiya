@@ -16,7 +16,6 @@ class GameObject:
         self.name = name
         self.blocks = blocks
 
-        self.fighter = None
         self.ai = None
         self.item = None
 

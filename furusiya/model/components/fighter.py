@@ -43,13 +43,14 @@ class Fighter(Component):
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
         # a simple formula for attack damage
-        damage = int(self.power * damage_multiplier) - target.fighter.defense
+        target_fighter = target.get_component(Fighter)
+        damage = int(self.power * damage_multiplier) - target_fighter.defense
 
         if damage > 0:
             # make the target take some damage
             message(self.owner.name.capitalize() + ' attacks ' + target.name +
                     ' for ' + str(damage) + ' hit points. {}'.format("Critical strike!" if is_critical else ""))
-            target.fighter.take_damage(damage)
+            target_fighter.take_damage(damage)
         else:
             message(self.owner.name.capitalize() + ' attacks ' + target.name +
                     ' but it has no effect!')

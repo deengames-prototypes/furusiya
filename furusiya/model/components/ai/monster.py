@@ -5,6 +5,7 @@ import config
 from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
 from model.components.ai.base import AI
+from model.components.fighter import Fighter
 
 
 class BasicMonster(AI):
@@ -21,8 +22,8 @@ class BasicMonster(AI):
                 monster.move_towards(Game.player.x, Game.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif Game.player.fighter.hp > 0:
-                monster.fighter.attack(Game.player)
+            elif Game.player.get_component(Fighter).hp > 0:
+                monster.get_component(Fighter).attack(Game.player)
 
 
 class StunnedMonster(AI):

@@ -12,19 +12,23 @@ class Player(GameObject):
         data = config.data.player
         super().__init__(0, 0, '@', 'player', colors.white, blocks=True)
 
-        self.fighter = Fighter(
-            self,
-            hp=data.startingHealth,
-            defense=data.startingDefense, power=data.startingPower,
-            xp=0, weapon=None, death_function=player_death
+        # Turn a name like "Sword" into the actual class instance
+        weapon_name = data.startingWeapon
+        weapon_init = getattr(model.weapons, weapon_name)
+
+        self.set_component(
+            Fighter(
+                self,
+                hp=data.startingHealth,
+                defense=data.startingDefense,
+                power=data.startingPower,
+                xp=0,
+                weapon=weapon_init(self),
+                death_function=player_death
+            )
         )
 
         Game.draw_bowsight = False
-
-        # Turn a name like "Sword" into the actual class instance
-        weapon_name = data.startingWeapon
-        initializer = getattr(model.weapons, weapon_name)
-        self.fighter.weapon = initializer(self)  # __init__(owner)
 
         self.level = 1
         self.stats_points = 0
@@ -33,14 +37,16 @@ class Player(GameObject):
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
 
     def gain_xp(self, amount):
-        self.fighter.xp += amount
+        fighter = self.get_component(Fighter)
+
+        fighter.xp += amount
         # XP doubles every level. 40, 80, 160, ...
         # First level = after four orcs. Yeah, low standards.
         xp_next_level = 2 ** (self.level + 1) * 10
         # DRY ya'ne
-        while self.fighter.xp >= xp_next_level:
+        while fighter.xp >= xp_next_level:
             self.level += 1
             self.stats_points += config.data.player.statsPointsOnLevelUp
             xp_next_level = 2 ** (self.level + 1) * config.data.player.expRequiredBase
             message("You are now level {}!".format(self.level))
-            self.fighter.heal(self.fighter.max_hp)
+            fighter.heal(fighter.max_hp)
