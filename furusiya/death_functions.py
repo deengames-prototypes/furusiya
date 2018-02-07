@@ -1,3 +1,7 @@
+import colors
+from main_interface import message
+from main_interface import Game
+
 def monster_death(monster):
     # transform it into a nasty corpse! it doesn't block, can't be
     # attacked and doesn't move

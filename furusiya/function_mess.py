@@ -6,7 +6,7 @@ from model.ai import BasicMonster, ConfusedMonster
 from model.fighter import Fighter
 from model.gameobject import GameObject
 from model.item import Item
-from model.player import Player
+from model.party.player import Player
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
