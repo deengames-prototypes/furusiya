@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 import tdl
 from tcod import image_load
-
 import colors
+
+# Has to be here, because we use it everywhere
+import file_watcher
+import config
+file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
+
 from function_mess import new_game, play_game, load_game, msgbox
 from main_interface import Game, menu
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
-
 
 def main_menu():
     img = image_load('menu_background.png')
