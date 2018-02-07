@@ -1,4 +1,4 @@
-from model.gameobject import GameObject
+from model.game_object import GameObject
 import colors
 
 class Stallion(GameObject):

@@ -4,7 +4,7 @@ from constants import *
 from main_interface import Game, menu, message, is_blocked
 from model.ai import BasicMonster, ConfusedMonster
 from model.fighter import Fighter
-from model.gameobject import GameObject
+from model.game_object import GameObject
 from model.item import Item
 from model.party.player import Player
 from model.party.stallion import Stallion

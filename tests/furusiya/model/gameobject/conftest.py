@@ -1,6 +1,6 @@
 import pytest
 
-from model.gameobject import GameObject
+from model.game_object import GameObject
 
 
 @pytest.fixture
