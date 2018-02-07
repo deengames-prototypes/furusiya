@@ -7,6 +7,7 @@ from model.fighter import Fighter
 from model.gameobject import GameObject
 from model.item import Item
 from model.party.player import Player
+from model.party.stallion import Stallion
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
@@ -99,6 +100,10 @@ def _make_cave():
     player_pos = random.choice(floor_tiles)
     Game.player.x = player_pos[0]
     Game.player.y = player_pos[1]
+    # TODO: what if we spawned in a wall? :/
+    Game.stallion.x = Game.player.x + 1
+    Game.stallion.y = Game.player.y + 1
+    Game.objects.append(Game.stallion)
 
     # Create objects/monsters by creating random "rooms"
     target = randint(MAX_ROOMS // 2, MAX_ROOMS)
@@ -343,7 +348,9 @@ def render_all():
                 Game.con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
+    
     Game.player.draw()
+    Game.stallion.draw()
 
     # blit the contents of "Game.con" to the root console and present it
     Game.root.blit(Game.con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
@@ -656,6 +663,7 @@ def load_game():
 def new_game():
 
     Game.player = Player()
+    Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
     make_map()

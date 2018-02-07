@@ -9,11 +9,10 @@ import model.weapons
 class Player(GameObject):
     def __init__(self):
         data = config.data.player
-        super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-            blocks=True,
+        super().__init__(0, 0, '@', 'player', colors.white, blocks=True,
             fighter=Fighter(hp=data.startingHealth,
-                            defense=data.startingDefense, power=data.startingPower, xp=0,
-                            weapon=None, death_function=player_death))
+                            defense=data.startingDefense, power=data.startingPower,
+                            xp=0, weapon=None, death_function=player_death))
 
         Game.draw_bowsight = False
 

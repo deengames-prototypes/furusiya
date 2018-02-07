@@ -16,6 +16,7 @@ class Game:
     visible_tiles = None
     draw_bowsight = None
     player = None
+    stallion = None
     my_map = None
     fov_recompute = None
     mouse_coord = None
