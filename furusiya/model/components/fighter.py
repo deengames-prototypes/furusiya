@@ -1,15 +1,17 @@
 import colors
 import config
+from model.components.base import Component
 from model.game_object import GameObject
 from model.item import Item
 from main_interface import Game, message
 
 
-class Fighter:
+class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, hp, defense, power, xp, weapon=None, death_function=None):
+    def __init__(self, owner, hp, defense, power, xp, weapon=None, death_function=None):
+        super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
