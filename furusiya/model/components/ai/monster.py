@@ -40,8 +40,8 @@ class StunnedMonster(TemporaryAI):
     """
     AI for a temporarily stunned monster (reverts to previous AI after a while).
     """
-    def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
-        super().__init__(owner, num_turns)
+    def __init__(self, owner, num_turns=None):
+        super().__init__(owner, num_turns or config.data.weapons.numTurnsStunned)
 
     def take_turn(self):
         if self.num_turns > 0:  # still stunned ...
@@ -59,8 +59,8 @@ class ConfusedMonster(TemporaryAI):
     """
     AI for a temporarily confused monster (reverts to previous AI after a while).
     """
-    def __init__(self, owner, num_turns=CONFUSE_NUM_TURNS):
-        super().__init__(owner, num_turns)
+    def __init__(self, owner, num_turns=None):
+        super().__init__(owner, num_turns or CONFUSE_NUM_TURNS)
 
     def take_turn(self):
         if self.num_turns > 0:  # still confused...

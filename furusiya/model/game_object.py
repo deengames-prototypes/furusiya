@@ -1,6 +1,6 @@
 import math
 
-from main_interface import Game, is_blocked, get_blocking_object_at
+from main_interface import Game, get_blocking_object_at
 
 
 class GameObject:
@@ -44,7 +44,7 @@ class GameObject:
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked
-        if not is_blocked(self.x + dx, self.y + dy):
+        if Game.area_map.is_walkable(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
         else:
@@ -75,8 +75,8 @@ class GameObject:
     def send_to_back(self):
         # make this object be drawn first, so all others appear above it if
         # they're in the same tile.
-        Game.objects.remove(self)
-        Game.objects.insert(0, self)
+        Game.area_map.entities.remove(self)
+        Game.area_map.entities.insert(0, self)
 
     def draw(self):
         # only show if it's visible to the player
