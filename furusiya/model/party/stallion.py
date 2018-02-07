@@ -1,5 +1,5 @@
 import colors
-from model.ai.stallion import StallionAi
+from model.components.ai.stallion import StallionAi
 from model.game_object import GameObject
 
 

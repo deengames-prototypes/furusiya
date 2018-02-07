@@ -4,7 +4,7 @@ import colors
 import config
 from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
-from model.ai.base import AI
+from model.components.ai.base import AI
 
 
 class BasicMonster(AI):

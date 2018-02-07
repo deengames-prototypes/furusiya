@@ -1,4 +1,4 @@
-from model.ai.base import AI
+from model.components.ai.base import AI
 
 
 class StallionAi(AI):

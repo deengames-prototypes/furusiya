@@ -1,7 +1,8 @@
-from model.fighter import Fighter
-from model.ai.monster import BasicMonster
-from model.game_object import GameObject
+from model.components.ai.monster import BasicMonster
+
 from death_functions import monster_death
+from model.components.fighter import Fighter
+from model.game_object import GameObject
 
 
 def create_monster(data, x, y, colour, name):

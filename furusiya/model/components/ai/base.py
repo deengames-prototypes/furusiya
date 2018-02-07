@@ -1,4 +1,4 @@
-from model.component import Component
+from model.components.base import Component
 
 
 class AI(Component):

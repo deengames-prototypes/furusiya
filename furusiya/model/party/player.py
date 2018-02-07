@@ -1,10 +1,11 @@
 import colors
 import config
+import model.weapons
 from death_functions import player_death
 from main_interface import Game, message
-from model.fighter import Fighter
+from model.components.fighter import Fighter
 from model.game_object import GameObject
-import model.weapons
+
 
 class Player(GameObject):
     def __init__(self):
