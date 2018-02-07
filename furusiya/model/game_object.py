@@ -17,7 +17,6 @@ class GameObject:
         self.blocks = blocks
 
         self.ai = None
-        self.item = None
 
         self._components = {}
 

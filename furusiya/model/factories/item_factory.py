@@ -5,6 +5,11 @@ from model.item import Item
 def create_item(x, y, character, name, color, use_function):
 
     item = GameObject(x, y, character, name, color)
-    item.item = Item(item, use_function=use_function)
+    item.set_component(
+        Item(
+            item,
+            use_function=use_function
+        )
+    )
 
     return item

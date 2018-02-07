@@ -11,7 +11,6 @@ from main_interface import Game, menu, message, is_blocked
 from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
 from model.factories import monster_factory, item_factory
-from model.game_object import GameObject
 from model.item import Item
 from model.party.player import Player
 from model.party.stallion import Stallion
@@ -417,7 +416,7 @@ def inventory_menu(header):
     # if an item was chosen, return it
     if index is None or len(Game.inventory) == 0:
         return None
-    return Game.inventory[index].item
+    return Game.inventory[index].get_component(Item)
 
 
 def msgbox(text, width=50):
@@ -467,8 +466,9 @@ def handle_keys():
             if user_input.text == 'g':
                 # pick up an item
                 for obj in Game.objects:  # look for an item in the player's tile
-                    if obj.x == Game.player.x and obj.y == Game.player.y and obj.item:
-                        obj.item.pick_up()
+                    obj_item = obj.get_component(Item)
+                    if obj.x == Game.player.x and obj.y == Game.player.y and obj_item:
+                        obj_item.pick_up()
                         break
 
             if user_input.text == 'i':
