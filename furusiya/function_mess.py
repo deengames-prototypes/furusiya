@@ -24,21 +24,21 @@ def create_room(room):
     # go through the tiles in the rectangle and make them passable
     for x in range(room.x1 + 1, room.x2):
         for y in range(room.y1 + 1, room.y2):
-            Game.my_map[x][y].blocked = False
-            Game.my_map[x][y].block_sight = False
+            Game.tiles[x][y].blocked = False
+            Game.tiles[x][y].block_sight = False
 
 
 def create_h_tunnel(x1, x2, y):
     for x in range(min(x1, x2), max(x1, x2) + 1):
-        Game.my_map[x][y].blocked = False
-        Game.my_map[x][y].block_sight = False
+        Game.tiles[x][y].blocked = False
+        Game.tiles[x][y].block_sight = False
 
 
 def create_v_tunnel(y1, y2, x):
     # vertical tunnel
     for y in range(min(y1, y2), max(y1, y2) + 1):
-        Game.my_map[x][y].blocked = False
-        Game.my_map[x][y].block_sight = False
+        Game.tiles[x][y].blocked = False
+        Game.tiles[x][y].block_sight = False
 
 
 def is_visible_tile(x, y):
@@ -47,9 +47,9 @@ def is_visible_tile(x, y):
         return False
     elif y >= MAP_HEIGHT or y < 0:
         return False
-    elif Game.my_map[x][y].blocked:
+    elif Game.tiles[x][y].blocked:
         return False
-    elif Game.my_map[x][y].block_sight:
+    elif Game.tiles[x][y].block_sight:
         return False
     else:
         return True
@@ -58,10 +58,10 @@ def is_visible_tile(x, y):
 def make_map():
 
     # the list of objects with those two
-    Game.objects = [Game.player]
+    Game.entities = [Game.player]
 
     # fill map with "blocked" tiles
-    Game.my_map = [
+    Game.tiles = [
         [Tile(True) for y in range(MAP_HEIGHT)]
         for x in range(MAP_WIDTH)
     ]
@@ -82,9 +82,9 @@ def _make_cave():
     to_make = NUM_TREES
 
     while to_make:
-        if Game.my_map[x][y].blocked:
-            Game.my_map[x][y].blocked = False
-            Game.my_map[x][y].block_sight = False
+        if Game.tiles[x][y].blocked:
+            Game.tiles[x][y].blocked = False
+            Game.tiles[x][y].block_sight = False
             floor_tiles.append((x, y))
             to_make -= 1
 
@@ -106,7 +106,7 @@ def _make_cave():
     # TODO: what if we spawned in a wall? :/
     Game.stallion.x = Game.player.x + 1
     Game.stallion.y = Game.player.y + 1
-    Game.objects.append(Game.stallion)
+    Game.entities.append(Game.stallion)
 
     # Create objects/monsters by creating random "rooms"
     target = randint(MAX_ROOMS // 2, MAX_ROOMS)
@@ -208,7 +208,7 @@ def place_objects(room):
                 colour = colors.orange
             
             monster = monster_factory.create_monster(data, x, y, colour, name)
-            Game.objects.append(monster)
+            Game.entities.append(monster)
 
     # choose random number of items
     num_items = randint(0, MAX_ROOM_ITEMS)
@@ -251,7 +251,7 @@ def place_objects(room):
 
             item = item_factory.create_item(x, y, char, name, color, use_func)
 
-            Game.objects.append(item)
+            Game.entities.append(item)
             item.send_to_back()  # items appear below other objects
 
 
@@ -276,7 +276,7 @@ def get_objects_under_mouse():
     (x, y) = Game.mouse_coord
 
     # create a list with the names of all objects at the mouse's coordinates and in FOV
-    stuff = [obj for obj in Game.objects
+    stuff = [obj for obj in Game.entities
              if obj.x == x and obj.y == y and (obj.x, obj.y) in Game.visible_tiles]
 
     return stuff
@@ -303,11 +303,11 @@ def render_all():
         for y in range(MAP_HEIGHT):
             for x in range(MAP_WIDTH):
                 visible = (x, y) in Game.visible_tiles
-                wall = Game.my_map[x][y].block_sight
+                wall = Game.tiles[x][y].block_sight
                 if not visible:
                     # if it's not visible right now, the player can only see it
                     # if it's explored
-                    if Game.my_map[x][y].explored:
+                    if Game.tiles[x][y].explored:
                         if wall:
                             Game.con.draw_char(x, y, '#', fg=color_dark_wall)
                         else:
@@ -318,13 +318,13 @@ def render_all():
                     else:
                         Game.con.draw_char(x, y, '.', fg=color_light_ground)
                     # since it's visible, explore it
-                    Game.my_map[x][y].explored = True
+                    Game.tiles[x][y].explored = True
 
     if Game.draw_bowsight:
         # Horrible, terrible, crazy hack. Can't figure out why visible tiles
         # just never seem to redraw as '.' or '#' on top of bow rays.
         for (x, y) in Game.visible_tiles:
-            char = '#' if Game.my_map[x][y].block_sight else '.'
+            char = '#' if Game.tiles[x][y].block_sight else '.'
             Game.con.draw_char(x, y, char, fg=color_light_ground)
 
         if Game.auto_target:
@@ -345,7 +345,7 @@ def render_all():
                 Game.con.draw_char(pos[0], pos[1], '#', colors.black)
 
     # draw all objects in the list
-    for obj in Game.objects:
+    for obj in Game.entities:
         if obj != Game.player:
             if Game.draw_bowsight and (obj.x, obj.y) in Game.visible_tiles and \
                             (obj.x, obj.y) == (x2, y2) and obj.get_component(Fighter) is not None:
@@ -392,7 +392,7 @@ def player_move_or_attack(dx, dy):
 
     # try to find an attackable object there
     Game.target = None
-    for obj in Game.objects:
+    for obj in Game.entities:
         if obj.get_component(Fighter) and obj.x == x and obj.y == y:
             Game.target = obj
             break
@@ -466,7 +466,7 @@ def handle_keys():
             # test for other keys
             if user_input.text == 'g':
                 # pick up an item
-                for obj in Game.objects:  # look for an item in the player's tile
+                for obj in Game.entities:  # look for an item in the player's tile
                     obj_item = obj.get_component(Item)
                     if obj.x == Game.player.x and obj.y == Game.player.y and obj_item:
                         obj_item.pick_up()
@@ -564,7 +564,7 @@ def target_monster(max_range=None):
             return None
 
         # return the first clicked monster, otherwise continue looping
-        for obj in Game.objects:
+        for obj in Game.entities:
             if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
                 return obj
 
@@ -574,7 +574,7 @@ def closest_monster(max_range):
     closest_enemy = None
     closest_dist = max_range + 1  # start with (slightly more than) maximum range
 
-    for obj in Game.objects:
+    for obj in Game.entities:
         if obj.get_component(Fighter) and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
             # calculate distance between this object and the player
             dist = Game.player.distance_to(obj)
@@ -638,7 +638,7 @@ def cast_fireball():
     message('The fireball explodes, burning everything within ' +
             str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
 
-    for obj in Game.objects:  # damage every fighter in range, including the player
+    for obj in Game.entities:  # damage every fighter in range, including the player
         obj_fighter = obj.get_component(Fighter)
         if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
             message('The ' + obj.name + ' gets burned for ' +
@@ -650,9 +650,9 @@ def cast_fireball():
 def save_game():
     # open a new empty shelve (possibly overwriting an old one) to write the game data
     with shelve.open('savegame', 'n') as savefile:
-        savefile['my_map'] = Game.my_map
-        savefile['objects'] = Game.objects
-        savefile['player_index'] = Game.objects.index(Game.player)  # index of player in objects list
+        savefile['my_map'] = Game.tiles
+        savefile['objects'] = Game.entities
+        savefile['player_index'] = Game.entities.index(Game.player)  # index of player in objects list
         savefile['inventory'] = Game.inventory
         savefile['game_msgs'] = Game.game_msgs
         savefile['game_state'] = Game.game_state
@@ -662,9 +662,9 @@ def load_game():
     # open the previously saved shelve and load the game data
 
     with shelve.open('savegame', 'r') as savefile:
-        Game.my_map = savefile['my_map']
-        Game.objects = savefile['objects']
-        Game.player = Game.objects[savefile['player_index']]  # get index of player in objects list and access it
+        Game.tiles = savefile['my_map']
+        Game.entities = savefile['objects']
+        Game.player = Game.entities[savefile['player_index']]  # get index of player in objects list and access it
         Game.inventory = savefile['inventory']
         Game.game_msgs = savefile['game_msgs']
         Game.game_state = savefile['game_state']
@@ -704,7 +704,7 @@ def play_game():
         render_all()
 
         # erase all objects at their old locations, before they move
-        for obj in Game.objects:
+        for obj in Game.entities:
             obj.clear()
 
         # handle keys and exit game if needed
@@ -715,7 +715,7 @@ def play_game():
 
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
-            for obj in Game.objects:
+            for obj in Game.entities:
                 obj_ai = obj.get_component(AI)
                 if obj_ai:
                     obj_ai.take_turn()

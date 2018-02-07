@@ -37,7 +37,7 @@ class Fighter(Component):
                     arrows = GameObject(self.owner.x, self.owner.y, '|',
                                         '{} arrows'.format(num_arrows), colors.brass, blocks=False)
                     arrows.set_component(Item(arrows))
-                    Game.objects.append(arrows)
+                    Game.entities.append(arrows)
                     arrows.send_to_back()
 
                 function = self.death_function
