@@ -32,7 +32,7 @@ class Fighter(Component):
             # check for death. if there's a death function, call it
             if self.hp <= 0:
                 # Drop arrows if necessary
-                if config.data.features.limitedArrows and self.owner.get_component(AI):  # It's a monster
+                if config.data.features.limitedArrows and self.owner.has_component(AI):  # It's a monster
                     num_arrows = config.data.enemies.arrowDropsOnKill
                     arrows = GameObject(self.owner.x, self.owner.y, '|',
                                         '{} arrows'.format(num_arrows), colors.brass, blocks=False)

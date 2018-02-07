@@ -27,7 +27,7 @@ def player_move_or_attack(dx, dy):
     # try to find an attackable object there
     Game.target = None
     for obj in Game.area_map.entities:
-        if obj.get_component(Fighter) and obj.x == x and obj.y == y:
+        if obj.has_component(Fighter) and obj.x == x and obj.y == y:
             Game.target = obj
             break
 
@@ -140,7 +140,7 @@ def handle_keys():
                                     Game.draw_bowsight = False
                                     is_cancelled = True
                                 elif event.char == 'f':
-                                    if Game.target and Game.target.get_component(Fighter):
+                                    if Game.target and Game.target.has_component(Fighter):
                                         is_critical = False
                                         damage_multiplier = config.data.weapons.arrowDamageMultiplier
                                         if config.data.features.bowCrits and randint(0,

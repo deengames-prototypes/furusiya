@@ -42,6 +42,9 @@ class GameObject:
         except KeyError:
             pass
 
+    def has_component(self, type_):
+        return self.get_component(type_) is not None
+
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked
         if Game.area_map.is_walkable(self.x + dx, self.y + dy):

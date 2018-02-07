@@ -43,7 +43,7 @@ def subcomp2():
 
 
 def test_basic(obj, comp):
-    assert obj.get_component(comp) is None
+    assert not obj.has_component(comp)
 
     c_instance = comp()
     obj.set_component(c_instance)
@@ -52,7 +52,7 @@ def test_basic(obj, comp):
 
     obj.remove_component(comp)
 
-    assert obj.get_component(comp) is None
+    assert not obj.has_component(comp)
 
 
 def test_component_subclassed(obj, comp, subcomp1):
