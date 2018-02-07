@@ -36,7 +36,7 @@ class Hammer:
                 hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
-                    target.ai = StunnedMonster(target)
+                    target.set_component(StunnedMonster(target))
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.

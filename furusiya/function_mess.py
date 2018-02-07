@@ -8,6 +8,7 @@ import colors
 import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
+from model.components.ai.base import AI
 from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
 from model.factories import monster_factory, item_factory
@@ -620,7 +621,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    monster.ai = ConfusedMonster(monster)
+    monster.set_component(ConfusedMonster(monster))
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 
@@ -715,5 +716,6 @@ def play_game():
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
             for obj in Game.objects:
-                if obj.ai:
-                    obj.ai.take_turn()
+                obj_ai = obj.get_component(AI)
+                if obj_ai:
+                    obj_ai.take_turn()

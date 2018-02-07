@@ -18,9 +18,7 @@ def create_monster(data, x, y, colour, name):
             death_function=monster_death
         )
     )
-    
-    ai = BasicMonster(monster)
-    monster.ai = ai
-    monster.original_ai = ai
+
+    monster.set_component(BasicMonster(monster))
 
     return monster

@@ -7,6 +7,8 @@ class Item(Component):
     """
     an item that can be picked up and used.
     """
+    component_type = 'Item'
+
     def __init__(self, owner, use_function=None):
         super().__init__(owner)
         self.use_function = use_function

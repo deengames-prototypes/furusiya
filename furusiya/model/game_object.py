@@ -16,15 +16,13 @@ class GameObject:
         self.name = name
         self.blocks = blocks
 
-        self.ai = None
-
         self._components = {}
 
     def _get_type(self, type_):
         possible_matches = [
             k
             for k in self._components.keys()
-            if issubclass(k, type_)
+            if k == type_.component_type
         ]
 
         if len(possible_matches) == 0:
@@ -33,7 +31,7 @@ class GameObject:
             return possible_matches[0]
 
     def set_component(self, component):
-        self._components[type(component)] = component
+        self._components[component.component_type] = component
 
     def get_component(self, type_):
         return self._components.get(self._get_type(type_), None)

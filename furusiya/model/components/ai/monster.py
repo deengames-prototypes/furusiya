@@ -26,13 +26,22 @@ class BasicMonster(AI):
                 monster.get_component(Fighter).attack(Game.player)
 
 
-class StunnedMonster(AI):
+class TemporaryAI(AI):
+    """
+    Base class for temporary AI's.
+    """
+    def __init__(self, owner, num_turns):
+        super().__init__(owner)
+        self.original_ai = owner.get_component(AI)
+        self.num_turns = num_turns
+
+
+class StunnedMonster(TemporaryAI):
     """
     AI for a temporarily stunned monster (reverts to previous AI after a while).
     """
     def __init__(self, owner, num_turns=config.data.weapons.numTurnsStunned):
-        super().__init__(owner)
-        self.num_turns = num_turns
+        super().__init__(owner, num_turns)
 
     def take_turn(self):
         if self.num_turns > 0:  # still stunned ...
@@ -41,18 +50,17 @@ class StunnedMonster(AI):
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.ai = self.owner.original_ai
+            self.owner.set_component(self.original_ai)
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
             self.owner.char = self.owner.name[0]
 
 
-class ConfusedMonster(AI):
+class ConfusedMonster(TemporaryAI):
     """
     AI for a temporarily confused monster (reverts to previous AI after a while).
     """
     def __init__(self, owner, num_turns=CONFUSE_NUM_TURNS):
-        super().__init__(owner)
-        self.num_turns = num_turns
+        super().__init__(owner, num_turns)
 
     def take_turn(self):
         if self.num_turns > 0:  # still confused...
@@ -63,5 +71,5 @@ class ConfusedMonster(AI):
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.ai = self.owner.original_ai
+            self.owner.set_component(self.original_ai)
             message('The ' + self.owner.name + ' is no longer confused!', colors.red)
