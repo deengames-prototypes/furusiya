@@ -1,12 +1,15 @@
 from model.fighter import Fighter
 from model.ai import BasicMonster
-from model.gameobject import GameObject
+from model.game_object import GameObject
+from death_functions import monster_death
 
-def create_monster(data, x, y, colour, name, death_function):
+def create_monster(data, x, y, colour, name):
     fighter_component = Fighter(hp=data.health, defense=data.defense,
-        power=data.attack, xp=data.xp, death_function=death_function)
+        power=data.attack, xp=data.xp, death_function=monster_death)
 
     ai_component = BasicMonster()
 
-    monster = GameObject(x, y, name[0], name, colour, blocks=True, fighter=fighter_component, ai=ai_component)
+    monster = GameObject(x, y, name[0], name, colour, blocks=True,
+        fighter=fighter_component, ai=ai_component)
+
     return monster

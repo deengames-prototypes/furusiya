@@ -1,6 +1,6 @@
 import colors
 import config
-from model.gameobject import GameObject
+from model.game_object import GameObject
 from model.item import Item
 from main_interface import Game, message
 

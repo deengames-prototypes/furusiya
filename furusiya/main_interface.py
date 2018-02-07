@@ -4,8 +4,8 @@ import tdl
 
 import colors
 import file_watcher
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
-
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH
+from constants import MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
 
 class Game:
     root = None
@@ -16,6 +16,7 @@ class Game:
     visible_tiles = None
     draw_bowsight = None
     player = None
+    stallion = None
     my_map = None
     fov_recompute = None
     mouse_coord = None
@@ -123,13 +124,3 @@ def get_blocking_object_at(x, y):
             return obj
 
     return None
-
-
-def player_death(player):
-    # the game ended!
-    message('You died!', colors.red)
-    Game.game_state = 'dead'
-
-    # for added effect, transform the player into a corpse!
-    player.char = '%'
-    player.color = colors.dark_red

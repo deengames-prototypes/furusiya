@@ -21,5 +21,3 @@ def get(key):
         raise(Exception("There's no key called '{0}'. Keys: {1}".format(key, data.items())))
     else:
         return data[key]
-
-file_watcher.watch('config.json', lambda raw_json: load(raw_json))

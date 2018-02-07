@@ -2,11 +2,12 @@ import colors
 import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
-from model.ai import BasicMonster, ConfusedMonster
+from model.ai import ConfusedMonster
 from model.fighter import Fighter
-from model.gameobject import GameObject
+from model.game_object import GameObject
 from model.item import Item
-from model.player import Player
+from model.party.player import Player
+from model.party.stallion import Stallion
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
@@ -99,6 +100,10 @@ def _make_cave():
     player_pos = random.choice(floor_tiles)
     Game.player.x = player_pos[0]
     Game.player.y = player_pos[1]
+    # TODO: what if we spawned in a wall? :/
+    Game.stallion.x = Game.player.x + 1
+    Game.stallion.y = Game.player.y + 1
+    Game.objects.append(Game.stallion)
 
     # Create objects/monsters by creating random "rooms"
     target = randint(MAX_ROOMS // 2, MAX_ROOMS)
@@ -199,7 +204,7 @@ def place_objects(room):
                 data = config.data.enemies.tigerslash
                 colour = colors.orange
             
-            monster = monster_factory.create_monster(data, x, y, colour, name, monster_death)
+            monster = monster_factory.create_monster(data, x, y, colour, name)
             Game.objects.append(monster)
 
     # choose random number of items
@@ -343,7 +348,9 @@ def render_all():
                 Game.con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
             else:
                 obj.draw()
+    
     Game.player.draw()
+    Game.stallion.draw()
 
     # blit the contents of "Game.con" to the root console and present it
     Game.root.blit(Game.con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
@@ -512,22 +519,6 @@ def handle_keys():
 
             return 'didnt-take-turn'
 
-
-def monster_death(monster):
-    # transform it into a nasty corpse! it doesn't block, can't be
-    # attacked and doesn't move
-    message(monster.name.capitalize() + ' is dead!', colors.orange)
-    monster.char = '%'
-    monster.color = colors.dark_red
-    monster.blocks = False
-    Game.player.gain_xp(monster.fighter.xp)
-    monster.fighter = None
-    monster.ai = None
-    monster.original_ai = None
-    monster.name = "{} remains".format(monster.name)
-    monster.send_to_back()
-
-
 def target_tile(max_range=None):
     # return the position of a tile left-clicked in player's FOV (optionally in
     # a range), or (None,None) if right-clicked.
@@ -672,6 +663,7 @@ def load_game():
 def new_game():
 
     Game.player = Player()
+    Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
     make_map()

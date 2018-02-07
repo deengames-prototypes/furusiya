@@ -15,7 +15,7 @@ is_running = {"run": True}
 
 def watch(filename_to_watch, callback):
     if not os.path.isfile(filename_to_watch):
-        raise (Exception("{0} doesn't exist".format(filename_to_watch)))
+        raise (Exception("{} doesn't exist in {}".format(filename_to_watch, os.getcwd())))
 
     w = Watch(filename_to_watch, callback)
     t = Timer(1, check_and_notify, [w])  # trigger after 1s
