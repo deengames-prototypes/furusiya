@@ -107,19 +107,6 @@ def message(new_msg, color=colors.white):
         Game.game_msgs.append((line, color))
 
 
-def is_blocked(x, y):
-    # first test the map tile
-    if not Game.area_map.tiles[x][y].is_walkable:
-        return True
-
-    # now check for any blocking objects
-    for obj in Game.area_map.entities:
-        if obj.blocks and obj.x == x and obj.y == y:
-            return True
-
-    return False
-
-
 def get_blocking_object_at(x, y):
     for obj in Game.area_map.entities:
         if obj.blocks and obj.x == x and obj.y == y:

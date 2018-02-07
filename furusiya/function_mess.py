@@ -7,7 +7,7 @@ import tdl
 import colors
 import config
 from constants import *
-from main_interface import Game, menu, message, is_blocked
+from main_interface import Game, menu, message
 from model.components.ai.base import AI
 from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
@@ -192,7 +192,7 @@ def place_objects(room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         # only place it if the tile is not blocked
-        if not is_blocked(x, y):
+        if Game.area_map.is_walkable(x, y):
             choice = randint(0, 100)
             if choice <= 55:  # 55%
                 name = 'bushslime'
@@ -219,7 +219,7 @@ def place_objects(room):
         y = randint(room.y1 + 1, room.y2 - 1)
 
         # only place it if the tile is not blocked
-        if not is_blocked(x, y):
+        if Game.area_map.is_walkable(x, y):
             dice = randint(0, 100)
             if dice < 70:
                 # create a healing potion (70% chance)

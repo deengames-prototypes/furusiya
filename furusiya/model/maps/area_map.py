@@ -24,7 +24,7 @@ class AreaMap:
                 and len([
                             e
                             for e in self.entities
-                            if e.x == x and e.y == y
+                            if e.x == x and e.y == y and e.blocks
                         ]) == 0)
 
     def place_on_random_ground(self, entity):
