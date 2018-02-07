@@ -32,7 +32,8 @@ class Fighter(Component):
                 if config.data.features.limitedArrows and self.owner.ai:  # It's a monster
                     num_arrows = config.data.enemies.arrowDropsOnKill
                     arrows = GameObject(self.owner.x, self.owner.y, '|',
-                                        '{} arrows'.format(num_arrows), colors.brass, blocks=False, item=Item())
+                                        '{} arrows'.format(num_arrows), colors.brass, blocks=False)
+                    arrows.item = Item(arrows)
                     Game.objects.append(arrows)
                     arrows.send_to_back()
 

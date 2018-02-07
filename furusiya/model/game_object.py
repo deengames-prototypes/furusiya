@@ -8,7 +8,7 @@ class GameObject:
     this is a generic object: the player, a monster, an item, the stairs...
     it's always represented by a character on screen.
     """
-    def __init__(self, x, y, char, name, color, blocks=False, item=None):
+    def __init__(self, x, y, char, name, color, blocks=False):
         self.x = x
         self.y = y
         self.char = char
@@ -18,12 +18,9 @@ class GameObject:
 
         self.fighter = None
         self.ai = None
+        self.item = None
 
         self._components = {}
-
-        self.item = item
-        if self.item:  # let the Item component know who owns it
-            self.item.owner = self
 
     def _get_type(self, type_):
         possible_matches = [

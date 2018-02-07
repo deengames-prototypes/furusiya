@@ -1,8 +1,15 @@
+import random
+import shelve
+from random import randint
+
+import tdl
+
 import colors
 import config
 from constants import *
 from main_interface import Game, menu, message, is_blocked
 from model.components.ai.monster import ConfusedMonster
+from model.factories import monster_factory, item_factory
 from model.game_object import GameObject
 from model.item import Item
 from model.party.player import Player
@@ -10,11 +17,6 @@ from model.party.stallion import Stallion
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
-from model.monsters import monster_factory
-from random import randint
-import random
-import shelve
-import tdl
 
 
 def create_room(room):
@@ -220,31 +222,33 @@ def place_objects(room):
             dice = randint(0, 100)
             if dice < 70:
                 # create a healing potion (70% chance)
-                item_component = Item(use_function=cast_heal)
-
-                item = GameObject(x, y, '!', 'healing potion',
-                                  colors.violet, item=item_component)
+                char = '!'
+                name = 'healing potion'
+                color = colors.violet
+                use_func = cast_heal
 
             elif dice < 70 + 10:
                 # create a lightning bolt scroll (15% chance)
-                item_component = Item(use_function=cast_lightning)
-
-                item = GameObject(x, y, '#', 'scroll of lightning bolt',
-                                  colors.light_yellow, item=item_component)
+                char = '#'
+                name = 'scroll of lightning bolt'
+                color = colors.light_yellow
+                use_func = cast_lightning
 
             elif dice < 70 + 10 + 10:
                 # create a fireball scroll (10% chance)
-                item_component = Item(use_function=cast_fireball)
-
-                item = GameObject(x, y, '#', 'scroll of fireball',
-                                  colors.light_yellow, item=item_component)
+                char = '#'
+                name = 'scroll of fireball'
+                color = colors.light_yellow
+                use_func = cast_fireball
 
             else:
                 # create a confuse scroll (15% chance)
-                item_component = Item(use_function=cast_confuse)
+                char = '#'
+                name = 'scroll of confusion'
+                color = colors.light_yellow
+                use_func = cast_confuse
 
-                item = GameObject(x, y, '#', 'scroll of confusion',
-                                  colors.light_yellow, item=item_component)
+            item = item_factory.create_item(x, y, char, name, color, use_func)
 
             Game.objects.append(item)
             item.send_to_back()  # items appear below other objects
