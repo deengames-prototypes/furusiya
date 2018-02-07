@@ -1,24 +1,23 @@
 import colors
 import config
-from main_interface import Game, message, player_death
-from model.gameobject import GameObject
+from death_functions import player_death
+from main_interface import Game, message
 from model.fighter import Fighter
+from model.gameobject import GameObject
 import model.weapons
-
 
 class Player(GameObject):
     def __init__(self):
         data = config.data.player
         super(Player, self).__init__(0, 0, '@', 'player', colors.white,
-                                     blocks=True,
-                                     fighter=Fighter(hp=data.startingHealth,
-                                                     defense=data.startingDefense, power=data.startingPower, xp=0,
-                                                     weapon=None, death_function=player_death))
+            blocks=True,
+            fighter=Fighter(hp=data.startingHealth,
+                            defense=data.startingDefense, power=data.startingPower, xp=0,
+                            weapon=None, death_function=player_death))
 
         Game.draw_bowsight = False
 
-        # Eval is evil if misused. Here, the config tells me the constructor
-        # method to call to create my weapon. Don't try this in prod, folks.
+        # Turn a name like "Sword" into the actual class instance
         weapon_name = data.startingWeapon
         initializer = getattr(model.weapons, weapon_name)
         self.fighter.weapon = initializer(self)  # __init__(owner)

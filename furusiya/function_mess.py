@@ -199,7 +199,7 @@ def place_objects(room):
                 data = config.data.enemies.tigerslash
                 colour = colors.orange
             
-            monster = monster_factory.create_monster(data, x, y, colour, name, monster_death)
+            monster = monster_factory.create_monster(data, x, y, colour, name)
             Game.objects.append(monster)
 
     # choose random number of items
@@ -511,22 +511,6 @@ def handle_keys():
                                         return ""
 
             return 'didnt-take-turn'
-
-
-def monster_death(monster):
-    # transform it into a nasty corpse! it doesn't block, can't be
-    # attacked and doesn't move
-    message(monster.name.capitalize() + ' is dead!', colors.orange)
-    monster.char = '%'
-    monster.color = colors.dark_red
-    monster.blocks = False
-    Game.player.gain_xp(monster.fighter.xp)
-    monster.fighter = None
-    monster.ai = None
-    monster.original_ai = None
-    monster.name = "{} remains".format(monster.name)
-    monster.send_to_back()
-
 
 def target_tile(max_range=None):
     # return the position of a tile left-clicked in player's FOV (optionally in
