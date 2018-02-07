@@ -9,15 +9,17 @@ import config
 from constants import *
 from main_interface import Game, menu, message
 from model.components.ai.base import AI
-from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
-from model.factories import monster_factory, item_factory
+from model.factories import monster_factory
 from model.item import Item
+from model.maps.area_map import AreaMap
+from model.maps.generators.forest_generator import ForestGenerator
 from model.party.player import Player
 from model.party.stallion import Stallion
 from model.rect import Rect
 from model.tile import Tile
 from model.weapons import Bow
+from view.renderer import render_all
 
 
 def create_room(room):
@@ -39,20 +41,6 @@ def create_v_tunnel(y1, y2, x):
     for y in range(min(y1, y2), max(y1, y2) + 1):
         Game.area_map.tiles[x][y].is_walkable = True
         Game.area_map.tiles[x][y].block_sight = False
-
-
-def is_visible_tile(x, y):
-
-    if x >= MAP_WIDTH or x < 0:
-        return False
-    elif y >= MAP_HEIGHT or y < 0:
-        return False
-    elif not Game.area_map.tiles[x][y].is_walkable:
-        return False
-    elif Game.area_map.tiles[x][y].block_sight:
-        return False
-    else:
-        return True
 
 
 def make_map():
@@ -224,33 +212,33 @@ def place_objects(room):
                 char = '!'
                 name = 'healing potion'
                 color = colors.violet
-                use_func = cast_heal
+                # use_func = cast_heal
 
             elif dice < 70 + 10:
                 # create a lightning bolt scroll (15% chance)
                 char = '#'
                 name = 'scroll of lightning bolt'
                 color = colors.light_yellow
-                use_func = cast_lightning
+                # use_func = cast_lightning
 
             elif dice < 70 + 10 + 10:
                 # create a fireball scroll (10% chance)
                 char = '#'
                 name = 'scroll of fireball'
                 color = colors.light_yellow
-                use_func = cast_fireball
+                # use_func = cast_fireball
 
             else:
                 # create a confuse scroll (15% chance)
                 char = '#'
                 name = 'scroll of confusion'
                 color = colors.light_yellow
-                use_func = cast_confuse
+                # use_func = cast_confuse
 
-            item = item_factory.create_item(x, y, char, name, color, use_func)
+            # item = item_factory.create_item(x, y, char, name, color, use_func)
 
-            Game.area_map.entities.append(item)
-            item.send_to_back()  # items appear below other objects
+            # Game.area_map.entities.append(item)
+            # item.send_to_back()  # items appear below other objects
 
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
@@ -268,118 +256,6 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
     text = name + ': ' + str(value) + '/' + str(maximum)
     x_centered = x + (total_width - len(text)) // 2
     Game.panel.draw_str(x_centered, y, text, fg=colors.white, bg=None)
-
-
-def get_objects_under_mouse():
-    (x, y) = Game.mouse_coord
-
-    # create a list with the names of all objects at the mouse's coordinates and in FOV
-    stuff = [obj for obj in Game.area_map.entities
-             if obj.x == x and obj.y == y and (obj.x, obj.y) in Game.visible_tiles]
-
-    return stuff
-
-
-def get_names_under_mouse():
-    # create a list with the names of all objects at the mouse's coordinates and in FOV
-    names = [obj.name for obj in get_objects_under_mouse()]
-
-    names = ', '.join(names)  # join the names, separated by commas
-    return names.capitalize()
-
-
-def render_all():
-    if Game.fov_recompute:
-        Game.fov_recompute = False
-        Game.visible_tiles = tdl.map.quickFOV(Game.player.x, Game.player.y,
-                                              is_visible_tile,
-                                              fov=FOV_ALGO,
-                                              radius=config.data.player.lightRadius,
-                                              lightWalls=FOV_LIGHT_WALLS)
-
-        # go through all tiles, and set their background color according to the FOV
-        for y in range(MAP_HEIGHT):
-            for x in range(MAP_WIDTH):
-                visible = (x, y) in Game.visible_tiles
-                wall = Game.area_map.tiles[x][y].block_sight
-                if not visible:
-                    # if it's not visible right now, the player can only see it
-                    # if it's explored
-                    if Game.area_map.tiles[x][y].is_explored:
-                        if wall:
-                            Game.con.draw_char(x, y, '#', fg=color_dark_wall)
-                        else:
-                            Game.con.draw_char(x, y, '.', fg=color_dark_ground)
-                elif not Game.draw_bowsight:
-                    if wall:
-                        Game.con.draw_char(x, y, '#', fg=color_light_wall)
-                    else:
-                        Game.con.draw_char(x, y, '.', fg=color_light_ground)
-                    # since it's visible, explore it
-                    Game.area_map.tiles[x][y].is_explored = True
-
-    if Game.draw_bowsight:
-        # Horrible, terrible, crazy hack. Can't figure out why visible tiles
-        # just never seem to redraw as '.' or '#' on top of bow rays.
-        for (x, y) in Game.visible_tiles:
-            char = '#' if Game.area_map.tiles[x][y].block_sight else '.'
-            Game.con.draw_char(x, y, char, fg=color_light_ground)
-
-        if Game.auto_target:
-            Game.target = closest_monster(config.data.player.lightRadius)
-            x2, y2 = (Game.target.x, Game.target.y) if Game.target is not None else Game.mouse_coord
-        else:
-            Game.target = None
-            x2, y2 = Game.mouse_coord
-        x1, y1 = Game.player.x, Game.player.y
-        line = tdl.map.bresenham(x1, y1, x2, y2)
-        for pos in line:
-            Game.con.draw_char(pos[0], pos[1], '*', colors.dark_green, bg=None)
-        tdl.flush()
-
-        # Undo drawing tiles outside sight
-        for pos in line:
-            if not pos in Game.visible_tiles:
-                Game.con.draw_char(pos[0], pos[1], '#', colors.black)
-
-    # draw all objects in the list
-    for obj in Game.area_map.entities:
-        if obj != Game.player:
-            if Game.draw_bowsight and (obj.x, obj.y) in Game.visible_tiles and \
-                            (obj.x, obj.y) == (x2, y2) and obj.get_component(Fighter) is not None:
-                Game.target = obj
-                Game.con.draw_char(obj.x, obj.y, 'X', fg=colors.red)
-            else:
-                obj.draw()
-    
-    Game.player.draw()
-    Game.stallion.draw()
-
-    # blit the contents of "Game.con" to the root console and present it
-    Game.root.blit(Game.con, 0, 0, MAP_WIDTH, MAP_HEIGHT, 0, 0)
-
-    # prepare to render the GUI Game.panel
-    Game.panel.clear(fg=colors.white, bg=colors.black)
-
-    # print the game messages, one line at a time
-    y = 1
-    for (line, color) in Game.game_msgs:
-        Game.panel.draw_str(MSG_X, y, line, bg=None, fg=color)
-        y += 1
-
-    # show the player's stats
-    player_fighter = Game.player.get_component(Fighter)
-    Game.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
-    # render_bar(1, 1, BAR_WIDTH, 'HP', player.fighter.hp, player.fighter.max_hp,
-    #     colors.light_red, colors.darker_red)
-
-    # display names of objects under the mouse
-    Game.panel.draw_str(1, 0, get_names_under_mouse(), bg=None, fg=colors.light_gray)
-
-    # blit the contents of "Game.panel" to the root console
-    Game.root.blit(Game.panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
-
-    tdl.flush()
 
 
 def player_move_or_attack(dx, dy):
@@ -526,125 +402,6 @@ def handle_keys():
             return 'didnt-take-turn'
 
 
-def target_tile(max_range=None):
-    # return the position of a tile left-clicked in player's FOV (optionally in
-    # a range), or (None,None) if right-clicked.
-    while True:
-        # render the screen. this erases the inventory and shows the names of
-        # objects under the mouse.
-        tdl.flush()
-
-        clicked = False
-        for event in tdl.event.get():
-            if event.type == 'MOUSEMOTION':
-                Game.mouse_coord = event.cell
-            if event.type == 'MOUSEDOWN' and event.button == 'LEFT':
-                clicked = True
-            elif ((event.type == 'MOUSEDOWN' and event.button == 'RIGHT') or
-                  (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
-                return None, None
-        render_all()
-
-        # accept the target if the player clicked in FOV, and in case a range is
-        # specified, if it's in that range
-        x = Game.mouse_coord[0]
-        y = Game.mouse_coord[1]
-        if (clicked and Game.mouse_coord in Game.visible_tiles and
-                (max_range is None or Game.player.distance(x, y) <= max_range)):
-            return Game.mouse_coord
-
-
-def target_monster(max_range=None):
-    # returns a clicked monster inside FOV up to a range, or None if right-clicked
-    while True:
-        (x, y) = target_tile(max_range)
-        if x is None:  # player cancelled
-            return None
-
-        # return the first clicked monster, otherwise continue looping
-        for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
-                return obj
-
-
-def closest_monster(max_range):
-    # find closest enemy, up to a maximum range, and in the player's FOV
-    closest_enemy = None
-    closest_dist = max_range + 1  # start with (slightly more than) maximum range
-
-    for obj in Game.area_map.entities:
-        if obj.get_component(Fighter) and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
-            # calculate distance between this object and the player
-            dist = Game.player.distance_to(obj)
-            if dist < closest_dist:  # it's closer, so remember it
-                closest_enemy = obj
-                closest_dist = dist
-    return closest_enemy
-
-
-def cast_heal():
-    # heal the player
-    player_fighter = Game.player.get_component(Fighter)
-    if player_fighter.hp == player_fighter.max_hp:
-        message('You are already at full health.', colors.red)
-        return 'cancelled'
-
-    message('Your wounds start to feel better!', colors.light_violet)
-    player_fighter.heal(HEAL_AMOUNT)
-
-
-def cast_lightning():
-    # find closest enemy (inside a maximum range) and damage it
-    monster = closest_monster(LIGHTNING_RANGE)
-    if monster is None:  # no enemy found within maximum range
-        message('No enemy is close enough to strike.', colors.red)
-        return 'cancelled'
-
-    # zap it!
-    message('A lighting bolt strikes the ' + monster.name + ' with a loud ' +
-            'thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.',
-            colors.light_blue)
-
-    monster.get_component(Fighter).take_damage(LIGHTNING_DAMAGE)
-
-
-def cast_confuse():
-    # ask the player for a target to confuse
-    message('Left-click an enemy to confuse it, or right-click to cancel.',
-            colors.light_cyan)
-    monster = target_monster(CONFUSE_RANGE)
-    if monster is None:
-        message('Cancelled')
-        return 'cancelled'
-
-    # replace the monster's AI with a "confused" one; after some turns it will
-    # restore the old AI
-    monster.set_component(ConfusedMonster(monster))
-    message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
-            'stumble around!', colors.light_green)
-
-
-def cast_fireball():
-    # ask the player for a target tile to throw a fireball at
-    message('Left-click a target tile for the fireball, or right-click to ' +
-            'cancel.', colors.light_cyan)
-
-    (x, y) = target_tile()
-    if x is None:
-        message('Cancelled')
-        return 'cancelled'
-    message('The fireball explodes, burning everything within ' +
-            str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
-
-    for obj in Game.area_map.entities:  # damage every fighter in range, including the player
-        obj_fighter = obj.get_component(Fighter)
-        if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
-            message('The ' + obj.name + ' gets burned for ' +
-                    str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)
-
-            obj_fighter.take_damage(FIREBALL_DAMAGE)
-
-
 def save_game():
     # open a new empty shelve (possibly overwriting an old one) to write the game data
     with shelve.open('savegame', 'n') as savefile:
@@ -672,11 +429,18 @@ def load_game():
 
 def new_game():
 
+    Game.area_map = AreaMap(SCREEN_WIDTH, SCREEN_HEIGHT)
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
-    _make_cave()
+    ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT, Game.area_map)
+
+    Game.area_map.place_on_random_ground(Game.player)
+    # TODO: what if we spawned in a wall? :/
+    Game.stallion.x = Game.player.x + 1
+    Game.stallion.y = Game.player.y + 1
+    Game.area_map.entities.append(Game.stallion)
 
     Game.game_state = 'playing'
     Game.inventory = []

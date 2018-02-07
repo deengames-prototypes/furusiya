@@ -1,8 +1,15 @@
-from model.game_object import GameObject
-from legacy.entities.monster import Monster
-from legacy.components.walkers.random_walker import RandomWalker
+from attrdict import AttrDict
+
+import colors
+import config
+from constants import MAX_ROOMS, ROOM_MAX_SIZE, ROOM_MIN_SIZE, MAX_ROOM_MONSTERS, MAX_ROOM_ITEMS
+from model.components.walkers.random_walker import RandomWalker
 import math
-import random
+from random import randint, choice
+
+from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
+from model.rect import Rect
+from model.factories import monster_factory, item_factory
 
 
 class ForestGenerator:
@@ -27,7 +34,7 @@ class ForestGenerator:
         self._height = height
         self._area_map = area_map
         self._generate_trees()
-        self._generate_monsters()
+        self._generate_objects()
 
     def _generate_trees(self):
         for x in range(0, self._area_map.width):
@@ -65,14 +72,20 @@ class ForestGenerator:
                 explored.append(position)
                 # Check each adjacent tile. If it's on-map, walkable, and not queued/explored,
                 # then it's a candidate for an unwalkable tile.
-                if x > 0 and map_tiles[x - 1][y].is_walkable and (x - 1, y) not in queue and (x - 1, y) not in explored:
-                    queue.append((x - 1, y))
-                if x < self._width - 1 and map_tiles[x + 1][y].is_walkable and (x + 1, y) not in queue and (x + 1, y) not in explored:
-                    queue.append((x + 1, y))
-                if y > 0 and map_tiles[x][y - 1].is_walkable and (x, y - 1) not in queue and (x, y - 1) not in explored:
-                    queue.append((x, y - 1))
-                if y < self._height - 1 and map_tiles[x][y + 1].is_walkable and (x, y + 1) not in queue and (x, y + 1) not in explored:
-                    queue.append((x, y + 1))
+
+                def append_if_eligible(to_append):
+                    tile = map_tiles[to_append[0]][to_append[1]]
+                    if tile.is_walkable and to_append not in queue + explored:
+                        queue.append(to_append)
+
+                if x > 0:
+                    append_if_eligible((x - 1, y))
+                if x < self._width - 1:
+                    append_if_eligible((x + 1, y))
+                if y > 0:
+                    append_if_eligible((x, y - 1))
+                if y < self._height - 1:
+                    append_if_eligible((x, y + 1))
 
         return explored
 
@@ -99,13 +112,16 @@ class ForestGenerator:
         within a copse of trees as an enclosed area. If we're wrong ... well.
         I suppose you can always exit and re-enter the dungeon if that happens.
         """
+        def is_empty_3x3(x, y):
+            cond = True
+            for x_ in range(x - 1, x + 2):
+                for y_ in range(y - 1, y + 2):
+                    cond = cond and map_tiles[x_][y_].is_walkable
+            return cond
+
         for x in range(1, self._width - 1):
             for y in range(1, self._height - 1):
-                if map_tiles[x][y].is_walkable and map_tiles[x - 1][y].is_walkable and \
-                        map_tiles[x + 1][y].is_walkable and map_tiles[x][y - 1].is_walkable and \
-                        map_tiles[x][y + 1].is_walkable and \
-                        map_tiles[x - 1][y - 1].is_walkable and map_tiles[x + 1][y - 1].is_walkable and \
-                        map_tiles[x - 1][y + 1].is_walkable and map_tiles[x + 1][y + 1].is_walkable:
+                if is_empty_3x3(x, y):
                     return x, y
 
         raise Exception("Can't find any empty ground with empty adjacent tiles!")
@@ -117,11 +133,7 @@ class ForestGenerator:
         the number of tiles we have to walk.
         Repeat until num_tiles is 0
         """
-        x = random.randint(0, self._width - 1)
-        y = random.randint(0, self._height - 1)
-
-        # This smells. We need a dummy entity.
-        e = GameObject(x, y, None, None, None)
+        e = AttrDict({'x': (randint(0, self._width - 1)), 'y': (randint(0, self._height - 1))})
         walker = RandomWalker(self._area_map, e)
 
         while num_tiles > 0:
@@ -131,39 +143,114 @@ class ForestGenerator:
                 num_tiles -= 1
             except ValueError as no_walkable_adjacents_error:
                 # While loop will not terminate, we'll try elsewhere
-                # Randomly move, even if there's a tree there. 
-                e.x += random.randint(-1, 1)
-                e.y += random.randint(-1, 1)
+                # Randomly move, even if there's a tree there.
+                dx = randint(-1, 1)
+                dy = randint(-1, 1) if dx == 0 else 0
+
+                e.x += dx
+                e.y += dy
 
     def _convert_to_ground(self, map_tile):
         map_tile.is_walkable = True
+        map_tile.block_sight = False
         map_tile.character = ForestGenerator.GROUND_CHARACTER
         map_tile.colour = ForestGenerator.GROUND_COLOUR
 
     def _convert_to_tree(self, map_tile):
         map_tile.is_walkable = False
+        map_tile.block_sight = True
         map_tile.character = ForestGenerator.TREE_CHARACTER
-        map_tile.colour = random.choice(ForestGenerator.TREE_COLOURS)
+        map_tile.colour = choice(ForestGenerator.TREE_COLOURS)
 
-    def _generate_monsters(self):
-        min_monsters, max_monsters = ForestGenerator.NUM_MONSTERS
-        num_monsters = random.randint(min_monsters, max_monsters)
-
-        while num_monsters > 0:
-            (x, y) = self._find_empty_tile()
-            monster_name = random.choice(ForestGenerator.MONSTERS)
-
-            data = Monster.ALL_MONSTERS[monster_name]
-            m = Monster(data[0], data[1], self._area_map)  # character/colour
-            m.x = x
-            m.y = y
-            self._area_map.entities.append(m)
-            num_monsters -= 1
+    def _generate_objects(self):
+        target = randint(MAX_ROOMS // 2, MAX_ROOMS)
+        while target:
+            x = randint(0, self._area_map.width - ROOM_MAX_SIZE)
+            y = randint(0, self._area_map.width - ROOM_MAX_SIZE)
+            w = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+            h = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
+            room = Rect(x, y, w, h)
+            self._generate_monsters_in(room)
+            self._generate_items_in(room)
+            target -= 1
 
     def _find_empty_tile(self):
         while True:
-            x = random.randint(0, self._area_map.width - 1)
-            y = random.randint(0, self._area_map.height - 1)
+            x = randint(0, self._area_map.width - 1)
+            y = randint(0, self._area_map.height - 1)
             if self._area_map.tiles[x][y].is_walkable:
                 break
         return x, y
+
+    def _generate_monsters_in(self, room):
+        # choose random number of monsters
+        num_monsters = randint(0, MAX_ROOM_MONSTERS)
+
+        for i in range(num_monsters):
+            # choose random spot for this monster
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+
+            # only place it if the tile is not blocked
+            if self._area_map.is_walkable(x, y):
+                choice = randint(0, 100)
+                if choice <= 55:  # 55%
+                    name = 'bushslime'
+                    data = config.data.enemies.bushslime
+                    colour = colors.desaturated_green
+                elif choice <= 85:  # 30%
+                    name = 'steelhawk'
+                    data = config.data.enemies.steelhawk
+                    colour = colors.light_blue
+                else:  # 15%
+                    name = 'tigerslash'
+                    data = config.data.enemies.tigerslash
+                    colour = colors.orange
+
+                monster = monster_factory.create_monster(data, x, y, colour, name)
+                self._area_map.entities.append(monster)
+
+    def _generate_items_in(self, room):
+        # choose random number of items
+        num_items = randint(0, MAX_ROOM_ITEMS)
+
+        for i in range(num_items):
+            # choose random spot for this item
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+
+            # only place it if the tile is not blocked
+            if self._area_map.is_walkable(x, y):
+                dice = randint(0, 100)
+                if dice < 70:
+                    # create a healing potion (70% chance)
+                    char = '!'
+                    name = 'healing potion'
+                    color = colors.violet
+                    use_func = cast_heal
+
+                elif dice < 70 + 10:
+                    # create a lightning bolt scroll (15% chance)
+                    char = '#'
+                    name = 'scroll of lightning bolt'
+                    color = colors.light_yellow
+                    use_func = cast_lightning
+
+                elif dice < 70 + 10 + 10:
+                    # create a fireball scroll (10% chance)
+                    char = '#'
+                    name = 'scroll of fireball'
+                    color = colors.light_yellow
+                    use_func = cast_fireball
+
+                else:
+                    # create a confuse scroll (15% chance)
+                    char = '#'
+                    name = 'scroll of confusion'
+                    color = colors.light_yellow
+                    use_func = cast_confuse
+
+                item = item_factory.create_item(x, y, char, name, color, use_func)
+
+                self._area_map.entities.append(item)
+                item.send_to_back()  # items appear below other objects

@@ -1,7 +1,6 @@
 from attrdict import AttrDict
 import json
 import re
-import file_watcher
 
 # Global key/value pairs intended as global config. Reloads automatically.
 

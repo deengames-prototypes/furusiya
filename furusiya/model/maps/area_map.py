@@ -2,7 +2,7 @@ import random
 
 
 class AreaMap:
-    def __init__(self, width, height):
+    def __init__(self, width, height, walkable=False):
         self.tiles = []
         self.entities = []
         self.width = width
@@ -12,7 +12,7 @@ class AreaMap:
         for x in range(0, self.width):
             self.tiles.append([])
             for y in range(0, self.height):
-                self.tiles[x].append(MapTile())
+                self.tiles[x].append(MapTile(walkable))
 
     def is_on_map(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
@@ -23,7 +23,7 @@ class AreaMap:
                 and len([
                             e
                             for e in self.entities
-                            if e.x == x and e.y == y and e.blocks
+                            if e.x == x and e.y == y and getattr(e, 'blocks', True)
                         ]) == 0)
 
     def place_on_random_ground(self, entity):

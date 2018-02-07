@@ -25,7 +25,7 @@ class Game:
     game_msgs = []
     game_state = None
 
-    area_map = AreaMap(SCREEN_WIDTH, SCREEN_HEIGHT)
+    area_map: AreaMap = None
 
     @classmethod
     def run(cls, to_run):

@@ -1,5 +1,6 @@
 import unittest
 
+from main_interface import Game
 from model.game_object import GameObject
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator
@@ -8,16 +9,16 @@ from model.maps.generators.forest_generator import ForestGenerator
 class TestMap(unittest.TestCase):
     def test_place_on_random_ground_places_entity_on_random_ground(self):
         width, height = (10, 10)
-        basic_map = AreaMap(width, height)        
-        fg = ForestGenerator(width, height, basic_map)
+        Game.area_map = AreaMap(width, height)
+        fg = ForestGenerator(width, height, Game.area_map)
 
         e = GameObject(0, 0, 'a', 'test', (255, 0, 0))
-        basic_map.place_on_random_ground(e)
+        Game.area_map.place_on_random_ground(e)
         
-        self.assertEqual(basic_map.tiles[e.x][e.y].is_walkable, True)
+        self.assertEqual(Game.area_map.tiles[e.x][e.y].is_walkable, True)
 
     def test_is_walkable_returns_true_for_empty_ground_within_bounds(self):
-        basic_map = AreaMap(10, 10)
+        basic_map = AreaMap(10, 10, walkable=True)
         basic_map.tiles[0][0].is_walkable = False
 
         self.assertFalse(basic_map.is_walkable(0, 0))
@@ -29,7 +30,7 @@ class TestMap(unittest.TestCase):
         self.assertFalse(basic_map.is_walkable(3, 77))
 
     def test_is_walkable_returns_false_if_entity_is_there(self):
-        basic_map = AreaMap(10, 10)
-        e = GameObject(0, 0, '@', 'player', (0, 0, 0))
+        basic_map = AreaMap(10, 10, walkable=True)
+        e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
         basic_map.place_on_random_ground(e)
         self.assertFalse(basic_map.is_walkable(e.x, e.y))
