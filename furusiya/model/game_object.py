@@ -36,7 +36,7 @@ class GameObject:
     def get_component(self, type_):
         return self._components.get(self._get_type(type_), None)
 
-    def del_component(self, type_):
+    def remove_component(self, type_):
         try:
             del self._components[self._get_type(type_)]
         except KeyError:

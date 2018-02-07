@@ -50,7 +50,7 @@ def test_basic(obj, comp):
 
     assert obj.get_component(comp) is c_instance
 
-    obj.del_component(comp)
+    obj.remove_component(comp)
 
     assert obj.get_component(comp) is None
 
