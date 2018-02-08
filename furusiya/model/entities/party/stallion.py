@@ -1,11 +1,11 @@
 import colors
 from model.components.ai.stallion import StallionAi
-from model.entities.game_object import GameObject
+from model.entities.npc import NPC
 
 
-class Stallion(GameObject):
+class Stallion(NPC):
     def __init__(self, player):
         super().__init__(0, 0, '=', 'stallion', color=colors.sepia, blocks=True)
 
-        self.set_component(StallionAi(self))
+        self.set_ai(StallionAi(self))
         self.player = player
