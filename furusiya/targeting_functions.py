@@ -6,7 +6,9 @@ from view.renderer import render_all
 
 
 def target_monster(max_range=None):
-    # returns a clicked monster inside FOV up to a range, or None if right-clicked
+    """
+    returns a clicked monster inside FOV up to a range, or None if right-clicked
+    """
     while True:
         (x, y) = target_tile(max_range)
         if x is None:  # player cancelled
@@ -19,8 +21,10 @@ def target_monster(max_range=None):
 
 
 def target_tile(max_range=None):
-    # return the position of a tile left-clicked in player's FOV (optionally in
-    # a range), or (None,None) if right-clicked.
+    """
+    return the position of a tile left-clicked in player's FOV (optionally in a range),
+    or (None, None) if right-clicked.
+    """
     while True:
         # render the screen. this erases the inventory and shows the names of
         # objects under the mouse.
