@@ -15,9 +15,9 @@ class RandomWalker:
         ]
         random.shuffle(adjacent_tiles)
 
-        for x_, y_ in adjacent_tiles:
-            if self.area_map.is_walkable(x_, y_):
-                self.parent.x, self.parent.y = x_, y_
+        for tile_x, tile_y in adjacent_tiles:
+            if self.area_map.is_walkable(tile_x, tile_y):
+                self.parent.x, self.parent.y = tile_x, tile_y
                 return
 
         raise ValueError("There are no available adjacent locations")

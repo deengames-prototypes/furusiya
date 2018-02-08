@@ -11,11 +11,11 @@ class AITest(AI):
         super().__init__(owner)
 
 
-class AITest1(AITest):
+class StunnedAI(AITest):
     pass
 
 
-class AITest2(AITest):
+class WalkerAI(AITest):
     pass
 
 
@@ -25,23 +25,23 @@ def npc():
 
 
 @pytest.fixture
-def ai1():
-    yield AITest1
+def stunned_ai():
+    yield StunnedAI
 
 
 @pytest.fixture
-def ai2():
-    yield AITest2
+def walker_ai():
+    yield WalkerAI
 
 
-def test_replace_subcomponent(npc, ai1, ai2):
-    original = ai1()
+def test_replace_subcomponent(npc, stunned_ai, walker_ai):
+    original = stunned_ai()
     npc.set_ai(original)
-    assert npc.get_component(AI) == original
+    assert npc.get_component(stunned_ai) == original
 
-    replacer = ai2()
+    replacer = walker_ai()
     npc.set_ai(replacer)
 
-    assert npc.get_component(AI) == replacer
-    assert npc.get_component(AI) != original
+    assert npc.get_component(walker_ai) == replacer
+    assert npc.get_component(stunned_ai) != original
     assert len(npc._components) == 1

@@ -16,7 +16,11 @@ class NPC(GameObject):
         if not self.original_ai:
             self.original_ai = ai
 
-        ai_ls = self._get_components_of_type(AI)
+        ai_ls = [
+            k
+            for k in self._components.keys()
+            if issubclass(k, AI)
+        ]
         for k in ai_ls:
             self.remove_component(k)
 

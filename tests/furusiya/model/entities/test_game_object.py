@@ -57,7 +57,8 @@ def test_component_subclassed(obj, comp, subcomp1):
     subc_instance = subcomp1()
     obj.set_component(subc_instance)
 
-    assert obj.get_component(comp) is subc_instance
+    assert obj.get_component(comp) is not subc_instance
+    assert obj.get_component(subcomp1) is subc_instance
 
 
 def test_replace_component(obj, comp):
