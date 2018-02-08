@@ -14,11 +14,9 @@ class Game:
     con = None
     panel = None
     inventory = []
-    visible_tiles = None
     draw_bowsight = None
     player = None
     stallion = None
-    fov_recompute = None
     mouse_coord = None
     auto_target = None
     target = None
@@ -26,6 +24,7 @@ class Game:
     game_state = None
 
     area_map = None
+    renderer = None
 
     @classmethod
     def run(cls, to_run):

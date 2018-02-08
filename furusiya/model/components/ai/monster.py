@@ -15,7 +15,7 @@ class BasicMonster(AI):
     def take_turn(self):
         # a basic monster takes its turn. If you can see it, it can see you
         monster = self.owner
-        if (monster.x, monster.y) in Game.visible_tiles:
+        if (monster.x, monster.y) in Game.renderer.visible_tiles:
 
             # move towards player if far away
             if monster.distance_to(Game.player) >= 2:

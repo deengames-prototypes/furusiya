@@ -2,10 +2,11 @@ from attrdict import AttrDict
 
 import colors
 from model.config import config
-from constants import MAX_ROOMS, ROOM_MAX_SIZE, ROOM_MIN_SIZE, MAX_ROOM_MONSTERS, MAX_ROOM_ITEMS
+from constants import MAX_ROOMS, ROOM_MAX_SIZE, ROOM_MIN_SIZE, MAX_ROOM_MONSTERS, MAX_ROOM_ITEMS, GROUND_CHARACTER, \
+    TREE_CHARACTER, color_light_ground, color_light_wall, color_dark_ground, color_dark_wall
 from model.components.walkers.random_walker import RandomWalker
 import math
-from random import randint, choice
+from random import randint
 
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
 from model.rect import Rect
@@ -19,15 +20,6 @@ class ForestGenerator:
     """
     TREE_PERCENTAGE = 1 / 4  # This percent of the map area should be trees
     TREE_COPSE_SIZE = 5  # Create copses of N trees at a time
-    NUM_MONSTERS = (5, 8)  # min-max
-    MONSTERS = ["tiger"]
-
-    GROUND_CHARACTER = '.'
-    GROUND_COLOUR = (64, 48, 0)
-
-    TREE_CHARACTER = 'T'
-    TREE_COLOURS = [(64, 128, 0),
-                    (0, 64, 0)]
 
     def __init__(self, width, height, area_map):
         self._width = width
@@ -153,14 +145,16 @@ class ForestGenerator:
     def _convert_to_ground(self, map_tile):
         map_tile.is_walkable = True
         map_tile.block_sight = False
-        map_tile.character = ForestGenerator.GROUND_CHARACTER
-        map_tile.colour = ForestGenerator.GROUND_COLOUR
+        map_tile.character = GROUND_CHARACTER
+        map_tile.colour = color_light_ground
+        map_tile.dark_colour = color_dark_ground
 
     def _convert_to_tree(self, map_tile):
         map_tile.is_walkable = False
         map_tile.block_sight = True
-        map_tile.character = ForestGenerator.TREE_CHARACTER
-        map_tile.colour = choice(ForestGenerator.TREE_COLOURS)
+        map_tile.character = TREE_CHARACTER
+        map_tile.colour = color_light_wall
+        map_tile.dark_colour = color_dark_wall
 
     def _generate_objects(self):
         target = randint(MAX_ROOMS // 2, MAX_ROOMS)

@@ -6,7 +6,8 @@
         "knockBackDamagesOnCollision": true,
         "bowCrits": true,
         "bowCritsStack": true,
-        "limitedArrows": true   
+        "limitedArrows": true,
+        "seeAllTiles": false
     },
     "player": {
         "startingHealth": 30,
@@ -54,5 +55,6 @@
             "health": 10,
             "xp": 35
         }
-    }
+    },
+    "seed": 1  // null for a random seed
 }

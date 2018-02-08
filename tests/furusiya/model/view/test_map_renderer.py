@@ -1,25 +1,14 @@
 import unittest
 
-from legacy.entities.player import Player
-from legacy.io.config_watcher import ConfigWatcher
-from legacy.io.map_renderer import MapRenderer
-from legacy.io.adapters.tdl_adapter import TdlAdapter
-from legacy.maps.area_map import AreaMap
+from constants import FOV_ALGO, FOV_LIGHT_WALLS
+from model.entities.party.player import Player
+from view.map_renderer import MapRenderer
+from view.adapter.tdl_adapter import TdlAdapter
+from model.maps.area_map import AreaMap
 from unittest.mock import MagicMock
 
 
 class TestMapRenderer(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        # Initializes instances so prod code that uses it won't crash
-        config = ConfigWatcher()
-        
-    def test_fov_constants_are_reasonable(self):
-        self.assertEqual(MapRenderer.FOV_ALGORITHM, 'BASIC')
-        self.assertTrue(MapRenderer.SHOULD_LIGHT_WALLS)
-        self.assertGreaterEqual(MapRenderer.VIEW_RADIUS, 5)
-
     def test_render_marks_current_fov_as_explored(self):
         map_width = 10
         map_height = 10
@@ -81,5 +70,6 @@ class TestMapRenderer(unittest.TestCase):
         renderer.recompute_fov = True
         renderer.render()
 
-        tdl_adapter.calculate_fov.assert_called_with(player.x, player.y, map.is_walkable,
-            MapRenderer.FOV_ALGORITHM, light_radius, MapRenderer.SHOULD_LIGHT_WALLS)
+        tdl_adapter.calculate_fov.assert_called_with(
+            player.x, player.y, map.is_walkable, FOV_ALGO, light_radius, FOV_LIGHT_WALLS
+        )
