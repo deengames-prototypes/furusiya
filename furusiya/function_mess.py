@@ -13,6 +13,7 @@ from model.entities.npc import NPC
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator
+from model.maps.generators.dungeon_generator import DungeonGenerator
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.weapons import Bow
@@ -197,7 +198,7 @@ def new_game():
     Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
 
     # generate map (at this point it's not drawn to the screen)
-    ForestGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
+    DungeonGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/

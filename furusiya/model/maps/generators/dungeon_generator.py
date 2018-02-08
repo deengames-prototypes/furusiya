@@ -5,8 +5,9 @@ import random
 from attrdict import AttrDict
 
 import colors
+from constants import GROUND_CHARACTER, WALL_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall, color_light_wall
+from main_interface import Game
 from model.config import config
-from constants import GROUND_CHARACTER, WALL_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall
 from model.components.walkers.random_walker import RandomWalker
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
 from model.rect import Rect
@@ -39,7 +40,7 @@ class DungeonGenerator:
         # TODO: dry this block with forest generator
         for x in range(0, self._area_map.width):
             for y in range(0, self._area_map.height):
-                self._convert_to_ground(self._area_map.tiles[x][y])
+                self._convert_to_wall(self._area_map.tiles[x][y])
 
         rooms = []
         rooms_to_generate = random.randint(DungeonGenerator.NUM_ROOMS[0], DungeonGenerator.NUM_ROOMS[1])
@@ -66,7 +67,7 @@ class DungeonGenerator:
                 # this means there are no intersections, so this room is valid
 
                 # "paint" it to the map's tiles
-                create_room(new_room)
+                self._create_room(new_room)
                 rooms_to_generate -= 1
 
                 # center coordinates of new room, will be useful later
@@ -74,32 +75,42 @@ class DungeonGenerator:
 
                 if len(rooms) == 0:
                     # this is the first room, where the player starts at
-                    player.x = new_x
-                    player.y = new_y
+                    Game.player.x = new_x
+                    Game.player.y = new_y
 
                 else:
                     # all rooms after the first:
                     # connect it to the previous room with a tunnel
 
                     # center coordinates of previous room
-                    (prev_x, prev_y) = rooms[num_rooms - 1].center()
+                    (prev_x, prev_y) = rooms[len(rooms) - 1].center()
 
                     # draw a coin (random number that is either 0 or 1)
                     if randint(0, 1):
                         # first move horizontally, then vertically
-                        create_h_tunnel(prev_x, new_x, prev_y)
-                        create_v_tunnel(prev_y, new_y, new_x)
+                        self._create_h_tunnel(prev_x, new_x, prev_y)
+                        self._create_v_tunnel(prev_y, new_y, new_x)
                     else:
                         # first move vertically, then horizontally
-                        create_v_tunnel(prev_y, new_y, prev_x)
-                        create_h_tunnel(prev_x, new_x, new_y)
-
-                # add some contents to this room, such as monsters
-                place_objects(new_room)
+                        self._create_v_tunnel(prev_y, new_y, prev_x)
+                        self._create_h_tunnel(prev_x, new_x, new_y)
 
                 # finally, append the new room to the list
                 rooms.append(new_room)
-                num_rooms += 1
+
+    def _create_room(self, room):
+        for x in range(room.x1 + 1, room.x2):
+            for y in range(room.y1 + 1, room.y2):
+                self._convert_to_ground(self._area_map.tiles[x][y])
+
+    def _create_h_tunnel(self, x1, x2, y):
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            self._convert_to_ground(self._area_map.tiles[x][y])
+
+
+    def _create_v_tunnel(self, y1, y2, x):
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            self._convert_to_ground(self._area_map.tiles[x][y])
 
     # TODO: DRY with forest generator
     def _convert_to_ground(self, map_tile):
@@ -114,7 +125,7 @@ class DungeonGenerator:
         map_tile.is_walkable = False
         map_tile.block_sight = True
         map_tile.character = WALL_CHARACTER
-        map_tile.colour = random.choice(WALL_CHARACTER)
+        map_tile.colour = color_light_wall
         map_tile.dark_colour = color_dark_wall
 
     # TODO: DRY with forest generator
@@ -133,7 +144,7 @@ class DungeonGenerator:
 
     def _generate_monsters(self):
         # choose random number of monsters
-        num_monsters = randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1])
+        num_monsters = randint(DungeonGenerator.NUM_MONSTERS[0], DungeonGenerator.NUM_MONSTERS[1])
 
         for i in range(num_monsters):
             # choose random spot for this monster

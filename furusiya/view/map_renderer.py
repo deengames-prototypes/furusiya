@@ -53,6 +53,7 @@ class MapRenderer:
         # Draw everything in the current FOV
         for (x, y) in self.visible_tiles:
             tile = self._area_map.tiles[x][y]
+            print("X {}, Y {}, CHAR {}, COLOUR {}!".format(x, y, tile.character, tile.colour))
             self._ui_adapter.con.draw_char(x, y, tile.character, tile.colour)
 
         for e in self._area_map.entities:
