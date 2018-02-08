@@ -6,13 +6,11 @@ import re
 
 data = {}
 
-
 def load(raw_json):
     # remove comments (JSON doesn't officially support comments)
     raw_json = re.sub(r"//.*", "", raw_json)
     global data
     data = AttrDict(json.loads(raw_json))
-
 
 def get(key):
     global data
