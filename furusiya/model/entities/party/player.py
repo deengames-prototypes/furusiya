@@ -1,5 +1,5 @@
 import colors
-import config
+from model.config import config
 import model.weapons
 from death_functions import player_death
 from main_interface import Game, message

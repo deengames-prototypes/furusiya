@@ -1,7 +1,7 @@
 import tdl
 
 import colors
-import config
+from model.config import config
 from constants import FOV_ALGO, FOV_LIGHT_WALLS, MAP_HEIGHT, MAP_WIDTH, color_dark_wall, color_dark_ground, \
     color_light_wall, color_light_ground, MSG_X, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT
 from main_interface import Game

@@ -1,5 +1,5 @@
 import colors
-import config
+from model.config import config
 from model.components.ai.base import AI
 from model.components.base import Component
 from model.entities.game_object import GameObject

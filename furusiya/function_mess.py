@@ -4,7 +4,7 @@ from random import randint
 import tdl
 
 import colors
-import config
+from model.config import config
 from constants import *
 from main_interface import Game, menu, message
 from model.components.ai.base import AI
@@ -149,7 +149,7 @@ def handle_keys():
                                             if config.data.features.bowCritsStack:
                                                 target_fighter = Game.target.get_component(Fighter)
                                                 damage_multiplier += (
-                                                    config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
+                                                        config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
                                                 target_fighter.bow_crits += 1
                                             is_critical = True
                                         Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
