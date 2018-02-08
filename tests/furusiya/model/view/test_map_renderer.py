@@ -10,16 +10,16 @@ from view.map_renderer import MapRenderer
 from view.adapter.tdl_adapter import TdlAdapter
 
 
-screen_width = 50
-screen_height = 50
-map_width = 10
-map_height = 10
-panel_height = 5
+SCREEN_WIDTH = 50
+SCREEN_HEIGHT = 50
+MAP_WIDTH = 10
+MAP_HEIGHT = 10
+PANEL_HEIGHT = 5
 
 
 class TestMapRenderer(unittest.TestCase):
     def test_render_marks_current_fov_as_explored(self):
-        map = AreaMap(map_width, map_height)
+        map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
 
         # Player is at (0, 0)
         player = Player()
@@ -38,9 +38,9 @@ class TestMapRenderer(unittest.TestCase):
 
         tdl_adapter = TdlAdapter(
             "Test Window",
-            map=(map_width, map_height),
-            screen=(screen_width, screen_height),
-            panel=(screen_width, panel_height)
+            map=(MAP_WIDTH, MAP_HEIGHT),
+            screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
+            panel=(SCREEN_WIDTH, PANEL_HEIGHT)
         )
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
@@ -54,7 +54,7 @@ class TestMapRenderer(unittest.TestCase):
             self.assertTrue(map.tiles[x][y].is_explored)
 
     def test_render_recalculates_fov_when_asked(self):
-        map = AreaMap(map_width, map_height)
+        map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
 
         # Player is at (0, 0)
         player = Player()
@@ -69,9 +69,9 @@ class TestMapRenderer(unittest.TestCase):
 
         tdl_adapter = TdlAdapter(
             "Test Window",
-            map=(map_width, map_height),
-            screen=(screen_width, screen_height),
-            panel=(screen_width, panel_height)
+            map=(MAP_WIDTH, MAP_HEIGHT),
+            screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
+            panel=(SCREEN_WIDTH, PANEL_HEIGHT)
         )
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
