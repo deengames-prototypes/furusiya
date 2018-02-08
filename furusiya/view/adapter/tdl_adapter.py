@@ -13,7 +13,9 @@ class TdlAdapter:
 
     @staticmethod
     def flush():
-        # draw on-screen
+        """
+        draw on-screen
+        """
         tdl.flush()
 
     @staticmethod
@@ -28,7 +30,9 @@ class TdlAdapter:
 
     @staticmethod
     def wait_for_input():
-        # wait for response
+        """
+        wait for response
+        """
         key = tdl.event.key_wait()
         return key
 
@@ -41,7 +45,7 @@ class TdlAdapter:
         for event in tdl.event.get():
             if event.type == 'KEYDOWN':
                 print("KEY DOWN: {0}".format(event))
-                return event # contains key pressed
+                return event  # contains key pressed
             if event.type == 'MOUSEMOTION':
                 print("MOUSE: {0}".format(event))
                 return event.cell
