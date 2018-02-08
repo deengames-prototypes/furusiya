@@ -25,7 +25,7 @@ class Game:
     game_msgs = []
     game_state = None
 
-    area_map: AreaMap = None
+    area_map = None
 
     @classmethod
     def run(cls, to_run):

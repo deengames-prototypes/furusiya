@@ -11,6 +11,7 @@ file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
 from function_mess import new_game, play_game, load_game, msgbox
 from main_interface import Game, menu
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+import random
 
 def main_menu():
     img = image_load('menu_background.png')
@@ -32,6 +33,8 @@ def main_menu():
         choice = menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
 
         if choice == 0:  # new game
+            if config.data.get("seed") is not None:
+                random.seed(config.data.seed)
             new_game()
             play_game()
         if choice == 1:  # load last game

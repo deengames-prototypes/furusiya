@@ -189,12 +189,12 @@ def load_game():
 
 def new_game():
 
-    Game.area_map = AreaMap(SCREEN_WIDTH, SCREEN_HEIGHT)
+    Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
-    ForestGenerator(SCREEN_WIDTH, SCREEN_HEIGHT, Game.area_map)
+    ForestGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/
