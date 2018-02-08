@@ -3,7 +3,7 @@ import textwrap
 import tdl
 
 import colors
-import file_watcher
+from model.config import file_watcher
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH
 from constants import MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
 from model.maps.area_map import AreaMap

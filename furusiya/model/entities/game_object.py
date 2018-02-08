@@ -18,12 +18,15 @@ class GameObject:
 
         self._components = {}
 
-    def _get_type(self, type_):
-        possible_matches = [
+    def _get_components_of_type(self, component_type):
+        return [
             k
             for k in self._components.keys()
-            if k == type_.component_type
+            if k == component_type
         ]
+
+    def _get_component_type(self, component_type):
+        possible_matches = self._get_components_of_type(component_type)
 
         if len(possible_matches) == 0:
             return None
@@ -31,16 +34,19 @@ class GameObject:
             return possible_matches[0]
 
     def set_component(self, component):
-        self._components[component.component_type] = component
+        self._components[type(component)] = component
 
-    def get_component(self, type_):
-        return self._components.get(self._get_type(type_), None)
+    def get_component(self, component_type):
+        return self._components.get(self._get_component_type(component_type), None)
 
-    def del_component(self, type_):
+    def remove_component(self, component_type):
         try:
-            del self._components[self._get_type(type_)]
+            del self._components[self._get_component_type(component_type)]
         except KeyError:
             pass
+
+    def has_component(self, component_type):
+        return self.get_component(component_type) is not None
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked

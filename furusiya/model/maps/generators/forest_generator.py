@@ -1,7 +1,7 @@
 from attrdict import AttrDict
 
 import colors
-import config
+from model.config import config
 from constants import MAX_ROOMS, ROOM_MAX_SIZE, ROOM_MIN_SIZE, MAX_ROOM_MONSTERS, MAX_ROOM_ITEMS
 from model.components.walkers.random_walker import RandomWalker
 import math

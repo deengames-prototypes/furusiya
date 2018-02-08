@@ -1,7 +1,7 @@
 from random import randint
 
 import colors
-import config
+from model.config import config
 from main_interface import message
 from model.components.ai.base import AI
 from model.components.ai.monster import StunnedMonster

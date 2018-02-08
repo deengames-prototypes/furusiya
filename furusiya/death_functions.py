@@ -13,8 +13,8 @@ def monster_death(monster):
     monster.color = colors.dark_red
     monster.blocks = False
     Game.player.gain_xp(monster.get_component(Fighter).xp)
-    monster.del_component(Fighter)
-    monster.del_component(AI)
+    monster.remove_component(Fighter)
+    monster.remove_component(AI)
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)
     monster.send_to_back()

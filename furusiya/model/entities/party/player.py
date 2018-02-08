@@ -1,10 +1,10 @@
 import colors
-import config
+from model.config import config
 import model.weapons
 from death_functions import player_death
 from main_interface import Game, message
 from model.components.fighter import Fighter
-from model.game_object import GameObject
+from model.entities.game_object import GameObject
 
 
 class Player(GameObject):
@@ -18,7 +18,7 @@ class Player(GameObject):
 
         self.set_component(
             Fighter(
-                self,
+                owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
                 power=data.startingPower,

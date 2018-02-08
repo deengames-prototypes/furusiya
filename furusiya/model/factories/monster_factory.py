@@ -2,15 +2,15 @@ from model.components.ai.monster import BasicMonster
 
 from death_functions import monster_death
 from model.components.fighter import Fighter
-from model.game_object import GameObject
+from model.entities.npc import NPC
 
 
 def create_monster(data, x, y, colour, name):
-    monster = GameObject(x, y, name[0], name, colour, blocks=True)
+    monster = NPC(x, y, name[0], name, colour, blocks=True)
 
     monster.set_component(
         Fighter(
-            monster,
+            owner=monster,
             hp=data.health,
             defense=data.defense,
             power=data.attack,
@@ -19,6 +19,6 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    monster.set_component(BasicMonster(monster))
+    monster.set_ai(BasicMonster(monster))
 
     return monster

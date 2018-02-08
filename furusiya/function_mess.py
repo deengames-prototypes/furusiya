@@ -4,7 +4,7 @@ from random import randint
 import tdl
 
 import colors
-import config
+from model.config import config
 from constants import *
 from main_interface import Game, menu, message
 from model.components.ai.base import AI
@@ -12,8 +12,8 @@ from model.components.fighter import Fighter
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator
-from model.party.player import Player
-from model.party.stallion import Stallion
+from model.entities.party.player import Player
+from model.entities.party.stallion import Stallion
 from model.weapons import Bow
 from view.renderer import render_all
 
@@ -27,7 +27,7 @@ def player_move_or_attack(dx, dy):
     # try to find an attackable object there
     Game.target = None
     for obj in Game.area_map.entities:
-        if obj.get_component(Fighter) and obj.x == x and obj.y == y:
+        if obj.has_component(Fighter) and obj.x == x and obj.y == y:
             Game.target = obj
             break
 
@@ -140,7 +140,7 @@ def handle_keys():
                                     Game.draw_bowsight = False
                                     is_cancelled = True
                                 elif event.char == 'f':
-                                    if Game.target and Game.target.get_component(Fighter):
+                                    if Game.target and Game.target.has_component(Fighter):
                                         is_critical = False
                                         damage_multiplier = config.data.weapons.arrowDamageMultiplier
                                         if config.data.features.bowCrits and randint(0,
@@ -149,7 +149,7 @@ def handle_keys():
                                             if config.data.features.bowCritsStack:
                                                 target_fighter = Game.target.get_component(Fighter)
                                                 damage_multiplier += (
-                                                    config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
+                                                        config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
                                                 target_fighter.bow_crits += 1
                                             is_critical = True
                                         Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,

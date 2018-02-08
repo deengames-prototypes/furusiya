@@ -1,7 +1,7 @@
 import colors
 from constants import HEAL_AMOUNT, LIGHTNING_RANGE, LIGHTNING_DAMAGE, CONFUSE_RANGE, FIREBALL_RADIUS, FIREBALL_DAMAGE
-from util_functions import target_monster, target_tile
-from view.renderer import closest_monster
+from view.targeting_distance import target_tile, target_monster
+from view.targeting_monster import closest_monster
 from main_interface import Game, message
 from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
@@ -44,7 +44,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    monster.set_component(ConfusedMonster(monster))
+    monster.set_ai(ConfusedMonster(monster))
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 

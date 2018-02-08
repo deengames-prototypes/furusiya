@@ -3,8 +3,7 @@ from model.entities.party.player import Player
 
 class TestPlayer:
 
-    def test_initializer_sets_appropriate_attributes(self, config):
-        assert config.data.features.swordStuns == True
+    def test_initializer_sets_appropriate_attributes(self):
         pass
         # print("MAKING")
         # p = Player()
