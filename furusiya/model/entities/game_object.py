@@ -1,7 +1,6 @@
 import math
 
 from main_interface import Game, get_blocking_object_at
-from model.components.ai.base import AI
 
 
 class GameObject:
@@ -17,7 +16,6 @@ class GameObject:
         self.name = name
         self.blocks = blocks
 
-        self.original_ai = None
         self._components = {}
 
     def _get_components_of_type(self, type_):
@@ -49,16 +47,6 @@ class GameObject:
 
     def has_component(self, type_):
         return self.get_component(type_) is not None
-
-    def set_ai(self, ai):
-        if not self.original_ai:
-            self.original_ai = ai
-
-        ai_ls = self._get_components_of_type(AI)
-        for k in ai_ls:
-            self.remove_component(k)
-
-        self.set_component(ai)
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked

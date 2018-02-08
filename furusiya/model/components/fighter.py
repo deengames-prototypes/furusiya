@@ -2,7 +2,7 @@ import colors
 import config
 from model.components.ai.base import AI
 from model.components.base import Component
-from model.game_object import GameObject
+from model.entities.game_object import GameObject
 from model.item import Item
 from main_interface import Game, message
 

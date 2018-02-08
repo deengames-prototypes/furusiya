@@ -12,8 +12,8 @@ from model.components.fighter import Fighter
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator
-from model.party.player import Player
-from model.party.stallion import Stallion
+from model.entities.party.player import Player
+from model.entities.party.stallion import Stallion
 from model.weapons import Bow
 from view.renderer import render_all
 

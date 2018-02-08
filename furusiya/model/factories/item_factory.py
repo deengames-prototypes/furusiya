@@ -1,4 +1,4 @@
-from model.game_object import GameObject
+from model.entities.game_object import GameObject
 from model.item import Item
 
 
