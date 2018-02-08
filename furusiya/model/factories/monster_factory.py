@@ -19,6 +19,6 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    monster.set_ai(BasicMonster(monster))
+    monster.ai = BasicMonster(monster)
 
     return monster

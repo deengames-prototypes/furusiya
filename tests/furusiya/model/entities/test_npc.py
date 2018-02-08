@@ -36,11 +36,11 @@ def walker_ai():
 
 def test_replace_subcomponent(npc, stunned_ai, walker_ai):
     original = stunned_ai()
-    npc.set_ai(original)
+    npc.ai = original
     assert npc.get_component(stunned_ai) == original
 
     replacer = walker_ai()
-    npc.set_ai(replacer)
+    npc.ai = replacer
 
     assert npc.get_component(walker_ai) == replacer
     assert npc.get_component(stunned_ai) != original

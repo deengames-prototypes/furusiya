@@ -14,7 +14,7 @@ def monster_death(monster):
     monster.blocks = False
     Game.player.gain_xp(monster.get_component(Fighter).xp)
     monster.remove_component(Fighter)
-    monster.remove_component(AI)
+    del monster.ai  # Relax, it's a property.
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)
     monster.send_to_back()
