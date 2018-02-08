@@ -12,6 +12,9 @@ def load(raw_json):
     global data
     data = AttrDict(json.loads(raw_json))
 
+def has(key):
+    return key in data
+
 def get(key):
     global data
     if key not in data:

@@ -32,8 +32,6 @@ def main_menu():
         choice = menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
 
         if choice == 0:  # new game
-            if config.data.get("seed") is not None:
-                random.seed(config.data.seed)
             new_game()
             play_game()
         if choice == 1:  # load last game
@@ -46,4 +44,8 @@ def main_menu():
         elif choice == 2:  # quit
             break
 
+if config.has("seed"):
+    seed = config.get("seed")
+    random.seed(seed)
+    print("Seeding as universe #{}".format(seed))
 Game.run(main_menu)
