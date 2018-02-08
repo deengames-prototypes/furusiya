@@ -17,16 +17,16 @@ def main_menu():
 
     while not tdl.event.is_window_closed():
         # show the background image, at twice the regular console resolution
-        img.blit_2x(Game.root, 0, 0)
+        img.blit_2x(Game.ui.root, 0, 0)
 
         # show the game's title, and some credits!
         title = 'FURUSIYA'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.root.draw_str(center, SCREEN_HEIGHT // 2 - 4, title, bg=None, fg=colors.light_yellow)
+        Game.ui.root.draw_str(center, SCREEN_HEIGHT // 2 - 4, title, bg=None, fg=colors.light_yellow)
 
         title = 'By nightblade9 and NegativeScript'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.root.draw_str(center, SCREEN_HEIGHT - 2, title, bg=None, fg=colors.light_yellow)
+        Game.ui.root.draw_str(center, SCREEN_HEIGHT - 2, title, bg=None, fg=colors.light_yellow)
 
         # show options and wait for the player's choice
         choice = menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)

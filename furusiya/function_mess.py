@@ -15,7 +15,6 @@ from model.maps.generators.forest_generator import ForestGenerator
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.weapons import Bow
-from view.adapter.tdl_adapter import TdlAdapter
 from view.map_renderer import MapRenderer
 
 
@@ -194,7 +193,7 @@ def new_game():
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
-    Game.renderer = MapRenderer(Game.area_map, Game.player, TdlAdapter)
+    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
 
     # generate map (at this point it's not drawn to the screen)
     ForestGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
@@ -223,7 +222,7 @@ def play_game():
     player_action = None
     Game.mouse_coord = (0, 0)
     Game.renderer.recompute_fov = True
-    Game.con.clear()  # unexplored areas start black (which is the default background color)
+    Game.ui.con.clear()  # unexplored areas start black (which is the default background color)
 
     while not tdl.event.is_window_closed():
 

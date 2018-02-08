@@ -3,8 +3,13 @@ import tdl
 
 
 class TdlAdapter:
-    def __init__(self, window_title, width, height, fps_limit=20):
-        pass
+    def __init__(self, window_title, screen, map, panel, fps_limit=20):
+        tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
+        self.root = tdl.init(*screen, title=window_title,
+                             fullscreen=False)
+        tdl.setFPS(fps_limit)
+        self.con = tdl.Console(*map)
+        self.panel = tdl.Console(*panel)
 
     @staticmethod
     def flush():
