@@ -1,4 +1,5 @@
 {
+    "seed": null,  // null for a random seed; seeds the game.    
     "features": {
         "swordStuns": true,
         "stunsStack": true,
@@ -55,6 +56,5 @@
             "health": 10,
             "xp": 35
         }
-    },
-    "seed": 1  // null for a random seed
+    }
 }
