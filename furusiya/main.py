@@ -48,4 +48,5 @@ if config.has("seed"):
     seed = config.get("seed")
     random.seed(seed)
     print("Seeding as universe #{}".format(seed))
+    
 Game.run(main_menu)
