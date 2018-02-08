@@ -1,13 +1,3 @@
-import config
-import os
-import pytest
-
-# Has to be done before other imports
-path = os.path.join('furusiya', 'config.json')       
-with open(path, 'rt') as f:
-    raw_json = f.read()
-config.load(raw_json)
-
 from model.party.player import Player
 
 

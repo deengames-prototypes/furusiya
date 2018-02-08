@@ -11,7 +11,5 @@ class Component:
     Attributes:
         owner (GameObject): The object who this component belongs to
     """
-    component_type = None
-
     def __init__(self, owner):
         self.owner = owner

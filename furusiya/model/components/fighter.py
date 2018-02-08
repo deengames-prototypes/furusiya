@@ -11,8 +11,6 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    component_type = 'Fighter'
-
     def __init__(self, owner, hp, defense, power, xp, weapon=None, death_function=None):
         super().__init__(owner)
         self.max_hp = hp

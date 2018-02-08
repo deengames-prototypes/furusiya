@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from model.components.ai.base import AI
 from model.components.base import Component
 from model.game_object import GameObject
 
@@ -12,8 +13,6 @@ def obj():
 
 
 class ComponentTest(Component):
-    component_type = 'Type1'
-
     def __init__(self, owner=Mock(), value=0):
         super().__init__(owner)
         self.value = value
@@ -24,6 +23,19 @@ class SubComponentTest1(ComponentTest):
 
 
 class SubComponentTest2(ComponentTest):
+    pass
+
+
+class AITest(AI):
+    def __init__(self, owner=Mock()):
+        super().__init__(owner)
+
+
+class AITest1(AITest):
+    pass
+
+
+class AITest2(AITest):
     pass
 
 
@@ -40,6 +52,16 @@ def subcomp1():
 @pytest.fixture
 def subcomp2():
     yield SubComponentTest2
+
+
+@pytest.fixture
+def ai1():
+    yield AITest1
+
+
+@pytest.fixture
+def ai2():
+    yield AITest2
 
 
 def test_basic(obj, comp):
@@ -72,14 +94,14 @@ def test_replace_component(obj, comp):
     assert len(obj._components) == 1
 
 
-def test_replace_subcomponent(obj, comp, subcomp1, subcomp2):
-    original = subcomp1(value=1)
-    obj.set_component(original)
-    assert obj.get_component(comp) == original
+def test_replace_subcomponent(obj, ai1, ai2):
+    original = ai1()
+    obj.set_ai(original)
+    assert obj.get_component(AI) == original
 
-    replacer = subcomp2(value=2)
-    obj.set_component(replacer)
+    replacer = ai2()
+    obj.set_ai(replacer)
 
-    assert obj.get_component(comp) == replacer
-    assert obj.get_component(comp) != original
+    assert obj.get_component(AI) == replacer
+    assert obj.get_component(AI) != original
     assert len(obj._components) == 1

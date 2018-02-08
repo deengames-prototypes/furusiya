@@ -4,12 +4,12 @@ from model.item import Item
 
 def create_item(x, y, character, name, color, use_function):
 
-    item = GameObject(x, y, character, name, color)
-    item.set_component(
+    item_obj = GameObject(x, y, character, name, color)
+    item_obj.set_component(
         Item(
-            item,
+            owner=item_obj,
             use_function=use_function
         )
     )
 
-    return item
+    return item_obj

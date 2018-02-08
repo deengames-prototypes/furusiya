@@ -1,6 +1,7 @@
 import math
 
 from main_interface import Game, get_blocking_object_at
+from model.components.ai.base import AI
 
 
 class GameObject:
@@ -16,14 +17,18 @@ class GameObject:
         self.name = name
         self.blocks = blocks
 
+        self.original_ai = None
         self._components = {}
 
-    def _get_type(self, type_):
-        possible_matches = [
+    def _get_components_of_type(self, type_):
+        return [
             k
             for k in self._components.keys()
-            if k == type_.component_type
+            if issubclass(k, type_)
         ]
+
+    def _get_component_type(self, type_):
+        possible_matches = self._get_components_of_type(type_)
 
         if len(possible_matches) == 0:
             return None
@@ -31,19 +36,29 @@ class GameObject:
             return possible_matches[0]
 
     def set_component(self, component):
-        self._components[component.component_type] = component
+        self._components[type(component)] = component
 
     def get_component(self, type_):
-        return self._components.get(self._get_type(type_), None)
+        return self._components.get(self._get_component_type(type_), None)
 
     def remove_component(self, type_):
         try:
-            del self._components[self._get_type(type_)]
+            del self._components[self._get_component_type(type_)]
         except KeyError:
             pass
 
     def has_component(self, type_):
         return self.get_component(type_) is not None
+
+    def set_ai(self, ai):
+        if not self.original_ai:
+            self.original_ai = ai
+
+        ai_ls = self._get_components_of_type(AI)
+        for k in ai_ls:
+            self.remove_component(k)
+
+        self.set_component(ai)
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked

@@ -32,7 +32,6 @@ class TemporaryAI(AI):
     """
     def __init__(self, owner, num_turns):
         super().__init__(owner)
-        self.original_ai = owner.get_component(AI)
         self.num_turns = num_turns
 
 
@@ -50,7 +49,7 @@ class StunnedMonster(TemporaryAI):
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.set_component(self.original_ai)
+            self.owner.set_component(self.owner.original_ai)
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
             self.owner.char = self.owner.name[0]
 
@@ -71,5 +70,5 @@ class ConfusedMonster(TemporaryAI):
         else:
             # restore the previous AI (this one will be deleted because it's not
             # referenced anymore)
-            self.owner.set_component(self.original_ai)
+            self.owner.set_component(self.owner.original_ai)
             message('The ' + self.owner.name + ' is no longer confused!', colors.red)

@@ -10,7 +10,7 @@ def create_monster(data, x, y, colour, name):
 
     monster.set_component(
         Fighter(
-            monster,
+            owner=monster,
             hp=data.health,
             defense=data.defense,
             power=data.attack,
@@ -19,6 +19,6 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    monster.set_component(BasicMonster(monster))
+    monster.set_ai(BasicMonster(monster))
 
     return monster

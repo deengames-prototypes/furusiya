@@ -18,7 +18,7 @@ class Player(GameObject):
 
         self.set_component(
             Fighter(
-                self,
+                owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
                 power=data.startingPower,
