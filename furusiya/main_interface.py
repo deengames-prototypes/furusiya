@@ -4,37 +4,35 @@ import tdl
 
 import colors
 from model.config import file_watcher
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, LIMIT_FPS, MAP_WIDTH
-from constants import MAP_HEIGHT, PANEL_HEIGHT, MSG_WIDTH, MSG_HEIGHT
-from model.maps.area_map import AreaMap
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, LIMIT_FPS, PANEL_HEIGHT
+from constants import MSG_WIDTH, MSG_HEIGHT
+from view.adapter.tdl_adapter import TdlAdapter
 
 
 class Game:
-    root = None
-    con = None
-    panel = None
     inventory = []
-    visible_tiles = None
     draw_bowsight = None
     player = None
     stallion = None
-    fov_recompute = None
-    mouse_coord = None
+    mouse_coord = (0, 0)
     auto_target = None
     target = None
     game_msgs = []
     game_state = None
 
     area_map = None
+    renderer = None
+    ui = None
 
     @classmethod
     def run(cls, to_run):
-        tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
-        cls.root = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title="Roguelike",
-                            fullscreen=False)
-        tdl.setFPS(LIMIT_FPS)
-        cls.con = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
-        cls.panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
+        cls.ui = TdlAdapter(
+            "Roguelike",
+            screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
+            map=(MAP_WIDTH, MAP_HEIGHT),
+            panel=(SCREEN_WIDTH, PANEL_HEIGHT),
+            fps_limit=LIMIT_FPS
+        )
 
         to_run()
 
@@ -71,12 +69,12 @@ def menu(header, options, width):
         y += 1
         letter_index += 1
 
-    # blit the contents of "window" to the Game.root console
+    # blit the contents of "window" to the Game.ui.root console
     x = SCREEN_WIDTH // 2 - width // 2
     y = SCREEN_HEIGHT // 2 - height // 2
-    Game.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
+    Game.ui.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
 
-    # present the Game.root console to the player and wait for a key-press
+    # present the Game.ui.root console to the player and wait for a key-press
     tdl.flush()
     key = tdl.event.key_wait()
     key_char = key.char

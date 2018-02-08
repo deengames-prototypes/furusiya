@@ -17,14 +17,32 @@ class AreaMap:
     def is_on_map(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
 
+    def get_entities_on(self, x, y):
+        return [
+            e
+            for e in self.entities
+            if (e.x, e.y) == (x, y)
+        ]
+
     def is_walkable(self, x, y):
         return (self.is_on_map(x, y)
                 and self.tiles[x][y].is_walkable
                 and len([
                             e
-                            for e in self.entities
-                            if e.x == x and e.y == y and getattr(e, 'blocks', True)
+                            for e in self.get_entities_on(x, y)
+                            if e.blocks
                         ]) == 0)
+
+    def is_visible_tile(self, x, y):
+        return self.is_walkable(x, y) and not self.tiles[x][y].block_sight
+
+    @staticmethod
+    def filter_tiles(tiles, filter_callback):
+        return [
+            (x, y)
+            for x, y in tiles
+            if filter_callback(x, y)
+        ]
 
     def place_on_random_ground(self, entity):
         x = random.randint(0, self.width)
@@ -45,6 +63,8 @@ class MapTile:
         self.is_walkable = walkable
         self.character = '.'
         self.colour = (128, 128, 128)
+        self.dark_colour = (32, 32, 32)
+
         self.is_explored = False
 
         # by default, if a tile is blocked, it also blocks sight

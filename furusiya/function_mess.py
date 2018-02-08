@@ -15,7 +15,7 @@ from model.maps.generators.forest_generator import ForestGenerator
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.weapons import Bow
-from view.renderer import render_all
+from view.map_renderer import MapRenderer
 
 
 def player_move_or_attack(dx, dy):
@@ -36,7 +36,7 @@ def player_move_or_attack(dx, dy):
         Game.player.get_component(Fighter).attack(Game.target)
     else:
         Game.player.move(dx, dy)
-        Game.fov_recompute = True
+        Game.renderer.recompute_fov = True
 
 
 def inventory_menu(header):
@@ -128,13 +128,13 @@ def handle_keys():
                     is_cancelled = False
                     Game.draw_bowsight = True
                     Game.auto_target = True
-                    render_all()  # show default targetting
+                    Game.renderer.render()  # show default targetting
                     while not is_fired and not is_cancelled:
                         for event in tdl.event.get():
                             if event.type == 'MOUSEMOTION':
                                 Game.mouse_coord = event.cell
                                 Game.auto_target = False
-                                render_all()
+                                Game.renderer.render()
                             elif event.type == 'KEYDOWN':
                                 if event.key == 'ESCAPE':
                                     Game.draw_bowsight = False
@@ -193,6 +193,8 @@ def new_game():
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
+    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
+
     # generate map (at this point it's not drawn to the screen)
     ForestGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
 
@@ -219,13 +221,13 @@ def play_game():
 
     player_action = None
     Game.mouse_coord = (0, 0)
-    Game.fov_recompute = True
-    Game.con.clear()  # unexplored areas start black (which is the default background color)
+    Game.renderer.recompute_fov = True
+    Game.ui.con.clear()  # unexplored areas start black (which is the default background color)
 
     while not tdl.event.is_window_closed():
 
         # draw all objects in the list
-        render_all()
+        Game.renderer.render()
 
         # erase all objects at their old locations, before they move
         for obj in Game.area_map.entities:

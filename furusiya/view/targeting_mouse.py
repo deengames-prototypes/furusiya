@@ -14,6 +14,6 @@ def get_objects_under_mouse():
 
     # create a list with the names of all objects at the mouse's coordinates and in FOV
     stuff = [obj for obj in Game.area_map.entities
-             if obj.x == x and obj.y == y and (obj.x, obj.y) in Game.visible_tiles]
+             if obj.x == x and obj.y == y and (obj.x, obj.y) in Game.renderer.visible_tiles]
 
     return stuff

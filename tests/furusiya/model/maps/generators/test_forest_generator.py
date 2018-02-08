@@ -53,6 +53,5 @@ class TestForestGenerator(unittest.TestCase):
         Game.area_map = AreaMap(width, height)
         fg = ForestGenerator(width, height, Game.area_map)
 
-        min_monsters = ForestGenerator.NUM_MONSTERS[0]
         self.assertTrue(fg._area_map is Game.area_map)
-        self.assertGreaterEqual(len(Game.area_map.entities), min_monsters)
+        self.assertGreaterEqual(len(Game.area_map.entities), 1)

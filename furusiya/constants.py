@@ -40,3 +40,6 @@ color_dark_ground = (32, 32, 32)
 color_dark_wall = (48, 48, 48)
 color_light_ground = (128, 128, 128)
 color_light_wall = (192, 192, 192)
+
+GROUND_CHARACTER = '.'
+TREE_CHARACTER = '#'

@@ -2,7 +2,6 @@ import tdl
 
 from main_interface import Game
 from model.components.fighter import Fighter
-from view.renderer import render_all
 
 
 def target_tile(max_range=None):
@@ -26,13 +25,13 @@ def target_tile(max_range=None):
             elif ((event.type == 'MOUSEDOWN' and event.button == 'RIGHT') or
                   (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
                 return None, None
-        render_all()
+        Game.renderer.render()
 
         # accept the target if the player clicked in FOV, and in case a range is
         # specified, if it's in that range
         x = Game.mouse_coord[0]
         y = Game.mouse_coord[1]
-        if (clicked and Game.mouse_coord in Game.visible_tiles and
+        if (clicked and Game.mouse_coord in Game.renderer.visible_tiles and
                 (max_range is None or Game.player.distance(x, y) <= max_range)):
             return Game.mouse_coord
 
