@@ -5,26 +5,13 @@ from model.components.fighter import Fighter
 from view.renderer import render_all
 
 
-def target_monster(max_range=None):
-    """
-    returns a clicked monster inside FOV up to a range, or None if right-clicked
-    """
-    while True:
-        (x, y) = target_tile(max_range)
-        if x is None:  # player cancelled
-            return None
-
-        # return the first clicked monster, otherwise continue looping
-        for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
-                return obj
-
-
 def target_tile(max_range=None):
     """
     return the position of a tile left-clicked in player's FOV (optionally in a range),
     or (None, None) if right-clicked.
     """
+    # TODO: This basically pauses the core game loop and starts this one.
+    # This definitely needs to be cleaned up.
     while True:
         # render the screen. this erases the inventory and shows the names of
         # objects under the mouse.
@@ -48,3 +35,19 @@ def target_tile(max_range=None):
         if (clicked and Game.mouse_coord in Game.visible_tiles and
                 (max_range is None or Game.player.distance(x, y) <= max_range)):
             return Game.mouse_coord
+
+
+def target_monster(max_range=None):
+    """
+    returns a clicked monster inside FOV up to a range, or None if right-clicked
+    """
+    # TODO: Same as target_tile :/
+    while True:
+        (x, y) = target_tile(max_range)
+        if x is None:  # player cancelled
+            return None
+
+        # return the first clicked monster, otherwise continue looping
+        for obj in Game.area_map.entities:
+            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
+                return obj

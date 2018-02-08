@@ -6,6 +6,8 @@ from constants import FOV_ALGO, FOV_LIGHT_WALLS, MAP_HEIGHT, MAP_WIDTH, color_da
     color_light_wall, color_light_ground, MSG_X, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT
 from main_interface import Game
 from model.components.fighter import Fighter
+from view.targeting_mouse import get_names_under_mouse
+from view.targeting_monster import closest_monster
 
 
 def render_all():
@@ -114,36 +116,3 @@ def is_visible_tile(x, y):
         return False
     else:
         return True
-
-
-def get_names_under_mouse():
-    # create a list with the names of all objects at the mouse's coordinates and in FOV
-    names = [obj.name for obj in get_objects_under_mouse()]
-
-    names = ', '.join(names)  # join the names, separated by commas
-    return names.capitalize()
-
-
-def get_objects_under_mouse():
-    (x, y) = Game.mouse_coord
-
-    # create a list with the names of all objects at the mouse's coordinates and in FOV
-    stuff = [obj for obj in Game.area_map.entities
-             if obj.x == x and obj.y == y and (obj.x, obj.y) in Game.visible_tiles]
-
-    return stuff
-
-
-def closest_monster(max_range):
-    # find closest enemy, up to a maximum range, and in the player's FOV
-    closest_enemy = None
-    closest_dist = max_range + 1  # start with (slightly more than) maximum range
-
-    for obj in Game.area_map.entities:
-        if obj.get_component(Fighter) and not obj == Game.player and (obj.x, obj.y) in Game.visible_tiles:
-            # calculate distance between this object and the player
-            dist = Game.player.distance_to(obj)
-            if dist < closest_dist:  # it's closer, so remember it
-                closest_enemy = obj
-                closest_dist = dist
-    return closest_enemy

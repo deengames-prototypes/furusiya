@@ -1,7 +1,7 @@
 import colors
 from constants import HEAL_AMOUNT, LIGHTNING_RANGE, LIGHTNING_DAMAGE, CONFUSE_RANGE, FIREBALL_RADIUS, FIREBALL_DAMAGE
-from targeting_functions import target_monster, target_tile
-from view.renderer import closest_monster
+from view.targeting_distance import target_tile, target_monster
+from view.targeting_monster import closest_monster
 from main_interface import Game, message
 from model.components.ai.monster import ConfusedMonster
 from model.components.fighter import Fighter
