@@ -9,6 +9,7 @@ from constants import *
 from main_interface import Game, menu, message
 from model.components.ai.base import AI
 from model.components.fighter import Fighter
+from model.entities.npc import NPC
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator
@@ -242,6 +243,8 @@ def play_game():
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
             for obj in Game.area_map.entities:
-                obj_ai = obj.get_component(AI)
+                if not isinstance(obj, NPC):
+                    continue
+                obj_ai = obj.ai
                 if obj_ai:
                     obj_ai.take_turn()
