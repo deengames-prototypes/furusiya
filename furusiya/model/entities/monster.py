@@ -2,11 +2,9 @@ from model.components.ai.base import AI
 from model.entities.game_object import GameObject
 
 
-class NPC(GameObject):
+class Monster(GameObject):
     """
-    Basic class representing a GameObject capable of smartly dealing with AIs
-
-    As the name suggests, it is used for every NPC(monsters, stallion, otherwise)
+    Basic class representing a monster with an AI. BOO!
     """
     def __init__(self, x, y, char, name, color, blocks=False):
         super().__init__(x, y, char, name, color, blocks)
