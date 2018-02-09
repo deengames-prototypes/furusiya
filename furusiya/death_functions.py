@@ -1,7 +1,6 @@
 import colors
 from main_interface import message
 from main_interface import Game
-from model.components.ai.base import AI
 from model.components.fighter import Fighter
 
 

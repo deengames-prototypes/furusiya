@@ -1,7 +1,8 @@
 import unittest
 
+from attrdict import AttrDict
+
 from model.maps.area_map import AreaMap
-from legacy.ecs.entity import Entity
 from model.components.walkers.random_walker import RandomWalker
 
 
@@ -11,8 +12,7 @@ class TestRandomWalker(unittest.TestCase):
         start_x, start_y = 3, 3
         area_map = AreaMap(start_x * 2, start_y * 2, walkable=True)
 
-        entity = Entity((255, 255, 255), '@')
-        entity.x, entity.y = (start_x, start_y)
+        entity = AttrDict({'x': start_x, 'y': start_y})
         r = RandomWalker(area_map, entity)
 
         expected = [(start_x - 1, start_y), (start_x + 1, start_y), (start_x, start_y + 1), (start_x, start_y - 1)]
@@ -32,8 +32,7 @@ class TestRandomWalker(unittest.TestCase):
         area_map = AreaMap(5, 5)
         self.__make_unwalkable(area_map)
 
-        entity = Entity((255, 255, 255), '@')
-        entity.x, entity.y = (3, 2)
+        entity = AttrDict({'x': 3, 'y': 2})
         area_map.tiles[entity.x][entity.y].is_walkable = True
         r = RandomWalker(area_map, entity)
 
@@ -44,7 +43,7 @@ class TestRandomWalker(unittest.TestCase):
         area_map = AreaMap(5, 5)
         self.__make_unwalkable(area_map)
 
-        entity = Entity((255, 255, 255), '@')
+        entity = AttrDict({'x': 0, 'y': 0})
         r = RandomWalker(area_map, entity)
 
         # Set position to (0, 0) and everything to solid: should throw (shouldn't walk off the LHS/top)
