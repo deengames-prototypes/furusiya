@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from datetime import datetime
+
 import tdl
 from tcod import image_load
 import colors
@@ -44,9 +46,9 @@ def main_menu():
         elif choice == 2:  # quit
             break
 
-if config.has("seed"):
-    seed = config.get("seed")
-    random.seed(seed)
-    print("Seeding as universe #{}".format(seed))
-    
+
+seed = config.get("seed") or int(datetime.now().timestamp())
+random.seed(seed)
+print("Seeding as universe #{}".format(seed))
+
 Game.run(main_menu)
