@@ -198,7 +198,7 @@ def new_game():
     Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
 
     # generate map (at this point it's not drawn to the screen)
-    DungeonGenerator(MAP_WIDTH, MAP_HEIGHT, Game.area_map)
+    DungeonGenerator(Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/

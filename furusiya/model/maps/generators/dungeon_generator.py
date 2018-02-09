@@ -29,9 +29,8 @@ class DungeonGenerator:
     MAX_ROOM_MONSTERS = 3
     MAX_ROOM_ITEMS = 2
 
-    def __init__(self, width, height, area_map):
-        self._width = width
-        self._height = height
+    def __init__(self, area_map):
+        self._rooms = []
         self._area_map = area_map
         self._generate_rooms()
         self._generate_objects()
@@ -42,10 +41,13 @@ class DungeonGenerator:
             for y in range(0, self._area_map.height):
                 self._convert_to_wall(self._area_map.tiles[x][y])
 
-        rooms = []
         rooms_to_generate = random.randint(DungeonGenerator.NUM_ROOMS[0], DungeonGenerator.NUM_ROOMS[1])
 
-        while rooms_to_generate:
+        # If you generate a room overlapping another room, that's a fail.
+        # After ten failures, we give up and return the dungeon as-is.
+        num_failures = 10
+
+        while rooms_to_generate and num_failures:
             # random width and height
             w = randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
             h = randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
@@ -58,9 +60,10 @@ class DungeonGenerator:
 
             # run through the other rooms and see if they intersect with this one
             failed = False
-            for other_room in rooms:
+            for other_room in self._rooms:
                 if new_room.intersect(other_room):
                     failed = True
+                    num_failures -= 1
                     break
 
             if not failed:
@@ -73,7 +76,7 @@ class DungeonGenerator:
                 # center coordinates of new room, will be useful later
                 (new_x, new_y) = new_room.center()
 
-                if len(rooms) == 0:
+                if len(self._rooms) == 0:
                     # this is the first room, where the player starts at
                     Game.player.x = new_x
                     Game.player.y = new_y
@@ -83,7 +86,7 @@ class DungeonGenerator:
                     # connect it to the previous room with a tunnel
 
                     # center coordinates of previous room
-                    (prev_x, prev_y) = rooms[len(rooms) - 1].center()
+                    (prev_x, prev_y) = self._rooms[len(self._rooms) - 1].center()
 
                     # draw a coin (random number that is either 0 or 1)
                     if randint(0, 1):
@@ -96,7 +99,7 @@ class DungeonGenerator:
                         self._create_h_tunnel(prev_x, new_x, new_y)
 
                 # finally, append the new room to the list
-                rooms.append(new_room)
+                self._rooms.append(new_room)
 
     def _create_room(self, room):
         for x in range(room.x1 + 1, room.x2):
