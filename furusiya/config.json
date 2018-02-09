@@ -1,5 +1,6 @@
 {
-    "seed": null,  // null for a random seed; seeds the game.    
+    "seed": null,  // null for a random seed; seeds the game.
+    "fullscreen": false, 
     "features": {
         "swordStuns": true,
         "stunsStack": true,

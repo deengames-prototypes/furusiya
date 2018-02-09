@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import tdl
-
+from model.config import config
 
 class TdlAdapter:
     def __init__(self, window_title, screen, map, panel, fps_limit=20):
         tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
         self.root = tdl.init(*screen, title=window_title,
-                             fullscreen=False)
+                             fullscreen=config.data.fullscreen)
         tdl.setFPS(fps_limit)
         self.con = tdl.Console(*map)
         self.panel = tdl.Console(*panel)
