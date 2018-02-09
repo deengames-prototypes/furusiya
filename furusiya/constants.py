@@ -14,15 +14,6 @@ MSG_WIDTH = SCREEN_WIDTH - BAR_WIDTH - 2
 MSG_HEIGHT = PANEL_HEIGHT - 1
 INVENTORY_WIDTH = 50
 
-# parameters for dungeon generator
-# TODO: move into dungeon generator
-ROOM_MAX_SIZE = 10
-ROOM_MIN_SIZE = 6
-MAX_ROOMS = 30
-NUM_TREES = 1800
-MAX_ROOM_MONSTERS = 3
-MAX_ROOM_ITEMS = 2
-
 # spell values
 HEAL_AMOUNT = 4
 LIGHTNING_DAMAGE = 20
@@ -43,4 +34,4 @@ color_light_ground = (128, 128, 128)
 color_light_wall = (192, 192, 192)
 
 GROUND_CHARACTER = '.'
-TREE_CHARACTER = '#'
+WALL_CHARACTER = '#'

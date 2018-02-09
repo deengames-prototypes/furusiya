@@ -28,9 +28,7 @@ class ForestGenerator:
         (64, 128, 0), # Brownish
         (0, 64, 0)) # Greenish
 
-    def __init__(self, width, height, area_map):
-        self._width = width
-        self._height = height
+    def __init__(self, area_map):
         self._area_map = area_map
         self._generate_trees()
         self._generate_objects()
@@ -40,7 +38,7 @@ class ForestGenerator:
             for y in range(0, self._area_map.height):
                 self._convert_to_ground(self._area_map.tiles[x][y])
 
-        total = math.floor(self._width * self._height * ForestGenerator.TREE_PERCENTAGE)
+        total = math.floor(self._area_map.width * self._area_map.height * ForestGenerator.TREE_PERCENTAGE)
 
         # Creates little clusters of N trees
         while total > 0:
@@ -79,11 +77,11 @@ class ForestGenerator:
 
                 if x > 0:
                     append_if_eligible((x - 1, y))
-                if x < self._width - 1:
+                if x < self._area_map.width - 1:
                     append_if_eligible((x + 1, y))
                 if y > 0:
                     append_if_eligible((x, y - 1))
-                if y < self._height - 1:
+                if y < self._area_map.height - 1:
                     append_if_eligible((x, y + 1))
 
         return explored
@@ -93,8 +91,8 @@ class ForestGenerator:
 
         all_ground_tiles = [
             (x, y)
-            for y in range(0, self._height)
-            for x in range(0, self._width)
+            for y in range(0, self._area_map.height)
+            for x in range(0, self._area_map.width)
             if map_tiles[x][y].is_walkable
         ]
 
@@ -118,8 +116,8 @@ class ForestGenerator:
                     cond = cond and map_tiles[x_][y_].is_walkable
             return cond
 
-        for x in range(1, self._width - 1):
-            for y in range(1, self._height - 1):
+        for x in range(1, self._area_map.width - 1):
+            for y in range(1, self._area_map.height - 1):
                 if is_empty_3x3(x, y):
                     return x, y
 
@@ -132,7 +130,7 @@ class ForestGenerator:
         the number of tiles we have to walk.
         Repeat until num_tiles is 0
         """
-        e = AttrDict({'x': (randint(0, self._width - 1)), 'y': (randint(0, self._height - 1))})
+        e = AttrDict({'x': (randint(0, self._area_map.width - 1)), 'y': (randint(0, self._area_map.height - 1))})
         walker = RandomWalker(self._area_map, e)
 
         while num_tiles > 0:
