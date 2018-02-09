@@ -1,9 +1,7 @@
 import colors
 from model.config import config
-from model.components.ai.base import AI
 from model.components.base import Component
-from model.entities.game_object import GameObject
-from model.item import Item
+from model.factories import item_factory
 from main_interface import Game, message
 
 
@@ -30,11 +28,10 @@ class Fighter(Component):
             # check for death. if there's a death function, call it
             if self.hp <= 0:
                 # Drop arrows if necessary
-                if config.data.features.limitedArrows and self.owner.has_component(AI):  # It's a monster
+                if config.data.features.limitedArrows and self.owner is not Game.player and self.owner.ai:  # It's a monster
                     num_arrows = config.data.enemies.arrowDropsOnKill
-                    arrows = GameObject(self.owner.x, self.owner.y, '|',
-                                        '{} arrows'.format(num_arrows), colors.brass, blocks=False)
-                    arrows.set_component(Item(arrows))
+                    arrows = item_factory.create_item(self.owner.x, self.owner.y, '|',
+                                                      '{} arrows'.format(num_arrows), colors.brass)
                     Game.area_map.entities.append(arrows)
                     arrows.send_to_back()
 
