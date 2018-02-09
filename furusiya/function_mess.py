@@ -7,15 +7,14 @@ import colors
 from model.config import config
 from constants import *
 from main_interface import Game, menu, message
-from model.components.ai.base import AI
 from model.components.fighter import Fighter
 from model.entities.npc import NPC
 from model.item import Item
 from model.maps.area_map import AreaMap
-from model.maps.generators.forest_generator import ForestGenerator
-from model.maps.generators.dungeon_generator import DungeonGenerator
+from model.maps import generators
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
+from model.maps.generators import DungeonGenerator
 from model.weapons import Bow
 from view.map_renderer import MapRenderer
 
@@ -198,7 +197,9 @@ def new_game():
     Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
 
     # generate map (at this point it's not drawn to the screen)
-    DungeonGenerator(Game.area_map)
+    generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
+    generator = getattr(generators, generator_class_name, DungeonGenerator)
+    generator(Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/
