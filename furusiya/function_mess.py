@@ -194,8 +194,6 @@ def new_game():
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
-    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
-
     # generate map (at this point it's not drawn to the screen)
     generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
     generator = getattr(generators, generator_class_name, DungeonGenerator)
@@ -224,17 +222,12 @@ def play_game():
 
     player_action = None
     Game.mouse_coord = (0, 0)
+    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
     Game.renderer.recompute_fov = True
-    Game.ui.con.clear()  # unexplored areas start black (which is the default background color)
 
     while not tdl.event.is_window_closed():
-
         # draw all objects in the list
         Game.renderer.render()
-
-        # erase all objects at their old locations, before they move
-        for obj in Game.area_map.entities:
-            obj.clear()
 
         # handle keys and exit game if needed
         player_action = handle_keys()
