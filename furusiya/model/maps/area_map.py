@@ -34,7 +34,7 @@ class AreaMap:
                         ]) == 0)
 
     def is_visible_tile(self, x, y):
-        return self.is_walkable(x, y) and not self.tiles[x][y].block_sight
+        return self.is_on_map(x, y) and not self.tiles[x][y].block_sight
 
     @staticmethod
     def filter_tiles(tiles, filter_callback):
