@@ -1,13 +1,13 @@
+import math
+from random import randint
+import random
+
 from attrdict import AttrDict
 
 import colors
 from model.config import config
-from constants import MAX_ROOMS, ROOM_MAX_SIZE, ROOM_MIN_SIZE, MAX_ROOM_MONSTERS, MAX_ROOM_ITEMS, GROUND_CHARACTER, \
-    TREE_CHARACTER, color_light_ground, color_light_wall, color_dark_ground, color_dark_wall
+from constants import GROUND_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall
 from model.components.walkers.random_walker import RandomWalker
-import math
-from random import randint
-
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
 from model.rect import Rect
 from model.factories import monster_factory, item_factory
@@ -18,8 +18,15 @@ class ForestGenerator:
     Generates a scary forest map in entirety, by mutating map tiles.
     Includes population of monsters, map items, etc.
     """
+    NUM_ITEMS = (10, 20)
+    NUM_MONSTERS = (30, 40)
+
     TREE_PERCENTAGE = 1 / 4  # This percent of the map area should be trees
     TREE_COPSE_SIZE = 5  # Create copses of N trees at a time
+    TREE_CHARACTER = '#'
+    TREE_COLOURS = (
+        (64, 128, 0), # Brownish
+        (0, 64, 0)) # Greenish
 
     def __init__(self, width, height, area_map):
         self._width = width
@@ -152,21 +159,13 @@ class ForestGenerator:
     def _convert_to_tree(self, map_tile):
         map_tile.is_walkable = False
         map_tile.block_sight = True
-        map_tile.character = TREE_CHARACTER
-        map_tile.colour = color_light_wall
+        map_tile.character = ForestGenerator.TREE_CHARACTER
+        map_tile.colour = random.choice(ForestGenerator.TREE_COLOURS)
         map_tile.dark_colour = color_dark_wall
 
     def _generate_objects(self):
-        target = randint(MAX_ROOMS // 2, MAX_ROOMS)
-        while target:
-            x = randint(0, self._area_map.width - ROOM_MAX_SIZE)
-            y = randint(0, self._area_map.width - ROOM_MAX_SIZE)
-            w = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-            h = randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
-            room = Rect(x, y, w, h)
-            self._generate_monsters_in(room)
-            self._generate_items_in(room)
-            target -= 1
+        self._generate_monsters()
+        self._generate_items()
 
     def _find_empty_tile(self):
         while True:
@@ -176,27 +175,27 @@ class ForestGenerator:
                 break
         return x, y
 
-    def _generate_monsters_in(self, room):
+    def _generate_monsters(self):
         # choose random number of monsters
-        num_monsters = randint(0, MAX_ROOM_MONSTERS)
+        num_monsters = randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1])
 
         for i in range(num_monsters):
             # choose random spot for this monster
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
+            x = randint(0, self._area_map.width)
+            y = randint(0, self._area_map.width)
 
             # only place it if the tile is not blocked
             if self._area_map.is_walkable(x, y):
                 choice = randint(0, 100)
-                if choice <= 55:  # 55%
+                if choice <= 55: 
                     name = 'bushslime'
                     data = config.data.enemies.bushslime
                     colour = colors.desaturated_green
-                elif choice <= 85:  # 30%
+                elif choice <= 55 + 30:
                     name = 'steelhawk'
                     data = config.data.enemies.steelhawk
                     colour = colors.light_blue
-                else:  # 15%
+                else:  # 15
                     name = 'tigerslash'
                     data = config.data.enemies.tigerslash
                     colour = colors.orange
@@ -204,14 +203,14 @@ class ForestGenerator:
                 monster = monster_factory.create_monster(data, x, y, colour, name)
                 self._area_map.entities.append(monster)
 
-    def _generate_items_in(self, room):
+    def _generate_items(self):
         # choose random number of items
-        num_items = randint(0, MAX_ROOM_ITEMS)
+        num_items = randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1])
 
         for i in range(num_items):
             # choose random spot for this item
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
+            x = randint(0, self._area_map.width)
+            y = randint(0, self._area_map.width)
 
             # only place it if the tile is not blocked
             if self._area_map.is_walkable(x, y):
@@ -237,7 +236,7 @@ class ForestGenerator:
                     color = colors.light_yellow
                     use_func = cast_fireball
 
-                else:
+                else: # 10
                     # create a confuse scroll (15% chance)
                     char = '#'
                     name = 'scroll of confusion'
