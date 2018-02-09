@@ -60,7 +60,6 @@ def msgbox(text, width=50):
 
 
 def handle_keys():
-    keypress = False
     user_input = None
     while user_input is None:
         # Synchronously wait
@@ -68,13 +67,10 @@ def handle_keys():
             if event is not None:
                 user_input = event
 
-    if event.type == 'KEYDOWN':
-        user_input = event
-        keypress = True
-    if event.type == 'MOUSEMOTION':
-        Game.mouse_coord = event.cell
+    if user_input.type == 'MOUSEMOTION':
+        Game.mouse_coord = user_input.cell
 
-    if not keypress:
+    if user_input.type != 'KEYDOWN':
         return 'didnt-take-turn'
 
     if user_input.key == 'ENTER' and user_input.alt:
@@ -122,45 +118,48 @@ def handle_keys():
                     chosen_item.drop()
 
             if user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
-                # Unlimited arrows, or limited but we have arrows
-                if not config.data.features.limitedArrows or \
-                        (config.data.features.limitedArrows and Game.player.arrows > 0):
-                    is_fired = False
-                    is_cancelled = False
-                    Game.draw_bowsight = True
-                    Game.auto_target = True
-                    Game.renderer.render()  # show default targetting
-                    while not is_fired and not is_cancelled:
-                        for event in tdl.event.get():
-                            if event.type == 'MOUSEMOTION':
-                                Game.mouse_coord = event.cell
-                                Game.auto_target = False
-                                Game.renderer.render()
-                            elif event.type == 'KEYDOWN':
-                                if event.key == 'ESCAPE':
-                                    Game.draw_bowsight = False
-                                    is_cancelled = True
-                                elif event.char == 'f':
-                                    if Game.target and Game.target.has_component(Fighter):
-                                        is_critical = False
-                                        damage_multiplier = config.data.weapons.arrowDamageMultiplier
-                                        if config.data.features.bowCrits and randint(0,
-                                                                                     100) <= config.data.weapons.bowCriticalProbability:
-                                            damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
-                                            if config.data.features.bowCritsStack:
-                                                target_fighter = Game.target.get_component(Fighter)
-                                                damage_multiplier += (
-                                                        config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
-                                                target_fighter.bow_crits += 1
-                                            is_critical = True
-                                        Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
-                                                              is_critical=is_critical)
-                                        Game.player.arrows -= 1
-                                        is_fired = True
-                                        Game.draw_bowsight = False
-                                        return ""
+                return process_bow()
 
             return 'didnt-take-turn'
+
+
+def process_bow():
+    # Unlimited arrows, or limited but we have arrows
+    if not config.data.features.limitedArrows or (config.data.features.limitedArrows and Game.player.arrows > 0):
+        is_fired = False
+        is_cancelled = False
+        Game.draw_bowsight = True
+        Game.auto_target = True
+        Game.renderer.render()  # show default targetting
+        while not is_fired and not is_cancelled:
+            for event in tdl.event.get():
+                if event.type == 'MOUSEMOTION':
+                    Game.mouse_coord = event.cell
+                    Game.auto_target = False
+                    Game.renderer.render()
+                elif event.type == 'KEYDOWN':
+                    if event.key == 'ESCAPE':
+                        Game.draw_bowsight = False
+                        is_cancelled = True
+                    elif event.char == 'f':
+                        if Game.target and Game.target.has_component(Fighter):
+                            is_critical = False
+                            damage_multiplier = config.data.weapons.arrowDamageMultiplier
+                            if config.data.features.bowCrits and randint(0,
+                                                                         100) <= config.data.weapons.bowCriticalProbability:
+                                damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
+                                if config.data.features.bowCritsStack:
+                                    target_fighter = Game.target.get_component(Fighter)
+                                    damage_multiplier += (
+                                            config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
+                                    target_fighter.bow_crits += 1
+                                is_critical = True
+                            Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
+                                                                      is_critical=is_critical)
+                            Game.player.arrows -= 1
+                            is_fired = True
+                            Game.draw_bowsight = False
+                            return ""
 
 
 def save_game():
