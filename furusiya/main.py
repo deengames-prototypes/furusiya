@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from datetime import datetime
+
 import tdl
 from tcod import image_load
 import colors
@@ -37,16 +39,16 @@ def main_menu():
         if choice == 1:  # load last game
             try:
                 load_game()
-            except:
+            except Exception as e:
                 msgbox('\n No saved game to load.\n', 24)
                 continue
             play_game()
         elif choice == 2:  # quit
             break
 
-if config.has("seed"):
-    seed = config.get("seed")
-    random.seed(seed)
-    print("Seeding as universe #{}".format(seed))
-    
+
+seed = config.get("seed") or int(datetime.now().timestamp())
+random.seed(seed)
+print("Seeding as universe #{}".format(seed))
+
 Game.run(main_menu)

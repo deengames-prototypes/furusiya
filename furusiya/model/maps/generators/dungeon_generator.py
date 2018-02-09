@@ -1,14 +1,10 @@
-import math
 from random import randint
 import random
-
-from attrdict import AttrDict
 
 import colors
 from constants import GROUND_CHARACTER, WALL_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall, color_light_wall
 from main_interface import Game
 from model.config import config
-from model.components.walkers.random_walker import RandomWalker
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
 from model.rect import Rect
 from model.factories import monster_factory, item_factory

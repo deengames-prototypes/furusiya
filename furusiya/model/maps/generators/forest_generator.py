@@ -9,7 +9,6 @@ from model.config import config
 from constants import GROUND_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall
 from model.components.walkers.random_walker import RandomWalker
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
-from model.rect import Rect
 from model.factories import monster_factory, item_factory
 
 

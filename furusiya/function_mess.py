@@ -7,38 +7,16 @@ import colors
 from model.config import config
 from constants import *
 from main_interface import Game, menu, message
-from model.components.ai.base import AI
 from model.components.fighter import Fighter
 from model.entities.npc import NPC
 from model.item import Item
 from model.maps.area_map import AreaMap
-from model.maps.generators.forest_generator import ForestGenerator
-from model.maps.generators.dungeon_generator import DungeonGenerator
+from model.maps import generators
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
+from model.maps.generators import DungeonGenerator
 from model.weapons import Bow
 from view.map_renderer import MapRenderer
-
-
-def player_move_or_attack(dx, dy):
-
-    # the coordinates the player is moving to/attacking
-    x = Game.player.x + dx
-    y = Game.player.y + dy
-
-    # try to find an attackable object there
-    Game.target = None
-    for obj in Game.area_map.entities:
-        if obj.has_component(Fighter) and obj.x == x and obj.y == y:
-            Game.target = obj
-            break
-
-    # attack if target found, move otherwise
-    if Game.target is not None:
-        Game.player.get_component(Fighter).attack(Game.target)
-    else:
-        Game.player.move(dx, dy)
-        Game.renderer.recompute_fov = True
 
 
 def inventory_menu(header):
@@ -61,7 +39,6 @@ def msgbox(text, width=50):
 
 
 def handle_keys():
-    keypress = False
     user_input = None
     while user_input is None:
         # Synchronously wait
@@ -69,15 +46,13 @@ def handle_keys():
             if event is not None:
                 user_input = event
 
-    if event.type == 'KEYDOWN':
-        user_input = event
-        keypress = True
-    if event.type == 'MOUSEMOTION':
-        Game.mouse_coord = event.cell
+    if user_input.type == 'MOUSEMOTION':
+        Game.mouse_coord = user_input.cell
 
-    if not keypress:
+    if user_input.type != 'KEYDOWN':
         return 'didnt-take-turn'
 
+    # actual keybindings
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle fullscreen
         tdl.set_fullscreen(not tdl.get_fullscreen())
@@ -85,83 +60,84 @@ def handle_keys():
     elif user_input.key == 'ESCAPE':
         return 'exit'  # exit game
 
-    if Game.game_state == 'playing':
-        # movement keys
-        if user_input.key == 'UP':
-            player_move_or_attack(0, -1)
+    elif Game.game_state == 'playing':
+        return process_in_game_keys(user_input)
 
-        elif user_input.key == 'DOWN':
-            player_move_or_attack(0, 1)
 
-        elif user_input.key == 'LEFT':
-            player_move_or_attack(-1, 0)
+def process_in_game_keys(user_input):
+    # movement keys
+    if user_input.key == 'UP':
+        Game.player.move_or_attack(0, -1)
 
-        elif user_input.key == 'RIGHT':
-            player_move_or_attack(1, 0)
-        else:
-            # test for other keys
-            if user_input.text == 'g':
-                # pick up an item
-                for obj in Game.area_map.entities:  # look for an item in the player's tile
-                    obj_item = obj.get_component(Item)
-                    if obj.x == Game.player.x and obj.y == Game.player.y and obj_item:
-                        obj_item.pick_up()
+    elif user_input.key == 'DOWN':
+        Game.player.move_or_attack(0, 1)
+
+    elif user_input.key == 'LEFT':
+        Game.player.move_or_attack(-1, 0)
+
+    elif user_input.key == 'RIGHT':
+        Game.player.move_or_attack(1, 0)
+    else:
+        # test for other keys
+        if user_input.text == 'g':
+            # pick up an item
+            for obj in Game.area_map.entities:  # look for an item in the player's tile
+                obj_item = obj.get_component(Item)
+                if (obj.x, obj.y) == (Game.player.x, Game.player.y) and obj_item:
+                    obj_item.pick_up()
+                    break
+
+        elif user_input.text == 'i':
+            # show the inventory; if an item is selected, use it
+            chosen_item = inventory_menu('Press the key next to an item to ' +
+                                         'use it, or any other to cancel.\n')
+            if chosen_item is not None:
+                chosen_item.use()
+
+        elif user_input.text == 'd':
+            # show the inventory; if an item is selected, drop it
+            chosen_item = inventory_menu('Press the key next to an item to' +
+                                         'drop it, or any other to cancel.\n')
+            if chosen_item is not None:
+                chosen_item.drop()
+
+        elif user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
+            return process_bow()
+
+        return 'didnt-take-turn'
+
+
+def process_bow():
+    # Unlimited arrows, or limited but we have arrows
+    if not config.data.features.limitedArrows or (config.data.features.limitedArrows and Game.player.arrows > 0):
+        Game.draw_bowsight = True
+        Game.auto_target = True
+        Game.renderer.render()  # show default targetting
+        while True:
+            for event in tdl.event.get():
+                if event.type == 'MOUSEMOTION':
+                    Game.mouse_coord = event.cell
+                    Game.auto_target = False
+                    Game.renderer.render()
+                elif event.type == 'KEYDOWN':
+                    if event.key == 'ESCAPE':
+                        Game.draw_bowsight = False
                         break
-
-            if user_input.text == 'i':
-                # show the inventory; if an item is selected, use it
-                chosen_item = inventory_menu('Press the key next to an item to ' +
-                                             'use it, or any other to cancel.\n')
-                if chosen_item is not None:
-                    chosen_item.use()
-
-            if user_input.text == 'd':
-                # show the inventory; if an item is selected, drop it
-                chosen_item = inventory_menu('Press the key next to an item to' +
-                                             'drop it, or any other to cancel.\n')
-                if chosen_item is not None:
-                    chosen_item.drop()
-
-            if user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
-                # Unlimited arrows, or limited but we have arrows
-                if not config.data.features.limitedArrows or \
-                        (config.data.features.limitedArrows and Game.player.arrows > 0):
-                    is_fired = False
-                    is_cancelled = False
-                    Game.draw_bowsight = True
-                    Game.auto_target = True
-                    Game.renderer.render()  # show default targetting
-                    while not is_fired and not is_cancelled:
-                        for event in tdl.event.get():
-                            if event.type == 'MOUSEMOTION':
-                                Game.mouse_coord = event.cell
-                                Game.auto_target = False
-                                Game.renderer.render()
-                            elif event.type == 'KEYDOWN':
-                                if event.key == 'ESCAPE':
-                                    Game.draw_bowsight = False
-                                    is_cancelled = True
-                                elif event.char == 'f':
-                                    if Game.target and Game.target.has_component(Fighter):
-                                        is_critical = False
-                                        damage_multiplier = config.data.weapons.arrowDamageMultiplier
-                                        if config.data.features.bowCrits and randint(0,
-                                                                                     100) <= config.data.weapons.bowCriticalProbability:
-                                            damage_multiplier *= (1 + config.data.weapons.bowCriticalDamageMultiplier)
-                                            if config.data.features.bowCritsStack:
-                                                target_fighter = Game.target.get_component(Fighter)
-                                                damage_multiplier += (
-                                                        config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits)
-                                                target_fighter.bow_crits += 1
-                                            is_critical = True
-                                        Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier,
-                                                              is_critical=is_critical)
-                                        Game.player.arrows -= 1
-                                        is_fired = True
-                                        Game.draw_bowsight = False
-                                        return ""
-
-            return 'didnt-take-turn'
+                    elif event.char == 'f':
+                        if Game.target and Game.target.has_component(Fighter):
+                            is_critical = False
+                            damage_multiplier = config.data.weapons.arrowDamageMultiplier
+                            if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
+                                damage_multiplier *= 1 + config.data.weapons.bowCriticalDamageMultiplier
+                                if config.data.features.bowCritsStack:
+                                    target_fighter = Game.target.get_component(Fighter)
+                                    damage_multiplier += config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits
+                                    target_fighter.bow_crits += 1
+                                is_critical = True
+                            Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier, is_critical=is_critical)
+                            Game.player.arrows -= 1
+                            Game.draw_bowsight = False
+                            return ""
 
 
 def save_game():
@@ -195,10 +171,10 @@ def new_game():
     Game.player = Player()
     Game.stallion = Stallion(Game.player)
 
-    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
-
     # generate map (at this point it's not drawn to the screen)
-    DungeonGenerator(Game.area_map)
+    generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
+    generator = getattr(generators, generator_class_name, DungeonGenerator)
+    generator(Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
     # TODO: what if we spawned in a wall? :/
@@ -223,17 +199,12 @@ def play_game():
 
     player_action = None
     Game.mouse_coord = (0, 0)
+    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
     Game.renderer.recompute_fov = True
-    Game.ui.con.clear()  # unexplored areas start black (which is the default background color)
 
     while not tdl.event.is_window_closed():
-
         # draw all objects in the list
         Game.renderer.render()
-
-        # erase all objects at their old locations, before they move
-        for obj in Game.area_map.entities:
-            obj.clear()
 
         # handle keys and exit game if needed
         player_action = handle_keys()
