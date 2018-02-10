@@ -99,3 +99,6 @@ class MapRenderer:
         self._ui_adapter.root.blit(self._ui_adapter.panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
 
         self._ui_adapter.flush()
+
+    def clear(self):
+        self._ui_adapter.clear()
