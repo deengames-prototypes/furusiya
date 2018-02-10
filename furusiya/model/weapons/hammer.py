@@ -5,6 +5,7 @@ from model.config import config
 from main_interface import message
 from model.components.ai.monster import StunnedMonster
 from model.components.fighter import Fighter
+from model.systems.ai_system import AISystem
 
 
 class Hammer:
@@ -12,7 +13,7 @@ class Hammer:
         self.owner = owner
 
     def attack(self, target):
-        if config.data.features.hammerKnocksBack:
+        if config.data.features.hammerKnocksBack and AISystem.has_ai(target):
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y
@@ -36,7 +37,7 @@ class Hammer:
                 hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
-                    target.set_component(StunnedMonster(target))
+                    AISystem.get_ai(target).set_temporary(StunnedMonster(target))
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
