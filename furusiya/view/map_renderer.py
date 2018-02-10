@@ -102,3 +102,10 @@ class MapRenderer:
 
     def clear(self):
         self._ui_adapter.clear()
+
+    def refresh_all(self):
+        for x in range(self._area_map.width):
+            for y in range(self._area_map.height):
+                tile = self._area_map.tiles[x][y]
+                if tile.is_explored:
+                    self._ui_adapter.con.draw_char(x, y, tile.character, tile.dark_colour)
