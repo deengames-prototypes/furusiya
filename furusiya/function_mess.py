@@ -8,13 +8,13 @@ from model.config import config
 from constants import *
 from main_interface import Game, menu, message
 from model.components.fighter import Fighter
-from model.entities.npc import NPC
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps import generators
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.maps.generators import DungeonGenerator
+from model.systems.ai_system import AISystem
 from model.weapons import Bow
 from view.map_renderer import MapRenderer
 
@@ -122,7 +122,7 @@ def process_bow():
                 elif event.type == 'KEYDOWN':
                     if event.key == 'ESCAPE':
                         Game.draw_bowsight = False
-                        break
+                        return 'didnt-take-turn'
                     elif event.char == 'f':
                         if Game.target and Game.target.has_component(Fighter):
                             is_critical = False
@@ -216,9 +216,4 @@ def play_game():
 
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
-            for obj in Game.area_map.entities:
-                if not isinstance(obj, NPC):
-                    continue
-                obj_ai = obj.ai
-                if obj_ai:
-                    obj_ai.take_turn()
+            AISystem.take_monster_turns()

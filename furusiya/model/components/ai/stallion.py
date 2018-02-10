@@ -1,6 +1,6 @@
-from model.components.ai.base import AI
+from model.components.ai.base import AbstractAI
 
 
-class StallionAi(AI):
-    def take_turn(self):
+class StallionAi(AbstractAI):
+    def _take_turn(self):
         print("Stallion whinnies!")

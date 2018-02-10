@@ -2,6 +2,7 @@ import colors
 from main_interface import message
 from main_interface import Game
 from model.components.fighter import Fighter
+from model.systems.ai_system import AISystem
 
 
 def monster_death(monster):
@@ -13,7 +14,7 @@ def monster_death(monster):
     monster.blocks = False
     Game.player.gain_xp(monster.get_component(Fighter).xp)
     monster.remove_component(Fighter)
-    del monster.ai  # Relax, it's a property.
+    AISystem.remove_ai(monster)
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)
     monster.send_to_back()

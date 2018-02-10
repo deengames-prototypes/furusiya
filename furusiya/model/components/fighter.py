@@ -3,6 +3,7 @@ from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
 from main_interface import Game, message
+from model.systems.ai_system import AISystem
 
 
 class Fighter(Component):
@@ -28,7 +29,7 @@ class Fighter(Component):
             # check for death. if there's a death function, call it
             if self.hp <= 0:
                 # Drop arrows if necessary
-                if config.data.features.limitedArrows and self.owner is not Game.player and self.owner.ai:  # It's a monster
+                if config.data.features.limitedArrows and self.owner is not Game.player and AISystem.has_ai(self.owner):  # It's a monster
                     num_arrows = config.data.enemies.arrowDropsOnKill
                     arrows = item_factory.create_item(self.owner.x, self.owner.y, '|',
                                                       '{} arrows'.format(num_arrows), colors.brass)
