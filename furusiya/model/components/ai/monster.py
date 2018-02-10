@@ -4,11 +4,11 @@ import colors
 from model.config import config
 from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
-from model.components.ai.base import AI
+from model.components.ai.base import AbstractAI
 from model.components.fighter import Fighter
 
 
-class BasicMonster(AI):
+class BasicMonster(AbstractAI):
     """
     AI for a basic monster.
     """
@@ -26,7 +26,7 @@ class BasicMonster(AI):
                 monster.get_component(Fighter).attack(Game.player)
 
 
-class StunnedMonster(AI):
+class StunnedMonster(AbstractAI):
     """
     AI for a temporarily stunned monster (reverts to previous AI after a while).
     """
@@ -43,7 +43,7 @@ class StunnedMonster(AI):
             self.owner.char = self.owner.name[0]
 
 
-class ConfusedMonster(AI):
+class ConfusedMonster(AbstractAI):
     """
     AI for a temporarily confused monster (reverts to previous AI after a while).
     """

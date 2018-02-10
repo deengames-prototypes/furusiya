@@ -2,7 +2,7 @@ from model.components.base import Component
 from model.systems.ai_system import AISystem
 
 
-class AI(Component):
+class AbstractAI(Component):
     """
     Base class for all AI components.
     """
