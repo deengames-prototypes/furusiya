@@ -99,3 +99,11 @@ class MapRenderer:
         self._ui_adapter.root.blit(self._ui_adapter.panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
 
         self._ui_adapter.flush()
+
+    def refresh_all(self):
+        self._ui_adapter.con.clear()
+        for x in range(self._area_map.width):
+            for y in range(self._area_map.height):
+                tile = self._area_map.tiles[x][y]
+                if tile.is_explored:
+                    self._ui_adapter.con.draw_char(x, y, tile.character, tile.dark_colour)
