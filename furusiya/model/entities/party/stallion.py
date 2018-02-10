@@ -10,3 +10,5 @@ class Stallion(GameObject):
 
         AISystem.set_ai(self, StallionAi(self))
         self.player = player
+
+        self.is_mounted = False
