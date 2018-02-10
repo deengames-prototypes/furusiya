@@ -201,7 +201,7 @@ def play_game():
     Game.mouse_coord = (0, 0)
     Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
     Game.renderer.recompute_fov = True
-    Game.renderer.refresh_all()
+    Game.renderer.clear()
 
     while not tdl.event.is_window_closed():
         # draw all objects in the list

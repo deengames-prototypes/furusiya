@@ -11,10 +11,16 @@ class TdlAdapter:
         self.con = tdl.Console(*map)
         self.panel = tdl.Console(*panel)
 
+    def clear(self):
+        """
+        Clears the screen.
+        """
+        self.con.clear()
+
     @staticmethod
     def flush():
         """
-        draw on-screen
+        Render everything from buffers to screen
         """
         tdl.flush()
 
