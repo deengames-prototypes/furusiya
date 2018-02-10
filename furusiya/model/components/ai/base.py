@@ -14,14 +14,14 @@ class AbstractAI(Component):
     def _take_turn(self):
         raise NotImplementedError()
 
-    def set_temporary(self, other):
+    def temporarily_switch_to(self, other):
         AISystem.set_ai(self.owner, other)
 
-        def new_take_turn():
+        def temporary_take_turn():
             if other.num_turns > 0:
                 other._take_turn()
             else:
                 AISystem.set_ai(self.owner, self)
                 self.take_turn()
 
-        other.take_turn = new_take_turn
+        other.take_turn = temporary_take_turn

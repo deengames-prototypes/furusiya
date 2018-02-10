@@ -45,7 +45,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    AISystem.get_ai(monster).set_temporary(ConfusedMonster(monster))
+    AISystem.get_ai(monster).temporarily_switch_to(ConfusedMonster(monster))
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 

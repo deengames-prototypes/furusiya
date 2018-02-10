@@ -25,8 +25,8 @@ class Sword:
                         # Stack the stun
                         target_ai.num_turns += config.data.weapons.numTurnsStunned
                     else:
-                        target_ai.set_temporary(StunnedMonster(target))
+                        target_ai.temporarily_switch_to(StunnedMonster(target))
                 else:
                     # Copy-pasta from two lines above
-                    target_ai.set_temporary(StunnedMonster(target))
+                    target_ai.temporarily_switch_to(StunnedMonster(target))
                 message('{} looks incapacitated!'.format(target.name), colors.light_green)
