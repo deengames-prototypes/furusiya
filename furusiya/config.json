@@ -10,7 +10,8 @@
         "bowCrits": true,
         "bowCritsStack": true,
         "limitedArrows": true,
-        "seeAllTiles": false
+        "seeAllTiles": false,
+        "horseIsMountable": true
     },
     "player": {
         "startingHealth": 30,
@@ -20,7 +21,8 @@
         "startingWeapon": "Bow",
         "lightRadius": 10,
         "statsPointsOnLevelUp": 5,
-        "startingArrows": 10
+        "startingArrows": 10,
+        "stallionFollowDistance": 3
     },
     "weapons": {
         // Sword

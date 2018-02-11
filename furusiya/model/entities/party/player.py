@@ -38,13 +38,15 @@ class Player(GameObject):
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
 
     def mount(self, horse):
-        self.x, self.y = horse.x, horse.y
-        self.mounted = True
-        horse.is_mounted = True
+        if config.data.features.horseIsMountable:
+            self.x, self.y = horse.x, horse.y
+            self.mounted = True
+            horse.is_mounted = True
 
     def unmount(self, horse):
-        self.mounted = False
-        horse.is_mounted = False
+        if config.data.features.horseIsMountable:
+            self.mounted = False
+            horse.is_mounted = False
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
