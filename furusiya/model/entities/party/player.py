@@ -49,13 +49,22 @@ class Player(GameObject):
             horse.is_mounted = False
 
     def rest(self):
-        if config.data.features.allowResting:
-            fighter = self.get_component(Fighter)
-            hp_gained = int(config.data.player.restingRatio * fighter.max_hp / fighter.hp)
-            fighter.heal(hp_gained)
-            return 'rested'
-        else:
-            return 'didnt-take-turn'
+        fighter = self.get_component(Fighter)
+        hp_gained = int(config.data.player.restingPercent * fighter.max_hp / fighter.hp)
+        fighter.heal(hp_gained)
+        return 'rested'
+
+    def restTillFull(self):
+        fighter = self.get_component(Fighter)
+        temp_health = fighter.hp
+        turns_to_full = 0
+        while temp_health < fighter.max_hp:
+            temp_health += int(config.data.player.restingPercent * fighter.max_hp / temp_health)
+            turns_to_full += 1
+        self.rest()  # rest for this turn
+
+        message(f'You rest for {turns_to_full} turns.')
+        return {'turnsToFullyRest': turns_to_full}
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?

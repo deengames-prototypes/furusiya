@@ -7,7 +7,7 @@ from model.systems.ai_system import AISystem
 
 
 def create_monster(data, x, y, colour, name):
-    monster = GameObject(x, y, name[0], name, colour, blocks=True)
+    monster = GameObject(x, y, name[0], name, colour, blocks=True, hostile=True)
 
     monster.set_component(
         Fighter(
