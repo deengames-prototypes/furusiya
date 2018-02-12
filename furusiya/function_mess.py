@@ -112,7 +112,7 @@ def process_in_game_keys(user_input):
             return Game.player.rest()
 
         elif user_input.text == 'R' and config.data.features.allowResting:
-            return Game.player.restTillFull()
+            return Game.player.rest_to_full_health()
 
         return 'didnt-take-turn'
 

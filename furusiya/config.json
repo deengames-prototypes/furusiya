@@ -44,7 +44,7 @@
     },
     "enemies": {
         "arrowDropsOnKill": 3,
-        "randomlyWalkOutOfSight": true,
+        "randomlyWalkWhenOutOfSight": true,
         "bushslime": {
             "attack": 3,
             "defense": 3,
