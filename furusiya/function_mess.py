@@ -104,6 +104,10 @@ def process_in_game_keys(user_input):
         elif user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
             return process_bow()
 
+        elif user_input.text == 'm' and Game.player.distance_to(Game.stallion) <= 1:
+            Game.player.unmount(Game.stallion) if Game.player.mounted else Game.player.mount(Game.stallion)
+            return ''
+
         return 'didnt-take-turn'
 
 

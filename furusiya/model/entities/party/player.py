@@ -33,8 +33,20 @@ class Player(GameObject):
         self.level = 1
         self.stats_points = 0
         self.arrows = config.data.player.startingArrows
+        self.mounted = False
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
+
+    def mount(self, horse):
+        if config.data.features.horseIsMountable:
+            self.x, self.y = horse.x, horse.y
+            self.mounted = True
+            horse.is_mounted = True
+
+    def unmount(self, horse):
+        if config.data.features.horseIsMountable:
+            self.mounted = False
+            horse.is_mounted = False
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
@@ -49,6 +61,8 @@ class Player(GameObject):
                 break
         else:
             self.move(dx, dy)
+            if self.mounted:
+                self.move(dx, dy)
             Game.renderer.recompute_fov = True
             return
 
