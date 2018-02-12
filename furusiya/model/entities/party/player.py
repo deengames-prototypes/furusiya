@@ -48,6 +48,15 @@ class Player(GameObject):
             self.mounted = False
             horse.is_mounted = False
 
+    def rest(self):
+        if config.data.features.allowResting:
+            fighter = self.get_component(Fighter)
+            hp_gained = int(config.data.player.restingRatio * fighter.max_hp / fighter.hp)
+            fighter.heal(hp_gained)
+            return 'rested'
+        else:
+            return 'didnt-take-turn'
+
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
         # the coordinates the player is moving to/attacking

@@ -11,7 +11,8 @@
         "bowCritsStack": true,
         "limitedArrows": true,
         "seeAllTiles": false,
-        "horseIsMountable": true
+        "horseIsMountable": true,
+        "allowResting": true
     },
     "player": {
         "startingHealth": 30,
@@ -22,7 +23,8 @@
         "lightRadius": 10,
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10,
-        "stallionFollowDistance": 3
+        "stallionFollowDistance": 3,
+        "restingRatio": 1 // formula: this * max_hp / current_hp
     },
     "weapons": {
         // Sword
@@ -42,6 +44,7 @@
     },
     "enemies": {
         "arrowDropsOnKill": 3,
+        "randomlyWalkOutOfSight": false,
         "bushslime": {
             "attack": 3,
             "defense": 3,

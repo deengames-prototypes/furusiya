@@ -1,6 +1,7 @@
 from random import randint
 
 import colors
+from model.components.walkers.random_walker import RandomWalker
 from model.config import config
 from constants import CONFUSE_NUM_TURNS
 from main_interface import Game, message
@@ -24,6 +25,10 @@ class BasicMonster(AbstractAI):
             # close enough, attack! (if the player is still alive.)
             elif Game.player.get_component(Fighter).hp > 0:
                 monster.get_component(Fighter).attack(Game.player)
+
+        else:
+            if config.data.enemies.randomlyWalkOutOfSight:
+                RandomWalker(Game.area_map, monster).walk()
 
 
 class StunnedMonster(AbstractAI):
