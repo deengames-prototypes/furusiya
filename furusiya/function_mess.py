@@ -108,6 +108,9 @@ def process_in_game_keys(user_input):
             Game.player.unmount(Game.stallion) if Game.player.mounted else Game.player.mount(Game.stallion)
             return ''
 
+        elif user_input.text == '.':
+            return Game.player.rest()
+
         return 'didnt-take-turn'
 
 
