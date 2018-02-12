@@ -27,7 +27,8 @@ class BasicMonster(AbstractAI):
                 monster.get_component(Fighter).attack(Game.player)
 
         else:
-            RandomWalker(Game.area_map, monster).walk()
+            if config.data.enemies.randomlyWalkOutOfSight:
+                RandomWalker(Game.area_map, monster).walk()
 
 
 class StunnedMonster(AbstractAI):
