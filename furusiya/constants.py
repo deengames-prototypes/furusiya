@@ -27,11 +27,3 @@ FOV_ALGO = 'BASIC'
 FOV_LIGHT_WALLS = True
 
 LIMIT_FPS = 20  # 20 frames-per-second maximum
-
-color_dark_ground = (32, 32, 32)
-color_dark_wall = (48, 48, 48)
-color_light_ground = (128, 128, 128)
-color_light_wall = (192, 192, 192)
-
-GROUND_CHARACTER = '.'
-WALL_CHARACTER = '#'

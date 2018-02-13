@@ -6,7 +6,6 @@ from attrdict import AttrDict
 
 import colors
 from model.config import config
-from constants import GROUND_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall
 from model.components.walkers.random_walker import RandomWalker
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
 from model.factories import monster_factory, item_factory
@@ -22,7 +21,6 @@ class ForestGenerator:
 
     TREE_PERCENTAGE = 1 / 4  # This percent of the map area should be trees
     TREE_COPSE_SIZE = 5  # Create copses of N trees at a time
-    TREE_CHARACTER = '#'
     TREE_COLOURS = (
         (64, 128, 0), # Brownish
         (0, 64, 0)) # Greenish
@@ -35,14 +33,14 @@ class ForestGenerator:
     def _generate_trees(self):
         for x in range(0, self._area_map.width):
             for y in range(0, self._area_map.height):
-                self._convert_to_ground(self._area_map.tiles[x][y])
+                self._area_map.tiles[x][y].convert_to_ground()
 
         total = math.floor(self._area_map.width * self._area_map.height * ForestGenerator.TREE_PERCENTAGE)
 
         # Creates little clusters of N trees
         while total > 0:
             to_create = min(ForestGenerator.TREE_COPSE_SIZE, total)
-            self._random_walk(self._area_map.tiles, to_create)
+            self._random_walk(to_create)
             total -= to_create
 
         # It's too bad those little clusters sometimes create "holes" that are
@@ -51,9 +49,9 @@ class ForestGenerator:
         #
         # Since mining is not part of the core experience, let's flood-fill the
         # ground, and any non-flood-filled ground tiles can turn into trees.
-        self._fill_ground_holes(self._area_map.tiles)
+        self._fill_ground_holes()
 
-    def _breadth_first_search(self, map_tiles, start_position):
+    def _breadth_first_search(self, start_position):
         """
         Breadth-first search. Assuming "position" is reachable,
         mark any other ground tiles that we can reach, as reachable.
@@ -64,13 +62,13 @@ class ForestGenerator:
         while queue:
             position = queue.pop()
             (x, y) = position
-            if map_tiles[x][y].is_walkable:  # ground tile
+            if self._area_map.tiles[x][y].is_walkable:  # ground tile
                 explored.append(position)
+
                 # Check each adjacent tile. If it's on-map, walkable, and not queued/explored,
                 # then it's a candidate for an unwalkable tile.
-
                 def append_if_eligible(to_append):
-                    tile = map_tiles[to_append[0]][to_append[1]]
+                    tile = self._area_map.tiles[to_append[0]][to_append[1]]
                     if tile.is_walkable and to_append not in queue + explored:
                         queue.append(to_append)
 
@@ -85,24 +83,24 @@ class ForestGenerator:
 
         return explored
 
-    def _fill_ground_holes(self, map_tiles):
-        start_position = self._find_empty_ground(map_tiles)
+    def _fill_ground_holes(self):
+        start_position = self._find_empty_ground()
 
         all_ground_tiles = [
             (x, y)
             for y in range(0, self._area_map.height)
             for x in range(0, self._area_map.width)
-            if map_tiles[x][y].is_walkable
+            if self._area_map.tiles[x][y].is_walkable
         ]
 
-        reachable = self._breadth_first_search(map_tiles, start_position)
+        reachable = self._breadth_first_search(start_position)
 
         unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
 
         for (x, y) in unreachable:
-            self._convert_to_tree(map_tiles[x][y])
+            self._area_map.tiles[x][y].convert_to_wall(colour=random.choice(ForestGenerator.TREE_COLOURS))
 
-    def _find_empty_ground(self, map_tiles):
+    def _find_empty_ground(self):
         """
         Look for a 3x3 patch of ground. It's unlikely that this is contained
         within a copse of trees as an enclosed area. If we're wrong ... well.
@@ -110,9 +108,9 @@ class ForestGenerator:
         """
         def is_empty_3x3(x, y):
             cond = True
-            for x_ in range(x - 1, x + 2):
-                for y_ in range(y - 1, y + 2):
-                    cond = cond and map_tiles[x_][y_].is_walkable
+            for i in range(x - 1, x + 2):
+                for j in range(y - 1, y + 2):
+                    cond = cond and self._area_map.tiles[i][j].is_walkable
             return cond
 
         for x in range(1, self._area_map.width - 1):
@@ -122,7 +120,7 @@ class ForestGenerator:
 
         raise Exception("Can't find any empty ground with empty adjacent tiles!")
 
-    def _random_walk(self, map_tiles, num_tiles):
+    def _random_walk(self, num_tiles):
         """
         Pick a random point, walk to a random adjacent point.
         If it's a floor tile, make it a wall tile, and decrement
@@ -135,7 +133,7 @@ class ForestGenerator:
         while num_tiles > 0:
             try:
                 walker.walk()
-                self._convert_to_tree(map_tiles[e.x][e.y])
+                self._area_map.tiles[e.x][e.y].convert_to_wall(colour=random.choice(ForestGenerator.TREE_COLOURS))
                 num_tiles -= 1
             except ValueError as no_walkable_adjacents_error:
                 # While loop will not terminate, we'll try elsewhere
@@ -145,20 +143,6 @@ class ForestGenerator:
 
                 e.x += dx
                 e.y += dy
-
-    def _convert_to_ground(self, map_tile):
-        map_tile.is_walkable = True
-        map_tile.block_sight = False
-        map_tile.character = GROUND_CHARACTER
-        map_tile.colour = color_light_ground
-        map_tile.dark_colour = color_dark_ground
-
-    def _convert_to_tree(self, map_tile):
-        map_tile.is_walkable = False
-        map_tile.block_sight = True
-        map_tile.character = ForestGenerator.TREE_CHARACTER
-        map_tile.colour = random.choice(ForestGenerator.TREE_COLOURS)
-        map_tile.dark_colour = color_dark_wall
 
     def _generate_objects(self):
         self._generate_monsters()
@@ -170,6 +154,7 @@ class ForestGenerator:
             y = randint(0, self._area_map.height - 1)
             if self._area_map.tiles[x][y].is_walkable:
                 break
+                
         return x, y
 
     def _generate_monsters(self):
