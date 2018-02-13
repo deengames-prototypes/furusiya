@@ -23,9 +23,8 @@ def test_basic(ai_sys):
     owner3, ai3 = 'owner3', Mock()
     ai_sys.set_ai(owner3, ai3)
 
-    ai_sys.take_monster_turns()
-
     for ai in (ai1, ai2, ai3):
+        ai_sys.take_turn(ai)
         assert ai.take_turn.called
 
     ai_sys.remove_ai(owner1)
