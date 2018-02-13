@@ -62,7 +62,7 @@ class Player(GameObject):
 
     def calculate_turns_to_rest(self):
         fighter = self.get_component(Fighter)
-        turns_to_rest = int((fighter.max_hp - fighter.hp) / self._rest(fighter.max_hp))
+        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._rest(fighter.max_hp))
 
         message(f'You rest for {self.turns_to_rest} turns.')
 
