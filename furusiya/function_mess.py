@@ -81,16 +81,6 @@ def handle_keys():
 def process_in_game_keys(user_input):
     Game.turn = None
 
-    if (Game.player.turns_to_rest > 0
-            and not [
-                e
-                for e in Game.area_map.entities
-                if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
-            ]):
-        Game.player.turns_to_rest -= 1
-        Game.player.rest()
-        return
-
     # movement keys
     if user_input.key == 'UP':
         Game.player.move_or_attack(0, -1)
