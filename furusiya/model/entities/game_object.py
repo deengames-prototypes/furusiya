@@ -8,13 +8,14 @@ class GameObject:
     this is a generic object: the player, a monster, an item, the stairs...
     it's always represented by a character on screen.
     """
-    def __init__(self, x, y, char, name, color, blocks=False):
+    def __init__(self, x, y, char, name, color, blocks=False, hostile=False):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
         self.name = name
         self.blocks = blocks
+        self.hostile = hostile
 
         self._components = {}
 

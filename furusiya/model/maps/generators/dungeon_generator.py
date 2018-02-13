@@ -2,7 +2,6 @@ from random import randint
 import random
 
 import colors
-from constants import GROUND_CHARACTER, WALL_CHARACTER, color_light_ground, color_dark_ground, color_dark_wall, color_light_wall
 from main_interface import Game
 from model.config import config
 from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
@@ -35,7 +34,7 @@ class DungeonGenerator:
         # TODO: dry this block with forest generator
         for x in range(0, self._area_map.width):
             for y in range(0, self._area_map.height):
-                self._convert_to_wall(self._area_map.tiles[x][y])
+                self._area_map.tiles[x][y].convert_to_wall()
 
         rooms_to_generate = random.randint(DungeonGenerator.NUM_ROOMS[0], DungeonGenerator.NUM_ROOMS[1])
 
@@ -100,32 +99,16 @@ class DungeonGenerator:
     def _create_room(self, room):
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1, room.y2):
-                self._convert_to_ground(self._area_map.tiles[x][y])
+                self._area_map.tiles[x][y].convert_to_ground()
 
     def _create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self._convert_to_ground(self._area_map.tiles[x][y])
+            self._area_map.tiles[x][y].convert_to_ground()
 
 
     def _create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self._convert_to_ground(self._area_map.tiles[x][y])
-
-    # TODO: DRY with forest generator
-    def _convert_to_ground(self, map_tile):
-        map_tile.is_walkable = True
-        map_tile.block_sight = False
-        map_tile.character = GROUND_CHARACTER
-        map_tile.colour = color_light_ground
-        map_tile.dark_colour = color_dark_ground
-
-    # TODO: DRY with forest generator
-    def _convert_to_wall(self, map_tile):
-        map_tile.is_walkable = False
-        map_tile.block_sight = True
-        map_tile.character = WALL_CHARACTER
-        map_tile.colour = color_light_wall
-        map_tile.dark_colour = color_dark_wall
+            self._area_map.tiles[x][y].convert_to_ground()
 
     # TODO: DRY with forest generator
     def _generate_objects(self):

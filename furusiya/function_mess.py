@@ -108,8 +108,12 @@ def process_in_game_keys(user_input):
             Game.player.unmount(Game.stallion) if Game.player.mounted else Game.player.mount(Game.stallion)
             return ''
 
-        elif user_input.text == '.':
+        elif user_input.text == 'r' and config.data.features.allowResting:
             return Game.player.rest()
+
+        elif user_input.text == 'R' and config.data.features.allowResting:
+            Game.player.rest()
+            return Game.player.calculate_turns_to_rest()
 
         return 'didnt-take-turn'
 
@@ -216,10 +220,20 @@ def play_game():
         Game.renderer.render()
 
         # handle keys and exit game if needed
-        player_action = handle_keys()
-        if player_action == 'exit':
-            save_game()
-            break
+        if (isinstance(player_action, dict)
+                and player_action.get('turnsToFullyRest', 0) > 0
+                and not [
+                    e
+                    for e in Game.area_map.entities
+                    if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
+                ]):
+            player_action['turnsToFullyRest'] -= 1
+            Game.player.rest()
+        else:
+            player_action = handle_keys()
+            if player_action == 'exit':
+                save_game()
+                break
 
         # let monsters take their turn
         if Game.game_state == 'playing' and player_action != 'didnt-take-turn':

@@ -4,6 +4,7 @@ import colors
 from constants import FOV_ALGO, FOV_LIGHT_WALLS, MSG_X, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT
 from main_interface import Game
 from model.components.fighter import Fighter
+from model.maps import area_map
 from model.config import config
 from view.targeting_monster import closest_monster
 from view.targeting_mouse import get_names_under_mouse
@@ -36,7 +37,7 @@ class MapRenderer:
                 self._ui_adapter.con.draw_char(x, y, tile.character, tile.dark_colour)
 
             # Due to lightWalls being set to true, we need to filter "walls" that are out of bounds.
-            self.visible_tiles = self._area_map.filter_tiles(
+            self.visible_tiles = area_map.filter_tiles(
                 self._ui_adapter.calculate_fov(
                     self._player.x, self._player.y,
                     self._area_map.is_visible_tile,

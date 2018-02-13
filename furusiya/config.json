@@ -24,7 +24,7 @@
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10,
         "stallionFollowDistance": 3,
-        "restingRatio": 1 // formula: this * max_hp / current_hp
+        "restingPercent": 5 // formula: this/100 * max_hp
     },
     "weapons": {
         // Sword
@@ -44,7 +44,7 @@
     },
     "enemies": {
         "arrowDropsOnKill": 3,
-        "randomlyWalkOutOfSight": false,
+        "randomlyWalkWhenOutOfSight": true,
         "bushslime": {
             "attack": 3,
             "defense": 3,

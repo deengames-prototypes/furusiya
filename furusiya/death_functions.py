@@ -17,6 +17,7 @@ def monster_death(monster):
     AISystem.remove_ai(monster)
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)
+    monster.hostile = False
     monster.send_to_back()
 
 
