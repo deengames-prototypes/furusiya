@@ -24,7 +24,7 @@
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10,
         "stallionFollowDistance": 3,
-        "restingPercent": 1 // formula: this * max_hp / current_hp
+        "restingPercent": 5 // formula: this/100 * max_hp
     },
     "weapons": {
         // Sword
