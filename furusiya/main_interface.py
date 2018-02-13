@@ -23,6 +23,8 @@ class Game:
     area_map = None
     renderer = None
     ui = None
+    turn = None
+    playing = False  # True when in-game, false otherwise
 
     @classmethod
     def run(cls, to_run):

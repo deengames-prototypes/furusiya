@@ -2,11 +2,6 @@ class AISystem:
     ais = {}
 
     @classmethod
-    def take_monster_turns(cls):
-        for ai in cls.ais.values():
-            ai.take_turn()
-
-    @classmethod
     def set_ai(cls, owner, ai):
         cls.ais[owner] = ai
 
@@ -21,3 +16,9 @@ class AISystem:
     @classmethod
     def has_ai(cls, owner):
         return cls.get_ai(owner) is not None
+
+    @classmethod
+    def take_turn(cls, entity):
+        if cls.has_ai(entity):
+            ai = cls.get_ai(entity)
+            ai.take_turn()

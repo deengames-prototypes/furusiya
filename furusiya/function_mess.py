@@ -39,6 +39,17 @@ def msgbox(text, width=50):
 
 
 def handle_keys():
+    if (Game.player.turns_to_rest > 0
+            and not [
+                e
+                for e in Game.area_map.entities
+                if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
+            ]):
+        Game.player.turns_to_rest -= 1
+        Game.player.rest()
+        Game.turn = None
+        return
+
     user_input = None
     while user_input is None:
         # Synchronously wait
@@ -50,7 +61,8 @@ def handle_keys():
         Game.mouse_coord = user_input.cell
 
     if user_input.type != 'KEYDOWN':
-        return 'didnt-take-turn'
+        Game.turn = Game.player
+        return
 
     # actual keybindings
     if user_input.key == 'ENTER' and user_input.alt:
@@ -58,13 +70,17 @@ def handle_keys():
         tdl.set_fullscreen(not tdl.get_fullscreen())
 
     elif user_input.key == 'ESCAPE':
-        return 'exit'  # exit game
+        save_game()
+        Game.playing = False
+        return
 
     elif Game.game_state == 'playing':
         return process_in_game_keys(user_input)
 
 
 def process_in_game_keys(user_input):
+    Game.turn = None
+
     # movement keys
     if user_input.key == 'UP':
         Game.player.move_or_attack(0, -1)
@@ -77,6 +93,7 @@ def process_in_game_keys(user_input):
 
     elif user_input.key == 'RIGHT':
         Game.player.move_or_attack(1, 0)
+
     else:
         # test for other keys
         if user_input.text == 'g':
@@ -112,10 +129,27 @@ def process_in_game_keys(user_input):
             return Game.player.rest()
 
         elif user_input.text == 'R' and config.data.features.allowResting:
-            Game.player.rest()
-            return Game.player.calculate_turns_to_rest()
+            Game.player.calculate_turns_to_rest()
 
-        return 'didnt-take-turn'
+            def condition():
+                return (
+                    Game.player.turns_to_rest > 0
+                    and not [
+                        e
+                        for e in Game.area_map.entities
+                        if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
+                    ]
+                )
+
+            def callback():
+                for e in Game.area_map.entities:
+                    AISystem.take_turn(e)
+                Game.player.turns_to_rest -= 1
+                Game.player.rest()
+
+            mini_loop(condition, callback)
+
+        Game.turn = Game.player
 
 
 def process_bow():
@@ -133,7 +167,8 @@ def process_bow():
                 elif event.type == 'KEYDOWN':
                     if event.key == 'ESCAPE':
                         Game.draw_bowsight = False
-                        return 'didnt-take-turn'
+                        Game.turn = Game.player
+                        return
                     elif event.char == 'f':
                         if Game.target and Game.target.has_component(Fighter):
                             is_critical = False
@@ -206,35 +241,31 @@ def new_game():
     Game.player.gain_xp(40 + 80 + 160 + 320)
 
 
+def mini_loop(condition, callback):
+    while condition() and not tdl.event.is_window_closed() and Game.playing:
+        Game.renderer.render()
+        callback()
+
+
 def play_game():
 
-    player_action = None
     Game.mouse_coord = (0, 0)
     Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
     Game.renderer.recompute_fov = True
     Game.renderer.clear()
     Game.renderer.refresh_all()
 
-    while not tdl.event.is_window_closed():
+    Game.turn = Game.player
+    Game.playing = True
+
+    while not tdl.event.is_window_closed() and Game.playing:
         # draw all objects in the list
         Game.renderer.render()
 
-        # handle keys and exit game if needed
-        if (isinstance(player_action, dict)
-                and player_action.get('turnsToFullyRest', 0) > 0
-                and not [
-                    e
-                    for e in Game.area_map.entities
-                    if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
-                ]):
-            player_action['turnsToFullyRest'] -= 1
-            Game.player.rest()
-        else:
-            player_action = handle_keys()
-            if player_action == 'exit':
-                save_game()
-                break
+        if Game.turn is Game.player:
+            handle_keys()
+        else:  # it's everyone else's turn
+            for e in Game.area_map.entities:
+                AISystem.take_turn(e)
 
-        # let monsters take their turn
-        if Game.game_state == 'playing' and player_action != 'didnt-take-turn':
-            AISystem.take_monster_turns()
+            Game.turn = Game.player

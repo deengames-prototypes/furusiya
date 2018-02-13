@@ -33,7 +33,10 @@ class Player(GameObject):
         self.level = 1
         self.stats_points = 0
         self.arrows = config.data.player.startingArrows
+
         self.mounted = False
+        self.mounted_moves = 0
+        self.turns_to_rest = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
 
@@ -59,10 +62,9 @@ class Player(GameObject):
 
     def calculate_turns_to_rest(self):
         fighter = self.get_component(Fighter)
-        turns_to_rest = int((fighter.max_hp - fighter.hp) / self._rest(fighter.max_hp))
+        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._rest(fighter.max_hp))
 
-        message(f'You rest for {turns_to_rest} turns.')
-        return {'turnsToFullyRest': turns_to_rest}
+        message(f'You rest for {self.turns_to_rest} turns.')
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
@@ -78,7 +80,12 @@ class Player(GameObject):
         else:
             self.move(dx, dy)
             if self.mounted:
-                self.move(dx, dy)
+                if self.mounted_moves >= 1:
+                    self.mounted_moves = 0
+                else:
+                    Game.turn = self
+                    self.mounted_moves += 1
+                Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
             return
 
