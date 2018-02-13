@@ -139,8 +139,25 @@ def process_in_game_keys(user_input):
             return Game.player.rest()
 
         elif user_input.text == 'R' and config.data.features.allowResting:
-            Game.player.rest()
-            return Game.player.calculate_turns_to_rest()
+            Game.player.calculate_turns_to_rest()
+
+            def condition():
+                return (
+                    Game.player.turns_to_rest > 0
+                    and not [
+                        e
+                        for e in Game.area_map.entities
+                        if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
+                    ]
+                )
+
+            def callback():
+                for e in Game.area_map.entities:
+                    AISystem.take_turn(e)
+                Game.player.turns_to_rest -= 1
+                Game.player.rest()
+
+            mini_loop(condition, callback)
 
         Game.turn = Game.player
 
@@ -232,6 +249,12 @@ def new_game():
 
     # Gain four levels
     Game.player.gain_xp(40 + 80 + 160 + 320)
+
+
+def mini_loop(condition, callback):
+    while condition() and not tdl.event.is_window_closed() and Game.playing:
+        Game.renderer.render()
+        callback()
 
 
 def play_game():
