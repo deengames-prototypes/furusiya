@@ -147,7 +147,7 @@ def process_in_game_keys(user_input):
                 Game.player.turns_to_rest -= 1
                 Game.player.rest()
 
-            mini_loop(condition, callback)
+            run_loop_with(condition, callback)
 
         Game.turn = Game.player
 
@@ -241,7 +241,7 @@ def new_game():
     Game.player.gain_xp(40 + 80 + 160 + 320)
 
 
-def mini_loop(condition, callback):
+def run_loop_with(condition, callback):
     while condition() and not tdl.event.is_window_closed() and Game.playing:
         Game.renderer.render()
         callback()
@@ -258,10 +258,10 @@ def play_game():
     Game.turn = Game.player
     Game.playing = True
 
-    while not tdl.event.is_window_closed() and Game.playing:
-        # draw all objects in the list
-        Game.renderer.render()
+    def condition():
+        return not tdl.event.is_window_closed() and Game.playing
 
+    def callback():
         if Game.turn is Game.player:
             handle_keys()
         else:  # it's everyone else's turn
@@ -269,3 +269,5 @@ def play_game():
                 AISystem.take_turn(e)
 
             Game.turn = Game.player
+
+    run_loop_with(condition, callback)
