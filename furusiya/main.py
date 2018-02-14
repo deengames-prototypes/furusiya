@@ -8,8 +8,8 @@ import colors
 from model.config import file_watcher, config
 file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
 
-from function_mess import new_game, play_game, load_game, msgbox
-from main_interface import Game, menu
+from function_mess import new_game, play_game, load_game
+from main_interface import Game
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import random
 
@@ -31,7 +31,7 @@ def main_menu():
         Game.ui.draw_string(center, SCREEN_HEIGHT - 2, title, colors.light_yellow)
 
         # show options and wait for the player's choice
-        choice = menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
+        choice = Game.ui.create_menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
 
         if choice == 0:  # new game
             new_game()
@@ -40,7 +40,7 @@ def main_menu():
             try:
                 load_game()
             except Exception as e:
-                msgbox('\n No saved game to load.\n', 24)
+                Game.ui.message_box('\n No saved game to load.\n', 24)
                 continue
             play_game()
         elif choice == 2:  # quit

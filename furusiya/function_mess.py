@@ -4,7 +4,7 @@ from random import randint
 import colors
 from model.config import config
 from constants import *
-from main_interface import Game, menu, message
+from main_interface import Game, message
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps import generators
@@ -24,16 +24,12 @@ def inventory_menu(header):
     else:
         options = [item.name for item in Game.inventory]
 
-    index = menu(header, options, INVENTORY_WIDTH)
+    index = Game.ui.create_menu(header, options, INVENTORY_WIDTH)
 
     # if an item was chosen, return it
     if index is None or len(Game.inventory) == 0:
         return None
     return Game.inventory[index].get_component(Item)
-
-
-def msgbox(text, width=50):
-    menu(text, [], width)  # use menu() as a sort of "message box"
 
 
 def handle_keys():
