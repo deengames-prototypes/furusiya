@@ -7,6 +7,7 @@ import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from model.config import config
 
+
 class TdlAdapter:
     def __init__(self, window_title, screen, map, panel, fps_limit=20):
         tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
@@ -122,3 +123,6 @@ class TdlAdapter:
 
     def message_box(self, text, width=50):
         self.create_menu(text, [], width)
+
+    def bresenham(self, x1, y1, x2, y2):
+        return tdl.map.bresenham(x1, y1, x2, y2)
