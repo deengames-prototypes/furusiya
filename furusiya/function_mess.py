@@ -39,17 +39,6 @@ def msgbox(text, width=50):
 
 
 def handle_keys():
-    if (Game.player.turns_to_rest > 0
-            and not [
-                e
-                for e in Game.area_map.entities
-                if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
-            ]):
-        Game.player.turns_to_rest -= 1
-        Game.player.rest()
-        Game.current_turn = None
-        return
-
     user_input = None
     while user_input is None:
         # Synchronously wait
