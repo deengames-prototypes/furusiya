@@ -53,12 +53,8 @@ class TdlAdapter:
         """
         Ask for input. If none, returns None.
         """
-        keypress = False
         for event in tdl.event.get():
             return event
-    
-        if not keypress:
-            return None
 
     @staticmethod
     def toggle_fullscreen():
