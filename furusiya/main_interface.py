@@ -23,7 +23,7 @@ class Game:
     area_map = None
     renderer = None
     ui = None
-    turn = None
+    current_turn = None
     playing = False  # True when in-game, false otherwise
 
     @classmethod

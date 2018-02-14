@@ -83,7 +83,7 @@ class Player(GameObject):
                 if self.mounted_moves >= 1:
                     self.mounted_moves = 0
                 else:
-                    Game.turn = self
+                    Game.current_turn = self
                     self.mounted_moves += 1
                 Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
