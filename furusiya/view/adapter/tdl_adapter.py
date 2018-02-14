@@ -53,3 +53,7 @@ class TdlAdapter:
     
         if not keypress:
             return None
+
+    @staticmethod
+    def toggle_fullscreen():
+        tdl.set_fullscreen(not tdl.get_fullscreen())

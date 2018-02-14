@@ -53,7 +53,7 @@ def handle_keys():
     # actual keybindings
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle fullscreen
-        tdl.set_fullscreen(not tdl.get_fullscreen())
+        Game.ui.toggle_fullscreen()
 
     elif user_input.key == 'ESCAPE':
         save_game()
