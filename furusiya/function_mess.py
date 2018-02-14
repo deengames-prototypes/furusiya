@@ -1,8 +1,6 @@
 import shelve
 from random import randint
 
-import tdl
-
 import colors
 from model.config import config
 from constants import *
@@ -144,18 +142,21 @@ def process_bow():
         Game.draw_bowsight = True
         Game.auto_target = True
         Game.renderer.render()  # show default targetting
+
         while True:
-            for event in tdl.event.get():
-                if event.type == 'MOUSEMOTION':
-                    Game.mouse_coord = event.cell
+            user_input = None
+            while user_input is None:
+                user_input = Game.ui.get_input()
+                if user_input.type == 'MOUSEMOTION':
+                    Game.mouse_coord = user_input.cell
                     Game.auto_target = False
                     Game.renderer.render()
-                elif event.type == 'KEYDOWN':
-                    if event.key == 'ESCAPE':
+                elif user_input.type == 'KEYDOWN':
+                    if user_input.key == 'ESCAPE':
                         Game.draw_bowsight = False
                         Game.current_turn = Game.player
                         return
-                    elif event.char == 'f':
+                    elif user_input.char == 'f':
                         if Game.target and FighterSystem.has_fighter(Game.target):
                             is_critical = False
                             damage_multiplier = config.data.weapons.arrowDamageMultiplier
@@ -228,7 +229,7 @@ def new_game():
 
 
 def run_loop_with(condition, callback):
-    while condition() and not tdl.event.is_window_closed() and Game.playing:
+    while condition() and not Game.ui.event_closed() and Game.playing:
         Game.renderer.render()
         callback()
 
@@ -244,9 +245,6 @@ def play_game():
     Game.current_turn = Game.player
     Game.playing = True
 
-    def condition():
-        return not tdl.event.is_window_closed() and Game.playing
-
     def callback():
         if Game.current_turn is Game.player:
             handle_keys()
@@ -256,4 +254,4 @@ def play_game():
 
             Game.current_turn = Game.player
 
-    run_loop_with(condition, callback)
+    run_loop_with(lambda: True, callback)

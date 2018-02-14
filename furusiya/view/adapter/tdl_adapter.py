@@ -57,3 +57,7 @@ class TdlAdapter:
     @staticmethod
     def toggle_fullscreen():
         tdl.set_fullscreen(not tdl.get_fullscreen())
+
+    @staticmethod
+    def event_closed():
+        return tdl.event.is_window_closed()
