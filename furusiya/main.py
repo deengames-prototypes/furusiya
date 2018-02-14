@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-import tdl
 from tcod import image_load
 import colors
 
@@ -14,21 +13,22 @@ from main_interface import Game, menu
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import random
 
+
 def main_menu():
     img = image_load('menu_background.png')
 
-    while not tdl.event.is_window_closed():
+    while not Game.ui.event_closed():
         # show the background image, at twice the regular console resolution
         img.blit_2x(Game.ui.root, 0, 0)
 
         # show the game's title, and some credits!
         title = 'FURUSIYA'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.ui.root.draw_str(center, SCREEN_HEIGHT // 2 - 4, title, bg=None, fg=colors.light_yellow)
+        Game.ui.draw_string(center, SCREEN_HEIGHT // 2 - 4, title, colors.light_yellow)
 
         title = 'By nightblade9 and NegativeScript'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.ui.root.draw_str(center, SCREEN_HEIGHT - 2, title, bg=None, fg=colors.light_yellow)
+        Game.ui.draw_string(center, SCREEN_HEIGHT - 2, title, colors.light_yellow)
 
         # show options and wait for the player's choice
         choice = menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)

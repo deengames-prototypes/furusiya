@@ -61,3 +61,6 @@ class TdlAdapter:
     @staticmethod
     def event_closed():
         return tdl.event.is_window_closed()
+
+    def draw_string(self, x, y, string, color):
+        self.root.draw_str(x, y, string, bg=None, fg=color)
