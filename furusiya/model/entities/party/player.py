@@ -35,7 +35,7 @@ class Player(GameObject):
         self.arrows = config.data.player.startingArrows
 
         self.mounted = False
-        self.mounted_moves = 0
+        self.moves_while_mounted = 0
         self.turns_to_rest = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
@@ -51,18 +51,18 @@ class Player(GameObject):
             self.mounted = False
             horse.is_mounted = False
 
-    def _rest(self, max_hp):
+    def _get_health_for_resting(self, max_hp):
         return int(config.data.player.restingPercent/100 * max_hp)
 
     def rest(self):
         fighter = self.get_component(Fighter)
-        hp_gained = self._rest(fighter.max_hp)
+        hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
         return 'rested'
 
     def calculate_turns_to_rest(self):
         fighter = self.get_component(Fighter)
-        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._rest(fighter.max_hp))
+        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
         message(f'You rest for {self.turns_to_rest} turns.')
 
@@ -80,11 +80,11 @@ class Player(GameObject):
         else:
             self.move(dx, dy)
             if self.mounted:
-                if self.mounted_moves >= 1:
-                    self.mounted_moves = 0
+                if self.moves_while_mounted >= 1:
+                    self.moves_while_mounted = 0
                 else:
                     Game.current_turn = self
-                    self.mounted_moves += 1
+                    self.moves_while_mounted += 1
                 Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
             return
