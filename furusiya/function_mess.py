@@ -41,10 +41,7 @@ def msgbox(text, width=50):
 def handle_keys():
     user_input = None
     while user_input is None:
-        # Synchronously wait
-        for event in tdl.event.get():
-            if event is not None:
-                user_input = event
+        user_input = Game.ui.get_input()
 
     if user_input.type == 'MOUSEMOTION':
         Game.mouse_coord = user_input.cell

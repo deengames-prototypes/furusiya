@@ -49,12 +49,7 @@ class TdlAdapter:
         """
         keypress = False
         for event in tdl.event.get():
-            if event.type == 'KEYDOWN':
-                print("KEY DOWN: {0}".format(event))
-                return event  # contains key pressed
-            if event.type == 'MOUSEMOTION':
-                print("MOUSE: {0}".format(event))
-                return event.cell
+            return event
     
         if not keypress:
             return None
