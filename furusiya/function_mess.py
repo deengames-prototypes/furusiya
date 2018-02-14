@@ -39,17 +39,6 @@ def msgbox(text, width=50):
 
 
 def handle_keys():
-    if (Game.player.turns_to_rest > 0
-            and not [
-                e
-                for e in Game.area_map.entities
-                if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
-            ]):
-        Game.player.turns_to_rest -= 1
-        Game.player.rest()
-        Game.turn = None
-        return
-
     user_input = None
     while user_input is None:
         # Synchronously wait
@@ -61,7 +50,7 @@ def handle_keys():
         Game.mouse_coord = user_input.cell
 
     if user_input.type != 'KEYDOWN':
-        Game.turn = Game.player
+        Game.current_turn = Game.player
         return
 
     # actual keybindings
@@ -79,7 +68,7 @@ def handle_keys():
 
 
 def process_in_game_keys(user_input):
-    Game.turn = None
+    Game.current_turn = None
 
     # movement keys
     if user_input.key == 'UP':
@@ -147,9 +136,9 @@ def process_in_game_keys(user_input):
                 Game.player.turns_to_rest -= 1
                 Game.player.rest()
 
-            mini_loop(condition, callback)
+            run_loop_with(condition, callback)
 
-        Game.turn = Game.player
+        Game.current_turn = Game.player
 
 
 def process_bow():
@@ -167,7 +156,7 @@ def process_bow():
                 elif event.type == 'KEYDOWN':
                     if event.key == 'ESCAPE':
                         Game.draw_bowsight = False
-                        Game.turn = Game.player
+                        Game.current_turn = Game.player
                         return
                     elif event.char == 'f':
                         if Game.target and Game.target.has_component(Fighter):
@@ -241,7 +230,7 @@ def new_game():
     Game.player.gain_xp(40 + 80 + 160 + 320)
 
 
-def mini_loop(condition, callback):
+def run_loop_with(condition, callback):
     while condition() and not tdl.event.is_window_closed() and Game.playing:
         Game.renderer.render()
         callback()
@@ -255,17 +244,19 @@ def play_game():
     Game.renderer.clear()
     Game.renderer.refresh_all()
 
-    Game.turn = Game.player
+    Game.current_turn = Game.player
     Game.playing = True
 
-    while not tdl.event.is_window_closed() and Game.playing:
-        # draw all objects in the list
-        Game.renderer.render()
+    def condition():
+        return not tdl.event.is_window_closed() and Game.playing
 
-        if Game.turn is Game.player:
+    def callback():
+        if Game.current_turn is Game.player:
             handle_keys()
         else:  # it's everyone else's turn
             for e in Game.area_map.entities:
                 AISystem.take_turn(e)
 
-            Game.turn = Game.player
+            Game.current_turn = Game.player
+
+    run_loop_with(condition, callback)
