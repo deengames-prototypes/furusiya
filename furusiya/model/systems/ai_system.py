@@ -1,21 +1,8 @@
-class AISystem:
-    ais = {}
+from model.systems.system import System
 
-    @classmethod
-    def set_ai(cls, owner, ai):
-        cls.ais[owner] = ai
 
-    @classmethod
-    def remove_ai(cls, owner):
-        del cls.ais[owner]
-
-    @classmethod
-    def get_ai(cls, owner):
-        return cls.ais.get(owner, None)
-
-    @classmethod
-    def has_ai(cls, owner):
-        return cls.get_ai(owner) is not None
+class AISystem(metaclass=System):
+    _component_name = 'ai'
 
     @classmethod
     def take_turn(cls, entity):
