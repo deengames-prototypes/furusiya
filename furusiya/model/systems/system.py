@@ -2,8 +2,8 @@ class System(type):
     def __new__(mcs, clsname, bases, dct):
         component_name = dct['_component_name']
 
-        def set_(cls, owner, ai):
-            getattr(cls, f'{component_name}s')[owner] = ai
+        def set_(cls, owner, component):
+            getattr(cls, f'{component_name}s')[owner] = component
 
         def remove_(cls, owner):
             del getattr(cls, f'{component_name}s')[owner]

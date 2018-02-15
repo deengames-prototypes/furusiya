@@ -4,6 +4,7 @@ from model.components.base import Component
 from model.factories import item_factory
 from main_interface import Game, message
 from model.systems.ai_system import AISystem
+from model.systems.fighter_system import FighterSystem
 
 
 class Fighter(Component):
@@ -42,7 +43,7 @@ class Fighter(Component):
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
         # a simple formula for attack damage
-        target_fighter = target.get_component(Fighter)
+        target_fighter = FighterSystem.get_fighter(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
 
         if damage > 0:

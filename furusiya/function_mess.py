@@ -7,7 +7,6 @@ import colors
 from model.config import config
 from constants import *
 from main_interface import Game, menu, message
-from model.components.fighter import Fighter
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps import generators
@@ -15,6 +14,7 @@ from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.maps.generators import DungeonGenerator
 from model.systems.ai_system import AISystem
+from model.systems.fighter_system import FighterSystem
 from model.weapons import Bow
 from view.map_renderer import MapRenderer
 
@@ -107,7 +107,7 @@ def process_in_game_keys(user_input):
             if chosen_item is not None:
                 chosen_item.drop()
 
-        elif user_input.text == 'f' and isinstance(Game.player.get_component(Fighter).weapon, Bow):
+        elif user_input.text == 'f' and isinstance(FighterSystem.get_fighter(Game.player).weapon, Bow):
             return process_bow()
 
         elif user_input.text == 'm' and Game.player.distance_to(Game.stallion) <= 1:
@@ -159,17 +159,17 @@ def process_bow():
                         Game.current_turn = Game.player
                         return
                     elif event.char == 'f':
-                        if Game.target and Game.target.has_component(Fighter):
+                        if Game.target and FighterSystem.has_fighter(Game.target):
                             is_critical = False
                             damage_multiplier = config.data.weapons.arrowDamageMultiplier
                             if config.data.features.bowCrits and randint(0, 100) <= config.data.weapons.bowCriticalProbability:
                                 damage_multiplier *= 1 + config.data.weapons.bowCriticalDamageMultiplier
                                 if config.data.features.bowCritsStack:
-                                    target_fighter = Game.target.get_component(Fighter)
+                                    target_fighter = FighterSystem.get_fighter(Game.target)
                                     damage_multiplier += config.data.weapons.bowCriticalDamageMultiplier * target_fighter.bow_crits
                                     target_fighter.bow_crits += 1
                                 is_critical = True
-                            Game.player.get_component(Fighter).attack(Game.target, damage_multiplier=damage_multiplier, is_critical=is_critical)
+                            FighterSystem.get_fighter(Game.player).attack(Game.target, damage_multiplier=damage_multiplier, is_critical=is_critical)
                             Game.player.arrows -= 1
                             Game.draw_bowsight = False
                             return ""

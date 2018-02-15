@@ -6,27 +6,32 @@ from model.systems.ai_system import AISystem
 
 
 @pytest.fixture
-def ai_sys():
+def ai1():
+    yield Mock()
+
+
+@pytest.fixture
+def ai2():
+    yield Mock()
+
+
+@pytest.fixture
+def ai3():
+    yield Mock()
+
+
+@pytest.fixture
+def ai_sys(ai1, ai2, ai3):
     AISystem.ais = {}
+
+    AISystem.set_ai('owner1', ai1)
+    AISystem.set_ai('owner2', ai2)
+    AISystem.set_ai('owner3', ai3)
+
     yield AISystem
 
 
-def test_basic(ai_sys):
-    owner1, ai1 = 'owner1', Mock()
-    ai_sys.set_ai(owner1, ai1)
-
-    assert ai_sys.has_ai(owner1)
-    assert ai_sys.get_ai(owner1) == ai1
-
-    owner2, ai2 = 'owner2', Mock()
-    ai_sys.set_ai(owner2, ai2)
-    owner3, ai3 = 'owner3', Mock()
-    ai_sys.set_ai(owner3, ai3)
-
-    for owner, ai in {owner1: ai1, owner2: ai2, owner3: ai3}.items():
+def test_take_turn(ai_sys, ai1, ai2, ai3):
+    for owner, ai in {'owner1': ai1, 'owner2': ai2, 'owner3': ai3}.items():
         ai_sys.take_turn(owner)
         assert ai.take_turn.called
-
-    ai_sys.remove_ai(owner1)
-    assert not ai_sys.has_ai(owner1)
-    assert ai_sys.get_ai(owner1) is None
