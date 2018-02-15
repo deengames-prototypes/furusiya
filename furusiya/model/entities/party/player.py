@@ -1,4 +1,5 @@
 import colors
+from model.components.xp import XP
 from model.config import config
 import model.weapons
 from death_functions import player_death
@@ -7,6 +8,7 @@ from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash
 from model.systems.fighter_system import FighterSystem
+from model.systems.xp_system import XPSystem
 
 
 class Player(GameObject):
@@ -24,16 +26,20 @@ class Player(GameObject):
                 hp=data.startingHealth,
                 defense=data.startingDefense,
                 power=data.startingPower,
-                xp=0,
                 weapon=weapon_init(self),
                 death_function=player_death
             )
         )
 
+        XPSystem.set_experience(
+            self, XP(
+                owner=self,
+                xp=0
+            )
+        )
+
         Game.draw_bowsight = False
 
-        self.level = 1
-        self.stats_points = 0
         self.arrows = config.data.player.startingArrows
 
         self.mounted = False
@@ -94,20 +100,3 @@ class Player(GameObject):
         FighterSystem.get_fighter(self).attack(target)
         if config.data.skills.omnislash.enabled:
             OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
-
-    def _xp_next_level(self):
-        return 2 ** (self.level + 1) * config.data.player.expRequiredBase
-
-    def gain_xp(self, amount):
-        # TODO: make this a component and eventually remove this class?
-        fighter = FighterSystem.get_fighter(self)
-
-        fighter.xp += amount
-        # XP doubles every level. 40, 80, 160, ...
-        # First level = after four orcs. Yeah, low standards.
-        # DRY ya'ne
-        while fighter.xp >= self._xp_next_level():
-            self.level += 1
-            self.stats_points += config.data.player.statsPointsOnLevelUp
-            message("You are now level {}!".format(self.level))
-            fighter.heal(fighter.max_hp)

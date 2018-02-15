@@ -3,6 +3,7 @@ from main_interface import message
 from main_interface import Game
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
+from model.systems.xp_system import XPSystem
 
 
 def monster_death(monster):
@@ -13,7 +14,7 @@ def monster_death(monster):
     monster.color = colors.dark_red
     monster.blocks = False
 
-    Game.player.gain_xp(FighterSystem.get_fighter(monster).xp)
+    XPSystem.get_experience(Game.player).gain_xp(XPSystem.get_experience(monster).xp)
     FighterSystem.remove_fighter(monster)
     AISystem.remove_ai(monster)
 
