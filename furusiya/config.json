@@ -28,6 +28,10 @@
         "resting": {
             "enabled": true,
             "percent": 5 // formula: this/100 * max_hp
+        },
+        "omnislash": {
+            "enabled": true,
+            "rehitPercent": 20
         }
     },
     "weapons": {
