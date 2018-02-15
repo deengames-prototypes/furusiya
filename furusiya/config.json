@@ -11,8 +11,7 @@
         "bowCritsStack": true,
         "limitedArrows": true,
         "seeAllTiles": false,
-        "horseIsMountable": true,
-        "allowResting": true
+        "horseIsMountable": true
     },
     "player": {
         "startingHealth": 30,
@@ -23,8 +22,17 @@
         "lightRadius": 10,
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10,
-        "stallionFollowDistance": 3,
-        "restingPercent": 5 // formula: this/100 * max_hp
+        "stallionFollowDistance": 3
+    },
+    "skills": {
+        "resting": {
+            "enabled": true,
+            "percent": 5 // formula: this/100 * max_hp
+        },
+        "omnislash": {
+            "enabled": true,
+            "rehitPercent": 20
+        }
     },
     "weapons": {
         // Sword

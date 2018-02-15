@@ -114,10 +114,10 @@ def process_in_game_keys(user_input):
             Game.player.unmount(Game.stallion) if Game.player.mounted else Game.player.mount(Game.stallion)
             return ''
 
-        elif user_input.text == 'r' and config.data.features.allowResting:
+        elif user_input.text == 'r' and config.data.skills.resting.enabled:
             return Game.player.rest()
 
-        elif user_input.text == 'R' and config.data.features.allowResting:
+        elif user_input.text == 'R' and config.data.skills.resting.enabled:
             Game.player.calculate_turns_to_rest()
 
             def condition():
