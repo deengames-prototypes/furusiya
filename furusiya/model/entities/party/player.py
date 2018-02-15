@@ -1,5 +1,5 @@
 import colors
-from model.components.xp import XP
+from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
 from death_functions import player_death
@@ -31,10 +31,15 @@ class Player(GameObject):
             )
         )
 
+        def on_level_callback():
+            self.stats_points += config.data.player.statsPointsOnLevelUp
+
         XPSystem.set_experience(
-            self, XP(
+            self, XPComponent(
                 owner=self,
-                xp=0
+                xp=0,
+                on_level_callback=on_level_callback,
+                xp_required_base=config.data.player.expRequiredBase
             )
         )
 
@@ -42,6 +47,7 @@ class Player(GameObject):
 
         self.arrows = config.data.player.startingArrows
 
+        self.stats_points = 0
         self.mounted = False
         self.moves_while_mounted = 0
         self.turns_to_rest = 0
