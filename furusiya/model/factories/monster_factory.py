@@ -4,13 +4,14 @@ from death_functions import monster_death
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.systems.ai_system import AISystem
+from model.systems.fighter_system import FighterSystem
 
 
 def create_monster(data, x, y, colour, name):
     monster = GameObject(x, y, name[0], name, colour, blocks=True, hostile=True)
 
-    monster.set_component(
-        Fighter(
+    FighterSystem.set_fighter(
+        monster, Fighter(
             owner=monster,
             hp=data.health,
             defense=data.defense,

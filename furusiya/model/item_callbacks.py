@@ -1,16 +1,16 @@
 import colors
 from constants import HEAL_AMOUNT, LIGHTNING_RANGE, LIGHTNING_DAMAGE, CONFUSE_RANGE, FIREBALL_RADIUS, FIREBALL_DAMAGE
 from model.systems.ai_system import AISystem
+from model.systems.fighter_system import FighterSystem
 from view.targeting_distance import target_tile, target_monster
 from view.targeting_monster import closest_monster
 from main_interface import Game, message
 from model.components.ai.monster import ConfusedMonster
-from model.components.fighter import Fighter
 
 
 def cast_heal():
     # heal the player
-    player_fighter = Game.player.get_component(Fighter)
+    player_fighter = FighterSystem.get_fighter(Game.player)
     if player_fighter.hp == player_fighter.max_hp:
         message('You are already at full health.', colors.red)
         return 'cancelled'
@@ -31,7 +31,7 @@ def cast_lightning():
             'thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.',
             colors.light_blue)
 
-    monster.get_component(Fighter).take_damage(LIGHTNING_DAMAGE)
+    FighterSystem.get_fighter(monster).take_damage(LIGHTNING_DAMAGE)
 
 
 def cast_confuse():
@@ -63,7 +63,7 @@ def cast_fireball():
             str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
 
     for obj in Game.area_map.entities:  # damage every fighter in range, including the player
-        obj_fighter = obj.get_component(Fighter)
+        obj_fighter = FighterSystem.get_fighter(obj)
         if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
             message('The ' + obj.name + ' gets burned for ' +
                     str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)

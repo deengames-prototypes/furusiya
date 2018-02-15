@@ -1,7 +1,7 @@
 import tdl
 
 from main_interface import Game
-from model.components.fighter import Fighter
+from model.systems.fighter_system import FighterSystem
 
 
 def target_tile(max_range=None):
@@ -48,5 +48,5 @@ def target_monster(max_range=None):
 
         # return the first clicked monster, otherwise continue looping
         for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and obj.get_component(Fighter) and obj != Game.player:
+            if obj.x == x and obj.y == y and FighterSystem.get_fighter(obj) and obj != Game.player:
                 return obj

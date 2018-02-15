@@ -5,6 +5,7 @@ from death_functions import player_death
 from main_interface import Game, message
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
+from model.systems.fighter_system import FighterSystem
 
 
 class Player(GameObject):
@@ -16,8 +17,8 @@ class Player(GameObject):
         weapon_name = data.startingWeapon
         weapon_init = getattr(model.weapons, weapon_name)
 
-        self.set_component(
-            Fighter(
+        FighterSystem.set_fighter(
+            self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
@@ -55,13 +56,13 @@ class Player(GameObject):
         return int(config.data.player.restingPercent/100 * max_hp)
 
     def rest(self):
-        fighter = self.get_component(Fighter)
+        fighter = FighterSystem.get_fighter(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
         return 'rested'
 
     def calculate_turns_to_rest(self):
-        fighter = self.get_component(Fighter)
+        fighter = FighterSystem.get_fighter(self)
         self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
         message(f'You rest for {self.turns_to_rest} turns.')
@@ -74,7 +75,7 @@ class Player(GameObject):
 
         # try to find an attackable object there
         for obj in Game.area_map.get_entities_on(x, y):
-            if obj.has_component(Fighter):
+            if FighterSystem.has_fighter(obj):
                 target = obj
                 break
         else:
@@ -89,14 +90,14 @@ class Player(GameObject):
             Game.renderer.recompute_fov = True
             return
 
-        self.get_component(Fighter).attack(target)
+        FighterSystem.get_fighter(self).attack(target)
 
     def _xp_next_level(self):
         return 2 ** (self.level + 1) * config.data.player.expRequiredBase
 
     def gain_xp(self, amount):
         # TODO: make this a component and eventually remove this class?
-        fighter = self.get_component(Fighter)
+        fighter = FighterSystem.get_fighter(self)
 
         fighter.xp += amount
         # XP doubles every level. 40, 80, 160, ...
