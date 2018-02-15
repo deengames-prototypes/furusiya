@@ -1,7 +1,5 @@
 import textwrap
 
-import tdl
-
 import colors
 from model.config import file_watcher
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, LIMIT_FPS, PANEL_HEIGHT
@@ -41,57 +39,6 @@ class Game:
         print("Terminating ...")
 
         file_watcher.stop()
-
-
-def menu(header, options, width):
-    if len(options) > 26:
-        raise ValueError('Cannot have a menu with more than 26 options.')
-
-    # calculate total height for the header (after textwrap) and one line per option
-    header_wrapped = textwrap.wrap(header, width)
-    header_height = len(header_wrapped)
-    if header == '':
-        header_height = 0
-    height = len(options) + header_height
-
-    # create an off-screen console that represents the menu's window
-    window = tdl.Console(width, height)
-
-    # print the header, with wrapped text
-    window.draw_rect(0, 0, width, height, None, fg=colors.white, bg=None)
-    for i, line in enumerate(header_wrapped):
-        window.draw_str(0, 0 + i, header_wrapped[i])
-
-    # print all the options
-    y = header_height
-    letter_index = ord('a')
-    for option_text in options:
-        text = '(' + chr(letter_index) + ') ' + option_text
-        window.draw_str(0, y, text, bg=None)
-        y += 1
-        letter_index += 1
-
-    # blit the contents of "window" to the Game.ui.root console
-    x = SCREEN_WIDTH // 2 - width // 2
-    y = SCREEN_HEIGHT // 2 - height // 2
-    Game.ui.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
-
-    # present the Game.ui.root console to the player and wait for a key-press
-    tdl.flush()
-    key = tdl.event.key_wait()
-    key_char = key.char
-    if key_char == '':
-        key_char = ' '  # placeholder
-
-    if key.key == 'ENTER' and key.alt:
-        # Alt+Enter: toggle fullscreen
-        tdl.set_fullscreen(not tdl.get_fullscreen())
-
-    # convert the ASCII code to an index; if it corresponds to an option, return it
-    index = ord(key_char) - ord('a')
-    if 0 <= index < len(options):
-        return index
-    return None
 
 
 def message(new_msg, color=colors.white):

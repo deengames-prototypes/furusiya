@@ -1,5 +1,3 @@
-import tdl
-
 import colors
 from constants import FOV_ALGO, FOV_LIGHT_WALLS, MSG_X, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT
 from main_interface import Game
@@ -66,7 +64,7 @@ class MapRenderer:
             x2, y2 = (Game.target.x, Game.target.y) if Game.target is not None else Game.mouse_coord
 
             x1, y1 = self._player.x, self._player.y
-            line = tdl.map.bresenham(x1, y1, x2, y2)
+            line = Game.ui.bresenham(x1, y1, x2, y2)
             monster_on_target_tile = [x for x in self._area_map.get_entities_on(x2, y2) if FighterSystem.has_fighter(x)]
             for pos in line:
                 if pos in self.visible_tiles:

@@ -1,12 +1,10 @@
 import shelve
 from random import randint
 
-import tdl
-
 import colors
 from model.config import config
 from constants import *
-from main_interface import Game, menu, message
+from main_interface import Game, message
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps import generators
@@ -26,7 +24,7 @@ def inventory_menu(header):
     else:
         options = [item.name for item in Game.inventory]
 
-    index = menu(header, options, INVENTORY_WIDTH)
+    index = Game.ui.create_menu(header, options, INVENTORY_WIDTH)
 
     # if an item was chosen, return it
     if index is None or len(Game.inventory) == 0:
@@ -34,17 +32,10 @@ def inventory_menu(header):
     return Game.inventory[index].get_component(Item)
 
 
-def msgbox(text, width=50):
-    menu(text, [], width)  # use menu() as a sort of "message box"
-
-
 def handle_keys():
     user_input = None
     while user_input is None:
-        # Synchronously wait
-        for event in tdl.event.get():
-            if event is not None:
-                user_input = event
+        user_input = Game.ui.get_input()
 
     if user_input.type == 'MOUSEMOTION':
         Game.mouse_coord = user_input.cell
@@ -56,7 +47,7 @@ def handle_keys():
     # actual keybindings
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle fullscreen
-        tdl.set_fullscreen(not tdl.get_fullscreen())
+        Game.ui.toggle_fullscreen()
 
     elif user_input.key == 'ESCAPE':
         save_game()
@@ -147,18 +138,21 @@ def process_bow():
         Game.draw_bowsight = True
         Game.auto_target = True
         Game.renderer.render()  # show default targetting
+
         while True:
-            for event in tdl.event.get():
-                if event.type == 'MOUSEMOTION':
-                    Game.mouse_coord = event.cell
+            user_input = None
+            while user_input is None:
+                user_input = Game.ui.get_input()
+                if user_input.type == 'MOUSEMOTION':
+                    Game.mouse_coord = user_input.cell
                     Game.auto_target = False
                     Game.renderer.render()
-                elif event.type == 'KEYDOWN':
-                    if event.key == 'ESCAPE':
+                elif user_input.type == 'KEYDOWN':
+                    if user_input.key == 'ESCAPE':
                         Game.draw_bowsight = False
                         Game.current_turn = Game.player
                         return
-                    elif event.char == 'f':
+                    elif user_input.char == 'f':
                         if Game.target and FighterSystem.has_fighter(Game.target):
                             is_critical = False
                             damage_multiplier = config.data.weapons.arrowDamageMultiplier
@@ -231,7 +225,7 @@ def new_game():
 
 
 def run_loop_with(condition, callback):
-    while condition() and not tdl.event.is_window_closed() and Game.playing:
+    while condition() and not Game.ui.event_closed() and Game.playing:
         Game.renderer.render()
         callback()
 
@@ -247,9 +241,6 @@ def play_game():
     Game.current_turn = Game.player
     Game.playing = True
 
-    def condition():
-        return not tdl.event.is_window_closed() and Game.playing
-
     def callback():
         if Game.current_turn is Game.player:
             handle_keys()
@@ -259,4 +250,4 @@ def play_game():
 
             Game.current_turn = Game.player
 
-    run_loop_with(condition, callback)
+    run_loop_with(lambda: True, callback)

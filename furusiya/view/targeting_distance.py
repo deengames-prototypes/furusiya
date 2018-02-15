@@ -1,5 +1,3 @@
-import tdl
-
 from main_interface import Game
 from model.systems.fighter_system import FighterSystem
 
@@ -14,17 +12,19 @@ def target_tile(max_range=None):
     while True:
         # render the screen. this erases the inventory and shows the names of
         # objects under the mouse.
-        tdl.flush()
+        Game.ui.flush()
 
         clicked = False
-        for event in tdl.event.get():
-            if event.type == 'MOUSEMOTION':
-                Game.mouse_coord = event.cell
-            if event.type == 'MOUSEDOWN' and event.button == 'LEFT':
-                clicked = True
-            elif ((event.type == 'MOUSEDOWN' and event.button == 'RIGHT') or
-                  (event.type == 'KEYDOWN' and event.key == 'ESCAPE')):
-                return None, None
+        user_input = Game.ui.get_input()
+
+        if user_input.type == 'MOUSEMOTION':
+            Game.mouse_coord = user_input.cell
+        if user_input.type == 'MOUSEDOWN' and user_input.button == 'LEFT':
+            clicked = True
+        elif ((user_input.type == 'MOUSEDOWN' and user_input.button == 'RIGHT') or
+              (user_input.type == 'KEYDOWN' and user_input.key == 'ESCAPE')):
+            return None, None
+
         Game.renderer.render()
 
         # accept the target if the player clicked in FOV, and in case a range is
