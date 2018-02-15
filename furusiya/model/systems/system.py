@@ -1,23 +1,38 @@
 class System(type):
+    """
+    Metaclass for component systems.
+
+    Automatically generates set_, remove_, get_, and has_
+    methods according to the class's _component_name attribute.
+
+    Also creates a dictionary of owner entities and objects
+    using the same name, appending the letter 's'.
+    """
     def __new__(mcs, clsname, bases, dct):
         component_name = dct['_component_name']
 
-        def set_(cls, owner, component):
-            getattr(cls, f'{component_name}s')[owner] = component
+        # This sets the local variable `component_dict`
+        # and the class attribute in question to the same dictionary instance
+        # for easier method generation
+        dct[f'{component_name}s'] = component_dict = {}
 
-        def remove_(cls, owner):
-            del getattr(cls, f'{component_name}s')[owner]
+        def set_(owner, component):
+            component_dict[owner] = component
 
-        def get_(cls, owner):
-            return getattr(cls, f'{component_name}s').get(owner, None)
+        def remove_(owner):
+            del component_dict[owner]
 
-        def has_(cls, owner):
-            return getattr(cls, f'get_{component_name}')(owner) is not None
+        def get_(owner):
+            return component_dict.get(owner, None)
 
-        dct[f'set_{component_name}'] = classmethod(set_)
-        dct[f'remove_{component_name}'] = classmethod(remove_)
-        dct[f'get_{component_name}'] = classmethod(get_)
-        dct[f'has_{component_name}'] = classmethod(has_)
-        dct[f'{component_name}s'] = {}
+        def has_(owner):
+            return get_(owner) is not None
+
+        # They don't need to be classmethods;
+        # we can access the component dictionary locally. See above.
+        dct[f'set_{component_name}'] = staticmethod(set_)
+        dct[f'remove_{component_name}'] = staticmethod(remove_)
+        dct[f'get_{component_name}'] = staticmethod(get_)
+        dct[f'has_{component_name}'] = staticmethod(has_)
 
         return type.__new__(mcs, clsname, bases, dct)
