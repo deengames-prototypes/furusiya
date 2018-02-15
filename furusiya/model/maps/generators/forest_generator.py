@@ -5,30 +5,34 @@ import random
 from attrdict import AttrDict
 
 import colors
-from model.config import config
 from model.components.walkers.random_walker import RandomWalker
-from model.item_callbacks import cast_heal, cast_lightning, cast_fireball, cast_confuse
-from model.factories import monster_factory, item_factory
-
+from model.config import config
+from model.maps.generators import map_generator
 
 class ForestGenerator:
     """
     Generates a scary forest map in entirety, by mutating map tiles.
     Includes population of monsters, map items, etc.
     """
-    NUM_ITEMS = (10, 20)
-    NUM_MONSTERS = (30, 40)
-
+    
     TREE_PERCENTAGE = 1 / 4  # This percent of the map area should be trees
     TREE_COPSE_SIZE = 5  # Create copses of N trees at a time
     TREE_COLOURS = (
         (64, 128, 0), # Brownish
         (0, 64, 0)) # Greenish
+    NUM_ITEMS = (10, 20)
+    NUM_MONSTERS = (30, 40)
 
     def __init__(self, area_map):
         self._area_map = area_map
         self._generate_trees()
-        self._generate_objects()
+        
+        map_generator.generate_monsters(self._area_map,
+            random.randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1]))
+
+        map_generator.generate_items(self._area_map,
+            random.randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1]))
+
 
     def _generate_trees(self):
         for x in range(0, self._area_map.width):
@@ -143,89 +147,3 @@ class ForestGenerator:
 
                 e.x += dx
                 e.y += dy
-
-    def _generate_objects(self):
-        self._generate_monsters()
-        self._generate_items()
-
-    def _find_empty_tile(self):
-        while True:
-            x = randint(0, self._area_map.width - 1)
-            y = randint(0, self._area_map.height - 1)
-            if self._area_map.tiles[x][y].is_walkable:
-                break
-                
-        return x, y
-
-    def _generate_monsters(self):
-        # choose random number of monsters
-        num_monsters = randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1])
-
-        for i in range(num_monsters):
-            # choose random spot for this monster
-            x = randint(0, self._area_map.width)
-            y = randint(0, self._area_map.width)
-
-            # only place it if the tile is not blocked
-            if self._area_map.is_walkable(x, y):
-                choice = randint(0, 100)
-                if choice <= 55: 
-                    name = 'bushslime'
-                    data = config.data.enemies.bushslime
-                    colour = colors.desaturated_green
-                elif choice <= 55 + 30:
-                    name = 'steelhawk'
-                    data = config.data.enemies.steelhawk
-                    colour = colors.light_blue
-                else:  # 15
-                    name = 'tigerslash'
-                    data = config.data.enemies.tigerslash
-                    colour = colors.orange
-
-                monster = monster_factory.create_monster(data, x, y, colour, name)
-                self._area_map.entities.append(monster)
-
-    def _generate_items(self):
-        # choose random number of items
-        num_items = randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1])
-
-        for i in range(num_items):
-            # choose random spot for this item
-            x = randint(0, self._area_map.width)
-            y = randint(0, self._area_map.width)
-
-            # only place it if the tile is not blocked
-            if self._area_map.is_walkable(x, y):
-                dice = randint(0, 100)
-                if dice < 70:
-                    # create a healing potion (70% chance)
-                    char = '!'
-                    name = 'healing potion'
-                    color = colors.violet
-                    use_func = cast_heal
-
-                elif dice < 70 + 10:
-                    # create a lightning bolt scroll (15% chance)
-                    char = '#'
-                    name = 'scroll of lightning bolt'
-                    color = colors.light_yellow
-                    use_func = cast_lightning
-
-                elif dice < 70 + 10 + 10:
-                    # create a fireball scroll (10% chance)
-                    char = '#'
-                    name = 'scroll of fireball'
-                    color = colors.light_yellow
-                    use_func = cast_fireball
-
-                else: # 10
-                    # create a confuse scroll (15% chance)
-                    char = '#'
-                    name = 'scroll of confusion'
-                    color = colors.light_yellow
-                    use_func = cast_confuse
-
-                item = item_factory.create_item(x, y, char, name, color, use_func)
-
-                self._area_map.entities.append(item)
-                item.send_to_back()  # items appear below other objects
