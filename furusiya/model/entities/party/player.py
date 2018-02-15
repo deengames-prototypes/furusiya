@@ -53,7 +53,7 @@ class Player(GameObject):
             horse.is_mounted = False
 
     def _get_health_for_resting(self, max_hp):
-        return int(config.data.player.restingPercent/100 * max_hp)
+        return int(config.data.skills.resting.percent/100 * max_hp)
 
     def rest(self):
         fighter = FighterSystem.get_fighter(self)
