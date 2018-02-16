@@ -19,7 +19,6 @@ class Item(Component):
             message('Your inventory is full, cannot pick up ' +
                     self.owner.name + '.', colors.red)
         elif "arrows" in self.owner.name:
-            global player
             # eg. 13 arrows
             num_arrows = int(self.owner.name[0:self.owner.name.index(' ')])
             Game.player.arrows += num_arrows

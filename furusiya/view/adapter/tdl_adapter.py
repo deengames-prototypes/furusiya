@@ -54,8 +54,19 @@ class TdlAdapter:
             lightWalls=should_light_walls
         )
 
-    @staticmethod
-    def wait_for_input():
+    def wait_for(self, event):
+        user_input = None
+        while user_input is None:
+            user_input = tdl.event.wait()
+            if user_input.type != event:
+                user_input = None
+
+        return user_input
+
+    def wait_for_mouse(self):
+        return self.wait_for('MOUSEDOWN')
+
+    def wait_for_key(self):
         """
         wait for response
         """
@@ -121,7 +132,7 @@ class TdlAdapter:
 
         # present the Game.ui.root console to the player and wait for a key-press
         self.flush()
-        key = self.wait_for_input()
+        key = self.wait_for_key()
         key_char = key.char
         if key_char == '':
             key_char = ' '  # placeholder
@@ -139,5 +150,6 @@ class TdlAdapter:
     def message_box(self, text, width=50):
         self.create_menu(text, [], width)
 
-    def bresenham(self, x1, y1, x2, y2):
+    @staticmethod
+    def bresenham(x1, y1, x2, y2):
         return tdl.map.bresenham(x1, y1, x2, y2)

@@ -3,7 +3,7 @@ from model.keys.key_callbacks import *
 
 
 keybinds = {
-    'ESCAPE': escape_callback,
+    'ESCAPE': exit_to_main_menu_callback,
     'ENTER': enter_callback,
 
     'UP': up_callback,
@@ -25,7 +25,13 @@ keybinds = {
 
 events = {
     'QUIT': quit_event,
-    'MOUSEMOTION': mousemotion_event
+
+    'MOUSEMOTION': mousemotion_event,
+    'MOUSEDOWN': None,
+    'MOUSEUP': None,
+
+    'KEYDOWN': None,
+    'KEYUP': None,
 }
 
 
@@ -43,7 +49,7 @@ class KeyBinder:
             self.suspend_keybind(key)
 
     def register_keybind(self, key, callback=None):
-        callback = callback or keybinds.get(key, lambda ev: None)
+        callback = callback or keybinds.get(key) or (lambda ev: None)
         setattr(self.game.ui.app, f'key_{key}', callback)
 
     def suspend_keybind(self, key):
@@ -62,7 +68,7 @@ class KeyBinder:
             self.suspend_event(key)
 
     def register_event(self, event_name, callback=None):
-        callback = callback or events.get(event_name, lambda ev: None)
+        callback = callback or events.get(event_name) or (lambda ev: None)
         setattr(self.game.ui.app, f'ev_{event_name}', callback)
 
     def suspend_event(self, event_name):

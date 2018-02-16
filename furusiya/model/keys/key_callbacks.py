@@ -10,7 +10,7 @@ from model.systems.fighter_system import FighterSystem
 from model.weapons import Bow
 
 
-def escape_callback(event):
+def exit_to_main_menu_callback(event):
     Game.saveload.save()
     Game.ui.app.suspend()
 

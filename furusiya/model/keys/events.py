@@ -1,5 +1,5 @@
 from main_interface import Game
-from model.keys.key_callbacks import escape_callback
+from model.keys.key_callbacks import exit_to_main_menu_callback
 from model.systems.ai_system import AISystem
 
 
@@ -15,7 +15,7 @@ def update_callback(delta_time):
 
 
 def quit_event(event):
-    escape_callback(event)
+    exit_to_main_menu_callback(event)
     exit()
 
 
