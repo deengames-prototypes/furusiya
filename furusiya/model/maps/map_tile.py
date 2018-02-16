@@ -8,7 +8,7 @@ class MapTile:
     GROUND_CHARACTER = '.'
     WALL_CHARACTER = '#'
 
-    def __init__(self, walkable=False):
+    def __init__(self):
         self.is_explored = False
         self.convert_to_ground()
 

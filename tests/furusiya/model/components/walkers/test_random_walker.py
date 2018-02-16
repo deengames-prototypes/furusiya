@@ -10,7 +10,7 @@ class TestRandomWalker(unittest.TestCase):
 
     def test_walk_walks_to_all_adjacencies(self):
         start_x, start_y = 3, 3
-        area_map = AreaMap(start_x * 2, start_y * 2, walkable=True)
+        area_map = AreaMap(start_x * 2, start_y * 2)
 
         entity = AttrDict({'x': start_x, 'y': start_y})
         r = RandomWalker(area_map, entity)

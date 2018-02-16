@@ -4,7 +4,7 @@ from model.maps.map_tile import MapTile
 
 class AreaMap:
 
-    def __init__(self, width, height, walkable=False):
+    def __init__(self, width, height):
         self.tiles = []
         self.entities = []
         self.width = width
@@ -14,7 +14,7 @@ class AreaMap:
         for x in range(0, self.width):
             self.tiles.append([])
             for y in range(0, self.height):
-                self.tiles[x].append(MapTile(walkable))
+                self.tiles[x].append(MapTile())
 
     def is_on_map(self, x, y):
         return 0 <= x < self.width and 0 <= y < self.height
