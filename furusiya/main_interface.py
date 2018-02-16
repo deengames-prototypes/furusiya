@@ -26,6 +26,7 @@ class Game:
     playing = False  # True when in-game, false otherwise
 
     saveload = None
+    keybinder = None
 
     @classmethod
     def run(cls, to_run):
@@ -38,11 +39,19 @@ class Game:
         )
         cls.saveload = SaveLoad(cls)
 
+        from model.key_binder import KeyBinder
+        cls.keybinder = KeyBinder(cls)
+
         to_run()
 
         print("Terminating ...")
 
         file_watcher.stop()
+
+    @classmethod
+    def set_keybinds_and_events(cls):
+        cls.keybinder.register_all_events()
+        cls.keybinder.register_all_keybinds()
 
 
 def message(new_msg, color=colors.white):

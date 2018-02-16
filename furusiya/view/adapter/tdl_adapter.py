@@ -6,6 +6,7 @@ import tdl
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from model.config import config
+from view.adapter.extensible_app import ExtensibleApp
 
 
 class TdlAdapter:
@@ -16,6 +17,11 @@ class TdlAdapter:
         tdl.setFPS(fps_limit)
         self.con = tdl.Console(*map)
         self.panel = tdl.Console(*panel)
+
+        self.app = ExtensibleApp()
+
+    def run(self):
+        self.app.run()
 
     def clear(self):
         """

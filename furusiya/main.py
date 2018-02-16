@@ -6,16 +6,65 @@ import colors
 
 # Has to be here, because we use it everywhere
 from model.config import file_watcher, config
+
 file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
 
-from function_mess import new_game, play_game
-from main_interface import Game
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from view.map_renderer import MapRenderer
+from model.entities.party.player import Player
+from model.entities.party.stallion import Stallion
+from model.maps import generators
+from model.maps.area_map import AreaMap
+from model.maps.generators import DungeonGenerator
+from main_interface import Game, message
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT
 import random
+
+
+def new_game():
+
+    Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
+    Game.player = Player()
+    Game.stallion = Stallion(Game.player)
+
+    # generate map (at this point it's not drawn to the screen)
+    generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
+    generator = getattr(generators, generator_class_name, DungeonGenerator)
+    generator(Game.area_map)
+
+    Game.area_map.place_on_random_ground(Game.player)
+    # TODO: what if we spawned in a wall? :/
+    Game.stallion.x = Game.player.x + 1
+    Game.stallion.y = Game.player.y + 1
+    Game.area_map.entities.append(Game.stallion)
+
+    Game.game_state = 'playing'
+    Game.inventory = []
+
+    # create the list of game messages and their colors, starts empty
+    Game.game_msgs = []
+
+    # a warm welcoming message!
+    message('Another brave knight yearns to bring peace to the land.', colors.red)
+
+    # Gain four levels
+    Game.player.gain_xp(40 + 80 + 160 + 320)
+
+
+def play_game():
+    Game.mouse_coord = (0, 0)
+    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
+    Game.renderer.recompute_fov = True
+    Game.renderer.clear()
+    Game.renderer.refresh_all()
+
+    Game.current_turn = Game.player
+    Game.playing = True
+    Game.ui.run()
 
 
 def main_menu():
     img = image_load('menu_background.png')
+    Game.set_keybinds_and_events()
 
     while not Game.ui.event_closed():
         # show the background image, at twice the regular console resolution
