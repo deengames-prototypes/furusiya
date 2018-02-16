@@ -32,8 +32,8 @@ def test_gain_xp(xp, player_fighter):
     player_fighter.assert_called_with(player_fighter.max_hp)
 
 
-def test_level_up_10(xp):
+def test_level_up_multiple_times(xp):
     old_level = xp.level
-    xp.gain_xp(sum([xp._xp_next_level() for _ in range(10)]))
+    xp.gain_xp(1000)
 
-    assert xp.level == old_level + 10
+    assert xp.level > old_level + 2
