@@ -11,13 +11,12 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, owner, hp, defense, power, xp, weapon=None, death_function=None):
+    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None):
         super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
-        self.xp = xp
         self.death_function = death_function
         self.weapon = weapon
         self.bow_crits = 0

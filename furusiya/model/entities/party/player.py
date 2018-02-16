@@ -1,4 +1,5 @@
 import colors
+from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
 from death_functions import player_death
@@ -7,6 +8,7 @@ from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash
 from model.systems.fighter_system import FighterSystem
+from model.systems.xp_system import XPSystem
 
 
 class Player(GameObject):
@@ -24,18 +26,28 @@ class Player(GameObject):
                 hp=data.startingHealth,
                 defense=data.startingDefense,
                 power=data.startingPower,
-                xp=0,
                 weapon=weapon_init(self),
                 death_function=player_death
             )
         )
 
+        def on_level_callback():
+            self.stats_points += config.data.player.statsPointsOnLevelUp
+
+        XPSystem.set_experience(
+            self, XPComponent(
+                owner=self,
+                xp=0,
+                on_level_callback=on_level_callback,
+                xp_required_base=config.data.player.expRequiredBase
+            )
+        )
+
         Game.draw_bowsight = False
 
-        self.level = 1
-        self.stats_points = 0
         self.arrows = config.data.player.startingArrows
 
+        self.stats_points = 0
         self.mounted = False
         self.moves_while_mounted = 0
         self.turns_to_rest = 0
@@ -94,20 +106,3 @@ class Player(GameObject):
         FighterSystem.get_fighter(self).attack(target)
         if config.data.skills.omnislash.enabled:
             OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
-
-    def _xp_next_level(self):
-        return 2 ** (self.level + 1) * config.data.player.expRequiredBase
-
-    def gain_xp(self, amount):
-        # TODO: make this a component and eventually remove this class?
-        fighter = FighterSystem.get_fighter(self)
-
-        fighter.xp += amount
-        # XP doubles every level. 40, 80, 160, ...
-        # First level = after four orcs. Yeah, low standards.
-        # DRY ya'ne
-        while fighter.xp >= self._xp_next_level():
-            self.level += 1
-            self.stats_points += config.data.player.statsPointsOnLevelUp
-            message("You are now level {}!".format(self.level))
-            fighter.heal(fighter.max_hp)

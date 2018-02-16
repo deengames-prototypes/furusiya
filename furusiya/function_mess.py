@@ -13,6 +13,7 @@ from model.entities.party.stallion import Stallion
 from model.maps.generators import DungeonGenerator
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
+from model.systems.xp_system import XPSystem
 from model.weapons import Bow
 from view.map_renderer import MapRenderer
 
@@ -221,7 +222,7 @@ def new_game():
     message('Another brave knight yearns to bring peace to the land.', colors.red)
 
     # Gain four levels
-    Game.player.gain_xp(40 + 80 + 160 + 320)
+    XPSystem.get_experience(Game.player).gain_xp(40 + 80 + 160 + 320)
 
 
 def run_loop_with(condition, callback):
