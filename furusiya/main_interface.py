@@ -5,6 +5,7 @@ from model.config import file_watcher
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, LIMIT_FPS, PANEL_HEIGHT
 from constants import MSG_WIDTH, MSG_HEIGHT
 from view.adapter.tdl_adapter import TdlAdapter
+from view.data.saveload import SaveLoad
 
 
 class Game:
@@ -24,6 +25,8 @@ class Game:
     current_turn = None
     playing = False  # True when in-game, false otherwise
 
+    saveload = None
+
     @classmethod
     def run(cls, to_run):
         cls.ui = TdlAdapter(
@@ -33,6 +36,7 @@ class Game:
             panel=(SCREEN_WIDTH, PANEL_HEIGHT),
             fps_limit=LIMIT_FPS
         )
+        cls.saveload = SaveLoad(cls)
 
         to_run()
 

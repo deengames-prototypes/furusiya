@@ -8,7 +8,7 @@ import colors
 from model.config import file_watcher, config
 file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
 
-from function_mess import new_game, play_game, load_game
+from function_mess import new_game, play_game
 from main_interface import Game
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 import random
@@ -38,7 +38,7 @@ def main_menu():
             play_game()
         if choice == 1:  # load last game
             try:
-                load_game()
+                Game.saveload.load()
             except Exception as e:
                 Game.ui.message_box('\n No saved game to load.\n', 24)
                 continue

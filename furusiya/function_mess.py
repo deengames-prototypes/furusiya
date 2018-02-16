@@ -1,4 +1,3 @@
-import shelve
 from random import randint
 
 import colors
@@ -52,7 +51,7 @@ def handle_keys():
         Game.ui.toggle_fullscreen()
 
     elif user_input.key == 'ESCAPE':
-        save_game()
+        Game.saveload.save()
         Game.playing = False
         return
 
@@ -172,31 +171,6 @@ def process_bow():
                             Game.player.arrows -= 1
                             Game.draw_bowsight = False
                             return ""
-
-
-def save_game():
-    # open a new empty shelve (possibly overwriting an old one) to write the game data
-    with shelve.open('savegame', 'n') as savefile:
-        savefile['tiles'] = Game.area_map.tiles
-        savefile['entities'] = Game.area_map.entities
-        savefile['player_index'] = Game.area_map.entities.index(Game.player)  # index of player in entities list
-        savefile['inventory'] = Game.inventory
-        savefile['game_msgs'] = Game.game_msgs
-        savefile['game_state'] = Game.game_state
-
-
-def load_game():
-    # open the previously saved shelve and load the game data
-
-    with shelve.open('savegame', 'r') as savefile:
-        Game.area_map.tiles = savefile['tiles']
-        Game.area_map.width = len(Game.area_map.tiles)
-        Game.area_map.height = len(Game.area_map.tiles[0])
-        Game.area_map.entities = savefile['entities']
-        Game.player = Game.area_map.entities[savefile['player_index']]  # get index of player in objects list and access it
-        Game.inventory = savefile['inventory']
-        Game.game_msgs = savefile['game_msgs']
-        Game.game_state = savefile['game_state']
 
 
 def new_game():
