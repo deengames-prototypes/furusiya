@@ -20,6 +20,11 @@ class TdlAdapter:
 
         self.app = ExtensibleApp()
 
+    @property
+    def event_queue(self):
+        """Private, I know. Not my fault tdl sucks."""
+        return tdl.event._eventQueue
+
     def run(self):
         self.app.run()
 
@@ -28,6 +33,9 @@ class TdlAdapter:
         Clears the screen.
         """
         self.con.clear()
+
+    def remove_event_from_queue(self, event_to_remove):
+        self.event_queue.remove(event_to_remove)
 
     @staticmethod
     def flush():
@@ -51,8 +59,13 @@ class TdlAdapter:
         """
         wait for response
         """
-        key = tdl.event.key_wait()
-        return key
+        user_input = None
+        while user_input is None:
+            user_input = tdl.event.key_wait()
+            if user_input.key == 'TEXT':
+                user_input = None
+
+        return user_input
 
     @staticmethod
     def get_input():
@@ -107,15 +120,15 @@ class TdlAdapter:
         self.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
 
         # present the Game.ui.root console to the player and wait for a key-press
-        tdl.flush()
-        key = tdl.event.key_wait()
+        self.flush()
+        key = self.wait_for_input()
         key_char = key.char
         if key_char == '':
             key_char = ' '  # placeholder
 
         if key.key == 'ENTER' and key.alt:
             # Alt+Enter: toggle fullscreen
-            tdl.set_fullscreen(not tdl.get_fullscreen())
+            self.toggle_fullscreen()
 
         # convert the ASCII code to an index; if it corresponds to an option, return it
         index = ord(key_char) - ord('a')
