@@ -82,7 +82,8 @@ class GameObject:
     def send_to_back(self):
         # make this object be drawn first, so all others appear above it if
         # they're in the same tile.
-        Game.area_map.entities.remove(self)
+        if self in Game.area_map.entities:
+            Game.area_map.entities.remove(self)
         Game.area_map.entities.insert(0, self)
 
     def draw(self):
