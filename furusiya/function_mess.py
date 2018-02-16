@@ -11,6 +11,7 @@ from model.maps import generators
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.maps.generators import DungeonGenerator
+from model.skills.whirlwind import Whirlwind
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 from model.systems.xp_system import XPSystem
@@ -129,6 +130,9 @@ def process_in_game_keys(user_input):
                 Game.player.rest()
 
             run_loop_with(condition, callback)
+
+        elif user_input.text == 'l' and config.data.skills.whirlwind.enabled:
+            return Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
 
         Game.current_turn = Game.player
 

@@ -32,6 +32,10 @@
         "omnislash": {
             "enabled": true,
             "rehitPercent": 20
+        },
+        "whirlwind": {
+            "enabled": true,
+            "radius": 2
         }
     },
     "weapons": {
