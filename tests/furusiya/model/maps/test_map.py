@@ -34,3 +34,23 @@ class TestMap(unittest.TestCase):
         e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
         basic_map.place_on_random_ground(e)
         self.assertFalse(basic_map.is_walkable(e.x, e.y))
+
+    def test_get_blocking_object_at_returns_object_if_object_is_there(self):
+        basic_map = AreaMap(10, 10)
+        e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
+        basic_map.place_on_random_ground(e)
+
+        # Act
+        blocking_object = basic_map.get_blocking_object_at(e.x, e.y)
+
+        # Assert
+        self.assertIs(e, blocking_object)
+
+    def test_get_blocking_object_at_returns_none_if_nothing_is_there(self):
+        basic_map = AreaMap(10, 10)
+
+        # Act
+        blocking_object = basic_map.get_blocking_object_at(0, 0)
+
+        # Assert
+        self.assertIsNone(blocking_object)
