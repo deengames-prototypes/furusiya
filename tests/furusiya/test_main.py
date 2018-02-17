@@ -14,12 +14,9 @@ def test_new_game_creates_new_game():
     assert Game.stallion is not None
 
     assert (Game.stallion.x, Game.stallion.y) in (
-        (x + Game.player.x, y + Game.player.y)
-        for x, y in (
-            (dx, dy)
-            for dx in range(-1, 2)
-            for dy in range(-1, 2)
-        )
+        (dx + Game.player.x, dy + Game.player.y)
+        for dx in range(-1, 2)
+        for dy in range(-1, 2)
     )
 
     assert Game.xp_sys.get(Game.player).level == 5

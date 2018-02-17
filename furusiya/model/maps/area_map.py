@@ -1,6 +1,7 @@
 import random
 
 from model.maps.map_tile import MapTile
+from model.rect import Rect
 
 
 class AreaMap:
@@ -26,6 +27,13 @@ class AreaMap:
             if (e.x, e.y) == (x, y)
         ]
 
+    def get_entity_with_id(self, entity_id):
+        for entity in self.entities:
+            if entity.id == entity_id:
+                return entity
+
+        return None
+
     def is_walkable(self, x, y):
         return (self.is_on_map(x, y)
                 and self.tiles[x][y].is_walkable
@@ -50,6 +58,44 @@ class AreaMap:
         entity.x = x
         entity.y = y
         self.entities.append(entity)
+
+        return self.entities.index(entity)
+
+    def get_walkable_tile_within(self, rect):
+        for tile_x in range(rect.x1, rect.x2):
+            for tile_y in range(rect.y1, rect.y2):
+                if self.is_walkable(tile_x, tile_y):
+                    return tile_x, tile_y
+
+        return None
+
+    def get_walkable_tile_around(self, x, y, range_num):
+        """
+        returns a walkable tile in given range "around" x, y.
+        tries to return closest tile there is.
+        """
+        already_processed = set()
+
+        for delta in range(range_num):
+            for width_range in range(-delta, delta):
+                for height_range in range(-delta, delta):
+                    if (width_range, height_range) not in already_processed:
+                        already_processed.add((width_range, height_range))
+                        rect = Rect(x, y, width_range, height_range)
+                        tile = self.get_walkable_tile_within(rect)
+                        if tile is not None:
+                            return tile
+
+        return None
+
+    def place_around(self, entity, x, y):
+        tile = self.get_walkable_tile_around(x, y, min(self.width, self.height))
+
+        entity.x = tile[0]
+        entity.y = tile[1]
+        self.entities.append(entity)
+
+        return self.entities.index(entity)
 
     def get_blocking_object_at(self, x, y):
         for obj in self.entities:

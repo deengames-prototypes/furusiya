@@ -25,20 +25,24 @@ from view.map_renderer import MapRenderer
 
 def new_game():
 
+    Game.fighter_sys = ComponentSystem()
+    Game.xp_sys = ComponentSystem()
+    Game.ai_sys = AISystem()
+
     Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
-    Game.player = Player()
-    Game.stallion = Stallion(Game.player)
+    player = Player()
+    stallion = Stallion(player)
 
     # generate map (at this point it's not drawn to the screen)
     generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
     generator = getattr(generators, generator_class_name, DungeonGenerator)
     generator(Game.area_map)
 
-    Game.area_map.place_on_random_ground(Game.player)
-    # TODO: what if we spawned in a wall? :/
-    Game.stallion.x = Game.player.x + 1
-    Game.stallion.y = Game.player.y + 1
-    Game.area_map.entities.append(Game.stallion)
+    Game.area_map.place_on_random_ground(player)
+    Game.area_map.place_around(stallion, player.x, player.y)
+
+    Game.player = player.id
+    Game.stallion = stallion.id
 
     Game.game_state = 'playing'
     Game.inventory = []
@@ -63,8 +67,6 @@ def play_game():
     Game.renderer.refresh_all()
 
     Game.current_turn = Game.player
-    Game.playing = True
-
     Game.ui.run()
 
 
@@ -80,10 +82,6 @@ def init_game():
     Game.save_manager = SaveManager(Game)
     Game.keybinder = KeyBinder(Game)
     Game.keybinder.register_all_keybinds_and_events()
-
-    Game.fighter_sys = ComponentSystem()
-    Game.xp_sys = ComponentSystem()
-    Game.ai_sys = AISystem()
 
 
 def main_menu():

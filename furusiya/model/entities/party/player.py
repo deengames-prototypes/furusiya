@@ -29,14 +29,11 @@ class Player(GameObject):
             )
         )
 
-        def on_level_callback():
-            self.stats_points += config.data.player.statsPointsOnLevelUp
-
         Game.xp_sys.set(
             self, XPComponent(
                 owner=self,
                 xp=0,
-                on_level_callback=on_level_callback,
+                on_level_callback=self.on_level_callback,
                 xp_required_base=config.data.player.expRequiredBase
             )
         )
@@ -48,9 +45,11 @@ class Player(GameObject):
         self.stats_points = 0
         self.mounted = False
         self.moves_while_mounted = 0
-        turns_to_rest = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
+
+    def on_level_callback(self):
+        self.stats_points += config.data.player.statsPointsOnLevelUp
 
     def mount(self, horse):
         if config.data.features.horseIsMountable:
@@ -85,10 +84,11 @@ class Player(GameObject):
         y = self.y + dy
 
         # try to find an attackable object there
-        for obj in Game.area_map.get_entities_on(x, y):
-            if Game.fighter_sys.has(obj):
-                target = obj
-                break
+        target = Game.area_map.get_blocking_object_at(x, y)
+        if target is not None:
+            Game.fighter_sys.get(self).attack(target)
+            if config.data.skills.omnislash.enabled:
+                OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
         else:
             self.move(dx, dy)
             if self.mounted:
@@ -100,7 +100,3 @@ class Player(GameObject):
                 Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
             return
-
-        Game.fighter_sys.get(self).attack(target)
-        if config.data.skills.omnislash.enabled:
-            OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))

@@ -13,11 +13,12 @@ def system():
 def test_system_basic(system):
     """Tests for basic System"""
     component_1 = Mock()
+    owner = Mock(id=1)
 
-    system.set('owner1', component_1)
-    assert system.has('owner1')
-    assert system.get('owner1') == component_1
+    system.set(owner, component_1)
+    assert system.has(owner)
+    assert system.get(owner) == component_1
 
-    system.remove('owner1')
-    assert not system.has('owner1')
-    assert system.get('owner1') is None
+    system.remove(owner)
+    assert not system.has(owner)
+    assert system.get(owner) is None
