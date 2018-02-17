@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from constants import FOV_ALGO, FOV_LIGHT_WALLS
-from main_interface import Game
+from game import Game
 from model.entities.party.player import Player
 from model.config import config
 from model.maps.area_map import AreaMap
@@ -19,7 +19,7 @@ PANEL_HEIGHT = 5
 
 class TestMapRenderer(unittest.TestCase):
     def setUp(self):
-        Game.game_msgs = []
+        Game.game_messages = []
 
     def test_render_marks_current_fov_as_explored(self):
         map = AreaMap(MAP_WIDTH, MAP_HEIGHT)

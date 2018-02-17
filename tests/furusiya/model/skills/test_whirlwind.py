@@ -3,14 +3,14 @@ from unittest.mock import Mock
 import math
 import pytest
 
+from game import Game
 from model.skills.whirlwind import Whirlwind
-from model.systems.fighter_system import FighterSystem
 
 
 def _mock_factory(*args, fighter=None, **kwargs):
     fighter = fighter or Mock()
     m = Mock(*args, **kwargs)
-    FighterSystem.set_fighter(m, fighter)
+    Game.fighter_sys.set(m, fighter)
     m.distance.side_effect = lambda x, y: math.sqrt((x - m.x) ** 2 + (y - m.y) ** 2)
     return m
 

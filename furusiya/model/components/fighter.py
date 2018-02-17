@@ -1,10 +1,9 @@
 import colors
-from main_interface import message, Game
 from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
-from model.systems.ai_system import AISystem
-from model.systems.fighter_system import FighterSystem
+from game import Game
+from model.helper_functions.message import message
 
 
 class Fighter(Component):
@@ -31,7 +30,7 @@ class Fighter(Component):
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
         # a simple formula for attack damage
-        target_fighter = FighterSystem.get_fighter(target)
+        target_fighter = Game.fighter_sys.get(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
 
         msg = f'{self.owner.name.capitalize()} attacks {target.name}'
@@ -56,7 +55,7 @@ class Fighter(Component):
 
     def die(self):
         # Drop arrows if it's a monster
-        if config.data.features.limitedArrows and AISystem.has_ai(self.owner):
+        if config.data.features.limitedArrows and Game.ai_sys.has(self.owner):
             num_arrows = config.data.enemies.arrowDropsOnKill
             arrows = item_factory.create_item(
                 self.owner.x, self.owner.y,

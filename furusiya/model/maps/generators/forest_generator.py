@@ -1,13 +1,11 @@
 import math
-from random import randint
-import random
 
 from attrdict import AttrDict
 
-import colors
+from game import Game
 from model.components.walkers.random_walker import RandomWalker
-from model.config import config
 from model.maps.generators import map_generator
+
 
 class ForestGenerator:
     """
@@ -28,10 +26,10 @@ class ForestGenerator:
         self._generate_trees()
         
         map_generator.generate_monsters(self._area_map,
-            random.randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1]))
+                                        Game.random.randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1]))
 
         map_generator.generate_items(self._area_map,
-            random.randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1]))
+                                     Game.random.randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1]))
 
 
     def _generate_trees(self):
@@ -102,7 +100,7 @@ class ForestGenerator:
         unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
 
         for (x, y) in unreachable:
-            self._area_map.tiles[x][y].convert_to_wall(colour=random.choice(ForestGenerator.TREE_COLOURS))
+            self._area_map.tiles[x][y].convert_to_wall(colour=Game.random.choice(ForestGenerator.TREE_COLOURS))
 
     def _find_empty_ground(self):
         """
@@ -131,19 +129,19 @@ class ForestGenerator:
         the number of tiles we have to walk.
         Repeat until num_tiles is 0
         """
-        e = AttrDict({'x': (randint(0, self._area_map.width - 1)), 'y': (randint(0, self._area_map.height - 1))})
+        e = AttrDict({'x': (Game.random.randint(0, self._area_map.width - 1)), 'y': (Game.random.randint(0, self._area_map.height - 1))})
         walker = RandomWalker(self._area_map, e)
 
         while num_tiles > 0:
             try:
                 walker.walk()
-                self._area_map.tiles[e.x][e.y].convert_to_wall(colour=random.choice(ForestGenerator.TREE_COLOURS))
+                self._area_map.tiles[e.x][e.y].convert_to_wall(colour=Game.random.choice(ForestGenerator.TREE_COLOURS))
                 num_tiles -= 1
             except ValueError as no_walkable_adjacents_error:
                 # While loop will not terminate, we'll try elsewhere
                 # Randomly move, even if there's a tree there.
-                dx = randint(-1, 1)
-                dy = randint(-1, 1) if dx == 0 else 0
+                dx = Game.random.randint(-1, 1)
+                dy = Game.random.randint(-1, 1) if dx == 0 else 0
 
                 e.x += dx
                 e.y += dy

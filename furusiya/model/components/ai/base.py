@@ -1,5 +1,5 @@
+from game import Game
 from model.components.base import Component
-from model.systems.ai_system import AISystem
 
 
 class AbstractAI(Component):
@@ -15,13 +15,13 @@ class AbstractAI(Component):
         raise NotImplementedError()
 
     def temporarily_switch_to(self, other):
-        AISystem.set_ai(self.owner, other)
+        Game.ai_sys.set(self.owner, other)
 
         def temporary_take_turn():
             if other.num_turns > 0:
                 other._take_turn()
             else:
-                AISystem.set_ai(self.owner, self)
+                Game.ai_sys.set(self.owner, self)
                 self.take_turn()
 
         other.take_turn = temporary_take_turn

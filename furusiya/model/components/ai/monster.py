@@ -1,12 +1,10 @@
-from random import randint
-
 import colors
 from model.components.walkers.random_walker import RandomWalker
 from model.config import config
 from constants import CONFUSE_NUM_TURNS
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.components.ai.base import AbstractAI
-from model.systems.fighter_system import FighterSystem
 
 
 class BasicMonster(AbstractAI):
@@ -23,8 +21,8 @@ class BasicMonster(AbstractAI):
                 monster.move_towards(Game.player.x, Game.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif FighterSystem.get_fighter(Game.player).hp > 0:
-                FighterSystem.get_fighter(monster).attack(Game.player)
+            elif Game.fighter_sys.get(Game.player).hp > 0:
+                Game.fighter_sys.get(monster).attack(Game.player)
 
         else:
             if config.data.enemies.randomlyWalkWhenOutOfSight:
@@ -58,7 +56,7 @@ class ConfusedMonster(AbstractAI):
     def _take_turn(self):
         if self.num_turns > 0:  # still confused...
             # move in a random direction, and decrease the number of turns confused
-            self.owner.move(randint(-1, 1), randint(-1, 1))
+            self.owner.move(Game.random.randint(-1, 1), Game.random.randint(-1, 1))
             self.num_turns -= 1
 
         if self.num_turns == 0:

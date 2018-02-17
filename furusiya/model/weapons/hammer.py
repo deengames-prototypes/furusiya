@@ -1,11 +1,10 @@
 import math
 
 import colors
+from game import Game
 from model.config import config
-from main_interface import message
+from model.helper_functions.message import message
 from model.components.ai.monster import StunnedMonster
-from model.systems.ai_system import AISystem
-from model.systems.fighter_system import FighterSystem
 
 
 class Hammer:
@@ -13,7 +12,7 @@ class Hammer:
         self.owner = owner
 
     def attack(self, target):
-        if config.data.features.hammerKnocksBack and AISystem.has_ai(target):
+        if config.data.features.hammerKnocksBack and Game.ai_sys.has(target):
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y
@@ -37,19 +36,19 @@ class Hammer:
                 hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
-                    AISystem.get_ai(target).temporarily_switch_to(StunnedMonster(target))
+                    Game.ai_sys.get(target).temporarily_switch_to(StunnedMonster(target))
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.
                     if config.data.features.knockBackDamagesOnCollision and knockback_distance:
                         damage_percent = config.data.weapons.hammerKnockBackDamagePercent / 100
-                        target_fighter = FighterSystem.get_fighter(target)
+                        target_fighter = Game.fighter_sys.get(target)
                         knockback_damage = int(damage_percent * target_fighter.max_hp)
                         target_fighter.take_damage(knockback_damage)
                         display_message += ' Takes {} additional damage!'.format(knockback_damage)
 
                         # Did we hit someone?
-                        hit_someone = FighterSystem.get_fighter(hit_something) if hit_something else None
+                        hit_someone = Game.fighter_sys.get(hit_something) if hit_something else None
                         if hit_someone:
                             knockback_damage = int(damage_percent * hit_someone.max_hp)
                             hit_someone.take_damage(knockback_damage)

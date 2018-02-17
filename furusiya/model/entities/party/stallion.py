@@ -1,14 +1,14 @@
 import colors
+from game import Game
 from model.components.ai.stallion import StallionAi
 from model.entities.game_object import GameObject
-from model.systems.ai_system import AISystem
 
 
 class Stallion(GameObject):
     def __init__(self, player):
         super().__init__(0, 0, '=', 'stallion', color=colors.sepia, blocks=True)
 
-        AISystem.set_ai(self, StallionAi(self))
+        Game.ai_sys.set(self, StallionAi(self))
         self.player = player
 
         self.is_mounted = False

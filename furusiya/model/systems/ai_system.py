@@ -1,11 +1,8 @@
-from model.systems.system import System
+from model.systems.system import ComponentSystem
 
 
-class AISystem(metaclass=System):
-    _component_name = 'ai'
-
-    @classmethod
-    def take_turn(cls, entity):
-        if cls.has_ai(entity):
-            ai = cls.get_ai(entity)
+class AISystem(ComponentSystem):
+    def take_turn(self, entity):
+        if self.has(entity):
+            ai = self.get(entity)
             ai.take_turn()
