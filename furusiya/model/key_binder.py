@@ -37,6 +37,10 @@ EVENT_BINDINGS = {
 }
 
 
+def placeholder_callback(ev):
+    pass
+
+
 class KeyBinder:
     def __init__(self, game):
         self.game = game
@@ -63,7 +67,7 @@ class KeyBinder:
             self.suspend_keybind(key)
 
     def register_keybind(self, key, callback=None):
-        callback = callback or KEY_BINDINGS.get(key) or (lambda ev: None)
+        callback = callback or KEY_BINDINGS.get(key) or placeholder_callback
         setattr(self.game.ui.app, self._format_attr_key(key), callback)
 
     def suspend_keybind(self, key):
@@ -77,7 +81,7 @@ class KeyBinder:
         self.register_update()
 
     def register_event(self, event_name, callback=None):
-        callback = callback or EVENT_BINDINGS.get(event_name) or (lambda ev: None)
+        callback = callback or EVENT_BINDINGS.get(event_name) or placeholder_callback
         setattr(self.game.ui.app, self._format_attr_event(event_name), callback)
 
     # Update
