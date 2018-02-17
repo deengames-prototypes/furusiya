@@ -2,6 +2,7 @@ from random import randint
 
 from game import Game
 from model.helper_functions.inventory import inventory_menu
+from model.helper_functions.message import message
 from model.item import Item
 from model.keys.util import in_game
 from model.skills.whirlwind import Whirlwind
@@ -132,11 +133,13 @@ def rest_callback(event):
 @in_game(pass_turn=True)
 def continuous_rest_callback(event):
     if config.data.skills.resting.enabled:
-        Game.player.calculate_turns_to_rest()
+        turns_to_rest = Game.player.calculate_turns_to_rest()
+        message(f'You rest for {turns_to_rest} turns.')
 
         def can_rest():
+            nonlocal turns_to_rest
             return (
-                Game.player.turns_to_rest > 0
+                turns_to_rest > 0
                 and not [
                     e
                     for e in Game.area_map.entities
@@ -145,10 +148,11 @@ def continuous_rest_callback(event):
             )
 
         def new_update_callback(delta_time):
+            nonlocal turns_to_rest
             if can_rest():
                 for e in Game.area_map.entities:
                     AISystem.take_turn(e)
-                Game.player.turns_to_rest -= 1
+                turns_to_rest -= 1
                 Game.player.rest()
             else:
                 Game.keybinder.register_all_keybinds_and_events()

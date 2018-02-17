@@ -4,7 +4,6 @@ from model.config import config
 import model.weapons
 from model.helper_functions.death_functions import player_death
 from game import Game
-from model.helper_functions.message import message
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash
@@ -51,7 +50,7 @@ class Player(GameObject):
         self.stats_points = 0
         self.mounted = False
         self.moves_while_mounted = 0
-        self.turns_to_rest = 0
+        turns_to_rest = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
 
@@ -77,9 +76,9 @@ class Player(GameObject):
 
     def calculate_turns_to_rest(self):
         fighter = FighterSystem.get_fighter(self)
-        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
+        turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
-        message(f'You rest for {self.turns_to_rest} turns.')
+        return turns_to_rest
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
