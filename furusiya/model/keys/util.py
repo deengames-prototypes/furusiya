@@ -1,7 +1,7 @@
 from main_interface import Game
 
 
-def in_game(*, pass_turn=False):
+def in_game(callback=None, *, pass_turn=False):
     """
     Decorator for ensuring in-game access only
     Also marks the current turn as passed.
@@ -13,4 +13,8 @@ def in_game(*, pass_turn=False):
                     Game.current_turn = None
                 callback(event)
         return _inner_function
-    return decorator
+
+    if callback is None:
+        return decorator
+    else:
+        return decorator(callback)

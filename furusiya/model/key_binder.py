@@ -20,7 +20,9 @@ keybinds = {
     'm': mount_callback,
 
     'r': rest_callback,
-    'R': continuous_rest_callback
+    'R': continuous_rest_callback,
+    
+    'l': whirlwind_callback
 }
 
 events = {

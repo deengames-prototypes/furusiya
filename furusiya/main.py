@@ -6,6 +6,7 @@ import colors
 
 # Has to be here, because we use it everywhere
 from model.config import file_watcher, config
+from model.systems.xp_system import XPSystem
 
 file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
 
@@ -47,7 +48,7 @@ def new_game():
     message('Another brave knight yearns to bring peace to the land.', colors.red)
 
     # Gain four levels
-    Game.player.gain_xp(40 + 80 + 160 + 320)
+    XPSystem.get_experience(Game.player).gain_xp(40 + 80 + 160 + 320)
 
 
 def play_game():

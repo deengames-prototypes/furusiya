@@ -4,6 +4,7 @@ from main_interface import Game
 from model.inventory import inventory_menu
 from model.item import Item
 from model.keys.util import in_game
+from model.skills.whirlwind import Whirlwind
 from model.systems.ai_system import AISystem
 from model.config import config
 from model.systems.fighter_system import FighterSystem
@@ -151,3 +152,9 @@ def continuous_rest_callback(event):
 
         Game.keybinder.suspend_all_keybinds()
         Game.keybinder.register_update(callback)
+
+
+@in_game(pass_turn=True)
+def whirlwind_callback(event):
+    if config.data.skills.whirlwind.enabled:
+        Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
