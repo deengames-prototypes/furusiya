@@ -41,6 +41,14 @@ class KeyBinder:
     def __init__(self, game):
         self.game = game
 
+    @staticmethod
+    def _format_attr_key(key_name):
+        return f'key_{key_name}'
+
+    @staticmethod
+    def _format_attr_event(event_name):
+        return f'ev_{event_name}'
+
     # Keybinds
     def register_all_keybinds(self):
         for key, callback in keybinds.items():
@@ -52,10 +60,10 @@ class KeyBinder:
 
     def register_keybind(self, key, callback=None):
         callback = callback or keybinds.get(key) or (lambda ev: None)
-        setattr(self.game.ui.app, f'key_{key}', callback)
+        setattr(self.game.ui.app, self._format_attr_key(key), callback)
 
     def suspend_keybind(self, key):
-        delattr(self.game.ui.app, f'key_{key}')
+        delattr(self.game.ui.app, self._format_attr_key(key))
 
     # Events
     def register_all_events(self):
@@ -66,7 +74,7 @@ class KeyBinder:
 
     def register_event(self, event_name, callback=None):
         callback = callback or events.get(event_name) or (lambda ev: None)
-        setattr(self.game.ui.app, f'ev_{event_name}', callback)
+        setattr(self.game.ui.app, self._format_attr_event(event_name), callback)
 
     # Update
     def register_update(self, new_callback=None):
