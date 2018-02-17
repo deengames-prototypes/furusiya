@@ -13,7 +13,7 @@ from model.weapons import Bow
 
 
 def exit_to_main_menu_callback(event):
-    Game.save_load.save()
+    Game.save_manager.save()
     Game.ui.app.suspend()
     Game.ui.unblit_map_and_panel()
 

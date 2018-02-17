@@ -15,5 +15,5 @@ class Game:
     current_turn = None
     playing = False  # True when in-game, false otherwise
 
-    save_load = None
+    save_manager = None
     keybinder = None

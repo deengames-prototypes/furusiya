@@ -7,7 +7,7 @@ from tcod import image_load
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, LIMIT_FPS
 from game import Game
-from data.saveload import SaveLoad
+from data.save_manager import SaveManager
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
 from model.config import file_watcher, config
@@ -76,7 +76,7 @@ def init_game():
         fps_limit=LIMIT_FPS
     )
 
-    Game.save_load = SaveLoad(Game)
+    Game.save_manager = SaveManager(Game)
     Game.keybinder = KeyBinder(Game)
     Game.keybinder.register_all_keybinds_and_events()
 
@@ -106,7 +106,7 @@ def main_menu():
             play_game()
         if choice == 1:  # load last game
             try:
-                Game.save_load.load()
+                Game.save_manager.load()
             except Exception as e:
                 message_box('\n No saved game to load.\n', 24)
                 continue

@@ -1,7 +1,7 @@
 import shelve
 
 
-class SaveLoad:
+class SaveManager:
     def __init__(self, game):
         self.game = game
 
@@ -12,7 +12,7 @@ class SaveLoad:
             savefile['entities'] = self.game.area_map.entities
             savefile['player_index'] = self.game.area_map.entities.index(self.game.player)  # index of player in entities list
             savefile['inventory'] = self.game.inventory
-            savefile['game_msgs'] = self.game.game_msgs
+            savefile['game_messages'] = self.game.game_messages
             savefile['game_state'] = self.game.game_state
 
     def load(self):
@@ -24,5 +24,5 @@ class SaveLoad:
             self.game.area_map.entities = savefile['entities']
             self.game.player = self.game.area_map.entities[savefile['player_index']]  # get index of player in objects list and access it
             self.game.inventory = savefile['inventory']
-            self.game.game_msgs = savefile['game_msgs']
+            self.game.game_messages = savefile['game_messages']
             self.game.game_state = savefile['game_state']
