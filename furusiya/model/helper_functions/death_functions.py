@@ -28,6 +28,7 @@ def player_death(player):
     # the game ended!
     message('You died!', colors.red)
     Game.game_state = 'dead'
+    Game.keybinder.register_all_keybinds_and_events()
 
     # for added effect, transform the player into a corpse!
     player.char = '%'

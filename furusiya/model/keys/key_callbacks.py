@@ -79,6 +79,7 @@ def bow_callback(event):
 
         Game.keybinder.suspend_all_keybinds()
 
+        @in_game(pass_turn=False)
         def new_escape_callback(event):
             Game.draw_bowsight = False
             Game.current_turn = Game.player
@@ -86,6 +87,9 @@ def bow_callback(event):
 
         @in_game(pass_turn=True)
         def new_f_callback(event):
+            if not Game.auto_target:
+                Game.target = Game.area_map.get_blocking_object_at(*Game.mouse_coord) or None
+
             if Game.target and FighterSystem.has_fighter(Game.target):
                 is_critical = False
                 conf = config.data.weapons
@@ -101,9 +105,7 @@ def bow_callback(event):
 
                 FighterSystem.get_fighter(Game.player).attack(Game.target, damage_multiplier, is_critical)
                 Game.player.arrows -= 1
-                Game.draw_bowsight = False
-
-                Game.keybinder.register_all_keybinds_and_events()
+                Game.auto_target = True
 
         Game.keybinder.register_keybind('ESCAPE', new_escape_callback)
         Game.keybinder.register_keybind('f', new_f_callback)
