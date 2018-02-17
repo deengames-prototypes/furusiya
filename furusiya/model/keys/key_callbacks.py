@@ -1,7 +1,7 @@
 from random import randint
 
 from game import Game
-from model.helper_functions.inventory import inventory_menu
+from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.util import in_game
@@ -15,6 +15,7 @@ from model.weapons import Bow
 def exit_to_main_menu_callback(event):
     Game.save_load.save()
     Game.ui.app.suspend()
+    Game.ui.unblit_map_and_panel()
 
 
 def enter_callback(event):

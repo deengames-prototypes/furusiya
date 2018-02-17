@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-import textwrap
-
 import tdl
 
-import colors
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from constants import PANEL_Y, PANEL_HEIGHT, SCREEN_WIDTH
 from game import Game
 from model.config import config
+from view.adapter.console_adapter import ConsoleAdapter
 from view.adapter.extensible_app import ExtensibleApp
 
 
@@ -16,15 +14,20 @@ class TdlAdapter:
         self.root = tdl.init(*screen, title=window_title,
                              fullscreen=config.data.fullscreen)
         tdl.setFPS(fps_limit)
-        self.con = tdl.Console(*map)
-        self.panel = tdl.Console(*panel)
+        self.blit_dict = {}  # dict of {console: (args, kwargs)}
+
+        self.con = self.managed_console(*map)
+        self.panel = self.managed_console(*panel)
 
         self.app = ExtensibleApp()
 
-    @property
-    def event_queue(self):
-        """Private, I know. Not my fault tdl sucks."""
-        return tdl.event._eventQueue
+    def blit_map_and_panel(self):
+        self.blit_at(self.panel, 0, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT, 0, 0)
+        self.blit_at(self.con, 0, 0, self.con.width, self.con.height, 0, 0)
+
+    def unblit_map_and_panel(self):
+        self.unblit(self.panel)
+        self.unblit(self.con)
 
     def run(self):
         self.app.run()
@@ -33,16 +36,14 @@ class TdlAdapter:
         """
         Clears the screen.
         """
-        self.con.clear()
+        self.root.clear()
 
-    def remove_event_from_queue(self, event_to_remove):
-        self.event_queue.remove(event_to_remove)
-
-    @staticmethod
-    def flush():
+    def flush(self):
         """
         Render everything from buffers to screen
         """
+        for console, (args, kwargs) in self.blit_dict.items():
+            self.root.blit(console, *args, **kwargs)
         tdl.flush()
 
     @staticmethod
@@ -57,8 +58,12 @@ class TdlAdapter:
 
     def wait_for(self, event, *, flush=True, condition=lambda i: True):
         while True:
-            if Game.renderer is not None and flush:
-                Game.renderer.render()
+            if flush:
+                if Game.renderer is not None:
+                    Game.renderer.render()
+                else:
+                    self.flush()
+
             user_input = tdl.event.wait()
             if user_input.type == event and condition(user_input):
                 return user_input
@@ -91,61 +96,19 @@ class TdlAdapter:
     def event_closed():
         return tdl.event.is_window_closed()
 
-    def draw_string(self, x, y, string, color):
-        self.root.draw_str(x, y, string, bg=None, fg=color)
+    @staticmethod
+    def managed_console(width, height):
+        return ConsoleAdapter(width, height)
 
-    def create_menu(self, header, options, width):
-        if len(options) > 26:
-            raise ValueError('Cannot have a menu with more than 26 options.')
+    def draw_root(self, x, y, string, color):
+        self.root.draw_str(x, y, string, fg=color, bg=None)
 
-        # calculate total height for the header (after textwrap) and one line per option
-        header_wrapped = textwrap.wrap(header, width)
-        header_height = len(header_wrapped)
-        if header == '':
-            header_height = 0
-        height = len(options) + header_height
+    def blit_at(self, console, *args, **kwargs):
+        self.blit_dict[console.console] = args, kwargs
 
-        # create an off-screen console that represents the menu's window
-        window = tdl.Console(width, height)
-
-        # print the header, with wrapped text
-        window.draw_rect(0, 0, width, height, None, fg=colors.white, bg=None)
-        for i, line in enumerate(header_wrapped):
-            window.draw_str(0, 0 + i, header_wrapped[i])
-
-        # print all the options
-        y = header_height
-        letter_index = ord('a')
-        for option_text in options:
-            text = '(' + chr(letter_index) + ') ' + option_text
-            window.draw_str(0, y, text, bg=None)
-            y += 1
-            letter_index += 1
-
-        # blit the contents of "window" to the Game.ui.root console
-        x = SCREEN_WIDTH // 2 - width // 2
-        y = SCREEN_HEIGHT // 2 - height // 2
-        self.root.blit(window, x, y, width, height, 0, 0, fg_alpha=1.0, bg_alpha=0.7)
-
-        # present the Game.ui.root console to the player and wait for a key-press
-        self.flush()
-        key = self.wait_for_key(flush=False)  # rendering temporarily stops here, else the window gets overwritten
-        key_char = key.text
-        if key_char == '':
-            key_char = ' '  # placeholder
-
-        if key.key == 'ENTER' and key.alt:
-            # Alt+Enter: toggle fullscreen
-            self.toggle_fullscreen()
-
-        # convert the ASCII code to an index; if it corresponds to an option, return it
-        index = ord(key_char) - ord('a')
-        if 0 <= index < len(options):
-            return index
-        return None
-
-    def message_box(self, text, width=50):
-        self.create_menu(text, [], width)
+    def unblit(self, console):
+        if self.blit_dict.get(console.console, None):
+            del self.blit_dict[console.console]
 
     @staticmethod
     def bresenham(x1, y1, x2, y2):
