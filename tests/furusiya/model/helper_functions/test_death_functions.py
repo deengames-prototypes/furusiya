@@ -5,7 +5,7 @@ import pytest
 from game import Game
 from model.components.xp import XPComponent
 from model.entities.game_object import GameObject
-from model.helper_functions.death_functions import monster_death
+from model.helper_functions.death_functions import monster_death, player_death
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 from model.systems.xp_system import XPSystem
@@ -28,6 +28,7 @@ def monster():
 @pytest.fixture
 def player():
     XPSystem.set_experience(Game.player, XPComponent(Game.player))
+    Game.keybinder = Mock()
 
     yield Game.player
 
@@ -47,3 +48,10 @@ def test_monster_death_marks_monster_as_dead(monster, player):
 
     assert not FighterSystem.has_fighter(monster)
     assert not AISystem.has_ai(monster)
+
+
+def test_player_death_affects_game_state(player):
+    player_death(player)
+
+    assert Game.game_state == 'dead'
+    assert player.char == '%'
