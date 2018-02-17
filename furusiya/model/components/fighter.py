@@ -1,8 +1,8 @@
 import colors
+from main_interface import message, Game
 from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
-from main_interface import Game, message
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 
@@ -25,34 +25,24 @@ class Fighter(Component):
         # apply damage if possible
         if damage > 0:
             self.hp -= damage
-
-            # check for death. if there's a death function, call it
+            # check for death
             if self.hp <= 0:
-                # Drop arrows if necessary
-                if config.data.features.limitedArrows and self.owner is not Game.player and AISystem.has_ai(self.owner):  # It's a monster
-                    num_arrows = config.data.enemies.arrowDropsOnKill
-                    arrows = item_factory.create_item(self.owner.x, self.owner.y, '|',
-                                                      '{} arrows'.format(num_arrows), colors.brass)
-                    Game.area_map.entities.append(arrows)
-                    arrows.send_to_back()
-
-                function = self.death_function
-                if function is not None:
-                    function(self.owner)
+                self.die()
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
         # a simple formula for attack damage
         target_fighter = FighterSystem.get_fighter(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
 
+        msg = f'{self.owner.name.capitalize()} attacks {target.name}'
         if damage > 0:
             # make the target take some damage
-            message(self.owner.name.capitalize() + ' attacks ' + target.name +
-                    ' for ' + str(damage) + ' hit points. {}'.format("Critical strike!" if is_critical else ""))
+            msg += f' for {damage} hit points.' + (' Critical strike!' if is_critical else '')
             target_fighter.take_damage(damage)
         else:
-            message(self.owner.name.capitalize() + ' attacks ' + target.name +
-                    ' but it has no effect!')
+            msg += ' but it has no effect!'
+
+        message(msg)
 
         # Regardless of damage, apply weapon effects
         if self.weapon:
@@ -63,3 +53,22 @@ class Fighter(Component):
         self.hp += amount
         if self.hp > self.max_hp:
             self.hp = self.max_hp
+
+    def die(self):
+        # Drop arrows if it's a monster
+        if config.data.features.limitedArrows and AISystem.has_ai(self.owner):
+            num_arrows = config.data.enemies.arrowDropsOnKill
+            arrows = item_factory.create_item(
+                self.owner.x, self.owner.y,
+                '|',
+                f'{num_arrows} arrows',
+                colors.brass
+            )
+
+            Game.area_map.entities.append(arrows)
+            arrows.send_to_back()
+
+        # if there's a death function, call it
+        death_function = self.death_function
+        if death_function is not None:
+            death_function(self.owner)

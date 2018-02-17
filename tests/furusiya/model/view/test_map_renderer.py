@@ -18,6 +18,9 @@ PANEL_HEIGHT = 5
 
 
 class TestMapRenderer(unittest.TestCase):
+    def setUp(self):
+        Game.game_msgs = []
+
     def test_render_marks_current_fov_as_explored(self):
         map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
 
