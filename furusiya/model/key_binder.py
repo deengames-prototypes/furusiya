@@ -1,4 +1,4 @@
-from model.keys.events import update_callback, quit_event, mousemotion_event
+from model.keys.callbacks import update_callback, quit_event, mousemotion_event
 from model.keys.key_callbacks import *
 
 
@@ -21,7 +21,7 @@ keybinds = {
 
     'r': rest_callback,
     'R': continuous_rest_callback,
-    
+
     'l': whirlwind_callback
 }
 
