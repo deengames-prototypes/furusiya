@@ -17,7 +17,6 @@ def target_tile(max_range=None):
 
     tile = None
     while tile is None:
-        Game.renderer.render()
         mousedown_event = Game.ui.wait_for_mouse()
         tile = get_tile(mousedown_event)
 

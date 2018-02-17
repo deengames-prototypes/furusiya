@@ -55,33 +55,25 @@ class TdlAdapter:
             lightWalls=should_light_walls
         )
 
-    def wait_for(self, event):
-        user_input = None
-        while user_input is None:
-            if Game.renderer is not None:
+    def wait_for(self, event, *, flush=True, condition=lambda i: True):
+        while True:
+            if Game.renderer is not None and flush:
                 Game.renderer.render()
             user_input = tdl.event.wait()
-            if user_input.type != event:
-                user_input = None
+            if user_input.type == event and condition(user_input):
+                return user_input
 
-        return user_input
+    def wait_for_mouse(self, flush=True):
+        return self.wait_for('MOUSEDOWN', flush=flush)
 
-    def wait_for_mouse(self):
-        return self.wait_for('MOUSEDOWN')
-
-    def wait_for_key(self):
+    def wait_for_key(self, flush=True):
         """
         wait for response
-        """
-        user_input = None
-        while user_input is None:
-            if Game.renderer is not None:
-                Game.renderer.render()
-            user_input = tdl.event.key_wait()
-            if user_input.key == 'TEXT':
-                user_input = None
 
-        return user_input
+        The condition is used to normalize keydown events to only one event per keypress(TEXT)
+            instead of two(CHAR and TEXT)
+        """
+        return self.wait_for('KEYDOWN', flush=flush, condition=lambda i: i.key == 'TEXT')
 
     @staticmethod
     def get_input():
@@ -137,8 +129,8 @@ class TdlAdapter:
 
         # present the Game.ui.root console to the player and wait for a key-press
         self.flush()
-        key = self.wait_for_key()
-        key_char = key.char
+        key = self.wait_for_key(flush=False)  # rendering temporarily stops here, else the window gets overwritten
+        key_char = key.text
         if key_char == '':
             key_char = ' '  # placeholder
 

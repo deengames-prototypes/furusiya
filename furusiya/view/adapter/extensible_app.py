@@ -51,6 +51,8 @@ class ExtensibleApp:
                 method = 'ev_%s' % event.type  # ev_TYPE
                 getattr(self, method)(event)
             if event.type == 'KEYDOWN':
+                if event.key == 'CHAR':
+                    continue
                 # call the key_* methods
                 method = 'key_%s' % (event.text if event.key == 'TEXT' else event.keychar)  # key_KEYNAME
                 if hasattr(self, method):  # silently exclude undefined methods
