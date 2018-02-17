@@ -1,5 +1,3 @@
-from random import randint
-
 import colors
 from model.components.walkers.random_walker import RandomWalker
 from model.config import config
@@ -58,7 +56,7 @@ class ConfusedMonster(AbstractAI):
     def _take_turn(self):
         if self.num_turns > 0:  # still confused...
             # move in a random direction, and decrease the number of turns confused
-            self.owner.move(randint(-1, 1), randint(-1, 1))
+            self.owner.move(Game.random.randint(-1, 1), Game.random.randint(-1, 1))
             self.num_turns -= 1
 
         if self.num_turns == 0:

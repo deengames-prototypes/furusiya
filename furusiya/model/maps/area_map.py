@@ -1,5 +1,4 @@
-import random
-
+from game import Game
 from model.maps.map_tile import MapTile
 from model.rect import Rect
 
@@ -40,13 +39,13 @@ class AreaMap:
         return self.is_on_map(x, y) and not self.tiles[x][y].block_sight
 
     def place_on_random_ground(self, entity):
-        x = random.randint(0, self.width)
-        y = random.randint(0, self.height)
+        x = Game.random.randint(0, self.width)
+        y = Game.random.randint(0, self.height)
 
         # If the tile is a tree or occupied, pick a different one
         while not self.is_walkable(x, y):
-            x = random.randint(0, self.width)
-            y = random.randint(0, self.height)
+            x = Game.random.randint(0, self.width)
+            y = Game.random.randint(0, self.height)
 
         entity.x = x
         entity.y = y

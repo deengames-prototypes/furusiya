@@ -1,5 +1,3 @@
-from random import randint
-
 from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
@@ -95,7 +93,7 @@ def bow_callback(event):
                 conf = config.data.weapons
                 damage_multiplier = conf.arrowDamageMultiplier
 
-                if config.data.features.bowCrits and randint(0, 100) <= conf.bowCriticalProbability:
+                if config.data.features.bowCrits and Game.random.randint(0, 100) <= conf.bowCriticalProbability:
                     damage_multiplier *= 1 + conf.bowCriticalDamageMultiplier
                     if config.data.features.bowCritsStack:
                         target_fighter = Game.fighter_sys.get(Game.target)

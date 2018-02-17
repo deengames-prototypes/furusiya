@@ -1,5 +1,4 @@
 import math
-import random
 import unittest
 
 from game import Game
@@ -32,10 +31,10 @@ class TestForestGenerator(unittest.TestCase):
         # this (breadth-first search, etc.).
         width, height = (60, 40)
         Game.area_map = AreaMap(width, height)
-        fg = ForestGenerator(Game.area_map)
         pre_fill_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
-        random.seed(1)
+        Game.random.seed(1)
+        ForestGenerator(Game.area_map)
 
         actual_num_trees = 0
 

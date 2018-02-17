@@ -1,4 +1,4 @@
-import random
+from game import Game
 
 
 class RandomWalker:
@@ -13,7 +13,7 @@ class RandomWalker:
             (self.parent.x + x_offset, self.parent.y + y_offset)
             for x_offset, y_offset in [(1, 0), (-1, 0), (0, 1), (0, -1)]
         ]
-        random.shuffle(adjacent_tiles)
+        Game.random.shuffle(adjacent_tiles)
 
         for tile_x, tile_y in adjacent_tiles:
             if self.area_map.is_walkable(tile_x, tile_y):

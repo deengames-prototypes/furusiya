@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import random
+from random import Random
 from datetime import datetime
 
 from tcod import image_load
@@ -80,6 +80,10 @@ def init_game():
     Game.keybinder = KeyBinder(Game)
     Game.keybinder.register_all_keybinds_and_events()
 
+    seed = config.get("seed") or int(datetime.now().timestamp())
+    Game.random = Random(seed)
+    print("Seeding as universe #{}".format(seed))
+
 
 def main_menu():
     init_game()
@@ -121,10 +125,5 @@ def main_menu():
 
 if __name__ == '__main__':
     file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
-
-    seed = config.get("seed") or int(datetime.now().timestamp())
-    random.seed(seed)
-    print("Seeding as universe #{}".format(seed))
-
     main_menu()
 

@@ -40,3 +40,5 @@ class Game(metaclass=GameMetaClass):
 
         self.player = None
         self.stallion = None
+
+        self.random = None

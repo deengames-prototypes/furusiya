@@ -1,5 +1,3 @@
-from random import randint
-
 import colors
 from game import Game
 from model.config import config
@@ -18,7 +16,7 @@ class Sword:
 
     def attack(self, target):
         if config.data.features.swordStuns and Game.ai_sys.has(target):
-            if randint(0, 100) <= config.data.weapons.swordStunProbability:
+            if Game.random.randint(0, 100) <= config.data.weapons.swordStunProbability:
                 target_ai = Game.ai_sys.get(target)
                 if config.data.features.stunsStack:
                     if isinstance(target_ai, StunnedMonster):
