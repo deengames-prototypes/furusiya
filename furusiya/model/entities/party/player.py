@@ -2,7 +2,7 @@ import colors
 from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
-from death_functions import player_death
+from model.helper_functions.death_functions import player_death
 from game import Game
 from model.helper_functions.message import message
 from model.components.fighter import Fighter

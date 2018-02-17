@@ -1,6 +1,6 @@
 from model.components.ai.monster import BasicMonster
 
-from death_functions import monster_death
+from model.helper_functions.death_functions import monster_death
 from model.components.fighter import Fighter
 from model.components.xp import XPComponent
 from model.entities.game_object import GameObject
