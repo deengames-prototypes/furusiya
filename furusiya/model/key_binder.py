@@ -64,18 +64,9 @@ class KeyBinder:
 
         self.register_update()
 
-    def suspend_all_events(self):
-        """You don't wanna do this. Really."""
-        for key in events.keys():
-            self.suspend_event(key)
-
     def register_event(self, event_name, callback=None):
         callback = callback or events.get(event_name) or (lambda ev: None)
         setattr(self.game.ui.app, f'ev_{event_name}', callback)
-
-    def suspend_event(self, event_name):
-        delattr(self.game.ui.app, f'ev_{event_name}')
-        self.register_event(event_name, lambda ev: None)
 
     # Update
     def register_update(self, new_callback=None):
