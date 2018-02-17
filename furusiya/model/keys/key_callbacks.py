@@ -134,7 +134,7 @@ def continuous_rest_callback(event):
     if config.data.skills.resting.enabled:
         Game.player.calculate_turns_to_rest()
 
-        def condition():
+        def can_rest():
             return (
                 Game.player.turns_to_rest > 0
                 and not [
@@ -144,8 +144,8 @@ def continuous_rest_callback(event):
                 ]
             )
 
-        def callback(delta_time):
-            if condition():
+        def new_update_callback(delta_time):
+            if can_rest():
                 for e in Game.area_map.entities:
                     AISystem.take_turn(e)
                 Game.player.turns_to_rest -= 1
@@ -154,7 +154,7 @@ def continuous_rest_callback(event):
                 Game.keybinder.register_all_keybinds_and_events()
 
         Game.keybinder.suspend_all_keybinds()
-        Game.keybinder.register_update(callback)
+        Game.keybinder.register_update(new_update_callback)
 
 
 @in_game(pass_turn=True)
