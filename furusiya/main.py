@@ -88,7 +88,7 @@ def main_menu():
             play_game()
         if choice == 1:  # load last game
             try:
-                Game.saveload.load()
+                Game.save_load.load()
             except Exception as e:
                 Game.ui.message_box('\n No saved game to load.\n', 24)
                 continue

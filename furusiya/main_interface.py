@@ -25,7 +25,7 @@ class Game:
     current_turn = None
     playing = False  # True when in-game, false otherwise
 
-    saveload = None
+    save_load = None
     keybinder = None
 
     @classmethod
@@ -37,7 +37,7 @@ class Game:
             panel=(SCREEN_WIDTH, PANEL_HEIGHT),
             fps_limit=LIMIT_FPS
         )
-        cls.saveload = SaveLoad(cls)
+        cls.save_load = SaveLoad(cls)
 
         from model.key_binder import KeyBinder
         cls.keybinder = KeyBinder(cls)

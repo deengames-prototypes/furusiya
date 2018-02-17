@@ -12,7 +12,7 @@ from model.weapons import Bow
 
 
 def exit_to_main_menu_callback(event):
-    Game.saveload.save()
+    Game.save_load.save()
     Game.ui.app.suspend()
 
 
