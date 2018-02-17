@@ -69,7 +69,7 @@ def inventory_drop(event):
 
 
 # Bow
-@in_game(pass_turn=True)
+@in_game(pass_turn=False)
 def bow_callback(event):
     if (isinstance(FighterSystem.get_fighter(Game.player).weapon, Bow)
             and not config.data.features.limitedArrows
@@ -84,6 +84,7 @@ def bow_callback(event):
             Game.current_turn = Game.player
             Game.keybinder.register_all_keybinds_and_events()
 
+        @in_game(pass_turn=True)
         def new_f_callback(event):
             if Game.target and FighterSystem.has_fighter(Game.target):
                 is_critical = False
