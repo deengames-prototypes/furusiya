@@ -1,5 +1,6 @@
 import colors
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.components.base import Component
 
 

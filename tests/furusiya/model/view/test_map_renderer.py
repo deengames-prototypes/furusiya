@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock
 
 from constants import FOV_ALGO, FOV_LIGHT_WALLS
-from main_interface import Game
+from game import Game
 from model.entities.party.player import Player
 from model.config import config
 from model.maps.area_map import AreaMap

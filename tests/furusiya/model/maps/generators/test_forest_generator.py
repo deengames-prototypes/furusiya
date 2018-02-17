@@ -2,7 +2,7 @@ import math
 import random
 import unittest
 
-from main_interface import Game
+from game import Game
 from model.maps.generators.forest_generator import ForestGenerator
 from model.maps.area_map import AreaMap
 

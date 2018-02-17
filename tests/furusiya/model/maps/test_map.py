@@ -1,6 +1,6 @@
 import unittest
 
-from main_interface import Game
+from game import Game
 from model.entities.game_object import GameObject
 from model.maps.area_map import AreaMap
 from model.maps.generators.forest_generator import ForestGenerator

@@ -4,7 +4,8 @@ from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 from view.targeting_distance import target_tile, target_monster
 from view.targeting_monster import closest_monster
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.components.ai.monster import ConfusedMonster
 
 

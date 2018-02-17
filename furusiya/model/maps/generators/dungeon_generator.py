@@ -1,11 +1,10 @@
 from random import randint
 import random
 
-import colors
-from main_interface import Game
-from model.config import config
+from game import Game
 from model.rect import Rect
 from model.maps.generators import map_generator
+
 
 class DungeonGenerator:
     """
@@ -103,7 +102,6 @@ class DungeonGenerator:
     def _create_h_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
             self._area_map.tiles[x][y].convert_to_ground()
-
 
     def _create_v_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):

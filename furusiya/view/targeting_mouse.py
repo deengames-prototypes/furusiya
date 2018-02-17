@@ -1,4 +1,4 @@
-from main_interface import Game
+from game import Game
 
 
 def get_names_under_mouse():

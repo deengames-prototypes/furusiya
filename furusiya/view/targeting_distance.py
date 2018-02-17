@@ -1,4 +1,4 @@
-from main_interface import Game
+from game import Game
 from model.systems.fighter_system import FighterSystem
 
 

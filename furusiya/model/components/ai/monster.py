@@ -4,7 +4,8 @@ import colors
 from model.components.walkers.random_walker import RandomWalker
 from model.config import config
 from constants import CONFUSE_NUM_TURNS
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.components.ai.base import AbstractAI
 from model.systems.fighter_system import FighterSystem
 

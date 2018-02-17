@@ -1,8 +1,9 @@
 import colors
-from main_interface import message, Game
 from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
+from game import Game
+from model.helper_functions.message import message
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 

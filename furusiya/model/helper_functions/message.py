@@ -2,27 +2,7 @@ import textwrap
 
 import colors
 from constants import MSG_WIDTH, MSG_HEIGHT
-
-
-class Game:
-    inventory = []
-    draw_bowsight = None
-    player = None
-    stallion = None
-    mouse_coord = (0, 0)
-    auto_target = None
-    target = None
-    game_msgs = []
-    game_state = None
-
-    area_map = None
-    renderer = None
-    ui = None
-    current_turn = None
-    playing = False  # True when in-game, false otherwise
-
-    save_load = None
-    keybinder = None
+from game import Game
 
 
 def message(new_msg, color=colors.white):

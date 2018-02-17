@@ -1,4 +1,4 @@
-from main_interface import Game
+from game import Game
 from model.keys.key_callbacks import exit_to_main_menu_callback
 from model.systems.ai_system import AISystem
 

@@ -6,7 +6,8 @@ from tcod import image_load
 
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, LIMIT_FPS
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.config import file_watcher, config
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion

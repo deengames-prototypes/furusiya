@@ -1,6 +1,6 @@
 from random import randint
 
-from main_interface import Game
+from game import Game
 from model.inventory import inventory_menu
 from model.item import Item
 from model.keys.util import in_game

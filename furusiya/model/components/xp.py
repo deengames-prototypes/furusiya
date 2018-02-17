@@ -1,4 +1,4 @@
-from main_interface import message
+from model.helper_functions.message import message
 from model.components.base import Component
 from model.systems.fighter_system import FighterSystem
 

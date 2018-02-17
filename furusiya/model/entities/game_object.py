@@ -1,6 +1,6 @@
 import math
 
-from main_interface import Game
+from game import Game
 
 
 class GameObject:

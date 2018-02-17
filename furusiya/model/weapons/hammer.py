@@ -2,7 +2,7 @@ import math
 
 import colors
 from model.config import config
-from main_interface import message
+from model.helper_functions.message import message
 from model.components.ai.monster import StunnedMonster
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem

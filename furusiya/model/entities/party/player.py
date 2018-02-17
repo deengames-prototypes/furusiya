@@ -3,7 +3,8 @@ from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
 from death_functions import player_death
-from main_interface import Game, message
+from game import Game
+from model.helper_functions.message import message
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash

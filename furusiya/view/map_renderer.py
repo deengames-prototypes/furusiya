@@ -1,6 +1,6 @@
 import colors
 from constants import FOV_ALGO, FOV_LIGHT_WALLS, MSG_X, PANEL_Y, SCREEN_WIDTH, PANEL_HEIGHT
-from main_interface import Game
+from game import Game
 from model.maps import area_map
 from model.config import config
 from model.systems.fighter_system import FighterSystem

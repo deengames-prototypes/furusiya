@@ -2,8 +2,8 @@ from random import randint
 
 import colors
 from model.config import config
-from main_interface import message
 from model.components.ai.monster import StunnedMonster
+from model.helper_functions.message import message
 from model.systems.ai_system import AISystem
 
 

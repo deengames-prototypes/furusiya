@@ -1,6 +1,6 @@
 import colors
-from main_interface import message
-from main_interface import Game
+from model.helper_functions.message import message
+from game import Game
 from model.systems.ai_system import AISystem
 from model.systems.fighter_system import FighterSystem
 from model.systems.xp_system import XPSystem

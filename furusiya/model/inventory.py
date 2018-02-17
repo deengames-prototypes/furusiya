@@ -1,5 +1,5 @@
 from constants import INVENTORY_WIDTH
-from main_interface import Game
+from game import Game
 from model.item import Item
 
 

@@ -1,4 +1,4 @@
-from main_interface import Game
+from game import Game
 
 
 def in_game(callback=None, *, pass_turn=False):
