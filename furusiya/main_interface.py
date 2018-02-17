@@ -36,11 +36,3 @@ def message(new_msg, color=colors.white):
 
         # add the new line as a tuple, with the text and the color
         Game.game_msgs.append((line, color))
-
-
-def get_blocking_object_at(x, y):
-    for obj in Game.area_map.entities:
-        if obj.blocks and obj.x == x and obj.y == y:
-            return obj
-
-    return None

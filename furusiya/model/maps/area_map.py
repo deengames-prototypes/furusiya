@@ -2,8 +2,8 @@ import random
 
 from model.maps.map_tile import MapTile
 
-class AreaMap:
 
+class AreaMap:
     def __init__(self, width, height):
         self.tiles = []
         self.entities = []
@@ -50,7 +50,15 @@ class AreaMap:
         entity.x = x
         entity.y = y
         self.entities.append(entity)
-    
+
+    def get_blocking_object_at(self, x, y):
+        for obj in self.entities:
+            if obj.blocks and (obj.x, obj.y) == (x, y):
+                return obj
+
+        return None
+
+
 def filter_tiles(tiles, filter_callback):
     return [
         (x, y)

@@ -1,6 +1,6 @@
 import math
 
-from main_interface import Game, get_blocking_object_at
+from main_interface import Game
 
 
 class GameObject:
@@ -55,7 +55,7 @@ class GameObject:
             self.x += dx
             self.y += dy
         else:
-            return get_blocking_object_at(self.x + dx, self.y + dy)
+            return Game.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 
     def move_towards(self, target_x, target_y):
         # vector from this object to the target, and distance
