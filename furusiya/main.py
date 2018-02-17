@@ -7,6 +7,7 @@ from tcod import image_load
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, LIMIT_FPS
 from game import Game
+from data.saveload import SaveLoad
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
 from model.config import file_watcher, config
@@ -18,7 +19,6 @@ from model.maps.area_map import AreaMap
 from model.maps.generators import DungeonGenerator
 from model.systems.xp_system import XPSystem
 from view.adapter.tdl_adapter import TdlAdapter
-from view.data.saveload import SaveLoad
 from view.map_renderer import MapRenderer
 
 
