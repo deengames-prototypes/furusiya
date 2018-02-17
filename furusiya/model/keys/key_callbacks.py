@@ -82,7 +82,7 @@ def bow_callback(event):
         def new_escape_callback(event):
             Game.draw_bowsight = False
             Game.current_turn = Game.player
-            Game.set_keybinds_and_events()
+            Game.keybinder.register_all_keybinds_and_events()
 
         def new_f_callback(event):
             if Game.target and FighterSystem.has_fighter(Game.target):
@@ -102,7 +102,7 @@ def bow_callback(event):
                 Game.player.arrows -= 1
                 Game.draw_bowsight = False
 
-                Game.set_keybinds_and_events()
+                Game.keybinder.register_all_keybinds_and_events()
 
         Game.keybinder.register_keybind('ESCAPE', new_escape_callback)
         Game.keybinder.register_keybind('f', new_f_callback)
@@ -148,7 +148,7 @@ def continuous_rest_callback(event):
                 Game.player.turns_to_rest -= 1
                 Game.player.rest()
             else:
-                Game.set_keybinds_and_events()
+                Game.keybinder.register_all_keybinds_and_events()
 
         Game.keybinder.suspend_all_keybinds()
         Game.keybinder.register_update(callback)

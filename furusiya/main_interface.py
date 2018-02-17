@@ -1,11 +1,7 @@
 import textwrap
 
 import colors
-from model.config import file_watcher
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, LIMIT_FPS, PANEL_HEIGHT
 from constants import MSG_WIDTH, MSG_HEIGHT
-from view.adapter.tdl_adapter import TdlAdapter
-from view.data.saveload import SaveLoad
 
 
 class Game:
@@ -27,31 +23,6 @@ class Game:
 
     save_load = None
     keybinder = None
-
-    @classmethod
-    def run(cls, to_run):
-        cls.ui = TdlAdapter(
-            "Roguelike",
-            screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
-            map=(MAP_WIDTH, MAP_HEIGHT),
-            panel=(SCREEN_WIDTH, PANEL_HEIGHT),
-            fps_limit=LIMIT_FPS
-        )
-        cls.save_load = SaveLoad(cls)
-
-        from model.key_binder import KeyBinder
-        cls.keybinder = KeyBinder(cls)
-
-        to_run()
-
-        print("Terminating ...")
-
-        file_watcher.stop()
-
-    @classmethod
-    def set_keybinds_and_events(cls):
-        cls.keybinder.register_all_events()
-        cls.keybinder.register_all_keybinds()
 
 
 def message(new_msg, color=colors.white):

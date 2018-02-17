@@ -49,6 +49,10 @@ class KeyBinder:
     def _format_attr_event(event_name):
         return f'ev_{event_name}'
 
+    def register_all_keybinds_and_events(self):
+        self.register_all_keybinds()
+        self.register_all_events()
+
     # Keybinds
     def register_all_keybinds(self):
         for key, callback in keybinds.items():

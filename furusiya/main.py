@@ -1,24 +1,23 @@
 #!/usr/bin/env python3
+import random
 from datetime import datetime
 
 from tcod import image_load
+
 import colors
-
-# Has to be here, because we use it everywhere
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, LIMIT_FPS
+from main_interface import Game, message
 from model.config import file_watcher, config
-from model.systems.xp_system import XPSystem
-
-file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
-
-from view.map_renderer import MapRenderer
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
+from model.key_binder import KeyBinder
 from model.maps import generators
 from model.maps.area_map import AreaMap
 from model.maps.generators import DungeonGenerator
-from main_interface import Game, message
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT
-import random
+from model.systems.xp_system import XPSystem
+from view.adapter.tdl_adapter import TdlAdapter
+from view.data.saveload import SaveLoad
+from view.map_renderer import MapRenderer
 
 
 def new_game():
@@ -63,9 +62,23 @@ def play_game():
     Game.ui.run()
 
 
+def init_game():
+    Game.ui = TdlAdapter(
+        "Roguelike",
+        screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
+        map=(MAP_WIDTH, MAP_HEIGHT),
+        panel=(SCREEN_WIDTH, PANEL_HEIGHT),
+        fps_limit=LIMIT_FPS
+    )
+
+    Game.save_load = SaveLoad(Game)
+    Game.keybinder = KeyBinder(Game)
+    Game.keybinder.register_all_keybinds_and_events()
+
+
 def main_menu():
+    init_game()
     img = image_load('menu_background.png')
-    Game.set_keybinds_and_events()
 
     while not Game.ui.event_closed():
         # show the background image, at twice the regular console resolution
@@ -96,9 +109,17 @@ def main_menu():
         elif choice == 2:  # quit
             break
 
+    print("Terminating ...")
 
-seed = config.get("seed") or int(datetime.now().timestamp())
-random.seed(seed)
-print("Seeding as universe #{}".format(seed))
+    file_watcher.stop()
 
-Game.run(main_menu)
+
+if __name__ == '__main__':
+    file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
+
+    seed = config.get("seed") or int(datetime.now().timestamp())
+    random.seed(seed)
+    print("Seeding as universe #{}".format(seed))
+
+    main_menu()
+
