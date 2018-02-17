@@ -4,7 +4,7 @@ from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
-from model.keys.util import in_game
+from model.keys.in_game_decorator import in_game
 from model.skills.whirlwind import Whirlwind
 from model.systems.ai_system import AISystem
 from model.config import config
