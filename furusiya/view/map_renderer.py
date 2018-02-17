@@ -3,7 +3,6 @@ from constants import FOV_ALGO, FOV_LIGHT_WALLS, MSG_X
 from game import Game
 from model.maps import area_map
 from model.config import config
-from model.systems.fighter_system import FighterSystem
 from view.targeting_monster import closest_monster
 from view.targeting_mouse import get_names_under_mouse
 
@@ -65,7 +64,7 @@ class MapRenderer:
 
             x1, y1 = self._player.x, self._player.y
             line = Game.ui.bresenham(x1, y1, x2, y2)
-            monster_on_target_tile = [x for x in self._area_map.get_entities_on(x2, y2) if FighterSystem.has_fighter(x)]
+            monster_on_target_tile = [x for x in self._area_map.get_entities_on(x2, y2) if Game.fighter_sys.has(x)]
             for pos in line:
                 if pos in self.visible_tiles:
                     if pos == (x2, y2) and monster_on_target_tile:
@@ -85,7 +84,7 @@ class MapRenderer:
             y += 1
 
         # show the player's stats
-        player_fighter = FighterSystem.get_fighter(self._player)
+        player_fighter = Game.fighter_sys.get(self._player)
         self._ui_adapter.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
 
         # display names of objects under the mouse

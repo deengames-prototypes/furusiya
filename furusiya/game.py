@@ -17,3 +17,7 @@ class Game:
 
     save_manager = None
     keybinder = None
+
+    fighter_sys = None
+    ai_sys = None
+    xp_sys = None

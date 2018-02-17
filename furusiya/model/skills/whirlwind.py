@@ -1,4 +1,4 @@
-from model.systems.fighter_system import FighterSystem
+from game import Game
 
 
 class Whirlwind:
@@ -7,5 +7,5 @@ class Whirlwind:
     @staticmethod
     def process(player, radius, area_map):
         for obj in area_map.entities:
-            if obj.distance(player.x, player.y) <= radius and FighterSystem.has_fighter(obj) and obj is not player:
-                FighterSystem.get_fighter(player).attack(obj)
+            if obj.distance(player.x, player.y) <= radius and Game.fighter_sys.has(obj) and obj is not player:
+                Game.fighter_sys.get(player).attack(obj)

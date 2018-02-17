@@ -17,7 +17,8 @@ from model.key_binder import KeyBinder
 from model.maps import generators
 from model.maps.area_map import AreaMap
 from model.maps.generators import DungeonGenerator
-from model.systems.xp_system import XPSystem
+from model.systems.ai_system import AISystem
+from model.systems.system import ComponentSystem
 from view.adapter.tdl_adapter import TdlAdapter
 from view.map_renderer import MapRenderer
 
@@ -49,7 +50,7 @@ def new_game():
     message('Another brave knight yearns to bring peace to the land.', colors.red)
 
     # Gain four levels
-    XPSystem.get_experience(Game.player).gain_xp(40 + 80 + 160 + 320)
+    Game.xp_sys.get(Game.player).gain_xp(40 + 80 + 160 + 320)
 
 
 def play_game():
@@ -79,6 +80,10 @@ def init_game():
     Game.save_manager = SaveManager(Game)
     Game.keybinder = KeyBinder(Game)
     Game.keybinder.register_all_keybinds_and_events()
+
+    Game.fighter_sys = ComponentSystem()
+    Game.xp_sys = ComponentSystem()
+    Game.ai_sys = AISystem()
 
 
 def main_menu():

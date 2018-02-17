@@ -1,6 +1,6 @@
+from game import Game
 from model.helper_functions.message import message
 from model.components.base import Component
-from model.systems.fighter_system import FighterSystem
 
 
 class XPComponent(Component):
@@ -24,5 +24,5 @@ class XPComponent(Component):
             if self.on_level_callback is not None:
                 self.on_level_callback()
             message(f"{self.owner.name.capitalize()} is now level {self.level}!")
-            fighter = FighterSystem.get_fighter(self.owner)
+            fighter = Game.fighter_sys.get(self.owner)
             fighter.heal(fighter.max_hp)

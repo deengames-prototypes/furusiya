@@ -1,6 +1,5 @@
 from game import Game
 from model.keys.key_callbacks import exit_to_main_menu_callback
-from model.systems.ai_system import AISystem
 
 
 def update_callback(delta_time):
@@ -9,7 +8,7 @@ def update_callback(delta_time):
         pass
     else:  # it's everyone else's turn
         for e in Game.area_map.entities:
-            AISystem.take_turn(e)
+            Game.ai_sys.take_turn(e)
 
         Game.current_turn = Game.player
 

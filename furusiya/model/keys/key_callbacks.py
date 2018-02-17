@@ -6,9 +6,7 @@ from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
 from model.skills.whirlwind import Whirlwind
-from model.systems.ai_system import AISystem
 from model.config import config
-from model.systems.fighter_system import FighterSystem
 from model.weapons import Bow
 
 
@@ -73,7 +71,7 @@ def inventory_drop(event):
 # Bow
 @in_game(pass_turn=False)
 def bow_callback(event):
-    if (isinstance(FighterSystem.get_fighter(Game.player).weapon, Bow)
+    if (isinstance(Game.fighter_sys.get(Game.player).weapon, Bow)
             and not config.data.features.limitedArrows
             or (config.data.features.limitedArrows and Game.player.arrows > 0)):
         Game.draw_bowsight = True
@@ -92,7 +90,7 @@ def bow_callback(event):
             if not Game.auto_target:
                 Game.target = Game.area_map.get_blocking_object_at(*Game.mouse_coord) or None
 
-            if Game.target and FighterSystem.has_fighter(Game.target):
+            if Game.target and Game.fighter_sys.has(Game.target):
                 is_critical = False
                 conf = config.data.weapons
                 damage_multiplier = conf.arrowDamageMultiplier
@@ -100,12 +98,12 @@ def bow_callback(event):
                 if config.data.features.bowCrits and randint(0, 100) <= conf.bowCriticalProbability:
                     damage_multiplier *= 1 + conf.bowCriticalDamageMultiplier
                     if config.data.features.bowCritsStack:
-                        target_fighter = FighterSystem.get_fighter(Game.target)
+                        target_fighter = Game.fighter_sys.get(Game.target)
                         damage_multiplier += conf.bowCriticalDamageMultiplier * target_fighter.bow_crits
                         target_fighter.bow_crits += 1
                     is_critical = True
 
-                FighterSystem.get_fighter(Game.player).attack(Game.target, damage_multiplier, is_critical)
+                Game.fighter_sys.get(Game.player).attack(Game.target, damage_multiplier, is_critical)
                 Game.player.arrows -= 1
                 Game.auto_target = True
 
@@ -152,7 +150,7 @@ def continuous_rest_callback(event):
             nonlocal turns_to_rest
             if can_rest():
                 for e in Game.area_map.entities:
-                    AISystem.take_turn(e)
+                    Game.ai_sys.take_turn(e)
                 turns_to_rest -= 1
                 Game.player.rest()
             else:

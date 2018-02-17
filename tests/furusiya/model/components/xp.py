@@ -4,7 +4,6 @@ import pytest
 
 import game
 from model.components.xp import XPComponent
-from model.systems.fighter_system import FighterSystem
 
 
 @pytest.fixture
@@ -19,7 +18,7 @@ def player_fighter():
 
 @pytest.fixture
 def xp(monkeypatch, player, player_fighter):
-    FighterSystem.set_fighter(player, player_fighter)
+    game.Game.fighter_sys.set(player, player_fighter)
     monkeypatch.setattr(game, 'message', lambda *args, **kwargs: None)
     yield XPComponent(player)
 

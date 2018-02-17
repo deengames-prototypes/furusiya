@@ -1,6 +1,5 @@
 from game import Game
 from main import new_game
-from model.systems.xp_system import XPSystem
 
 
 def test_new_game_creates_new_game():
@@ -23,7 +22,7 @@ def test_new_game_creates_new_game():
         )
     )
 
-    assert XPSystem.get_experience(Game.player).level == 5
+    assert Game.xp_sys.get(Game.player).level == 5
 
     assert Game.inventory is not None
     assert Game.inventory == []

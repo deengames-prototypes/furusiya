@@ -1,9 +1,6 @@
 import colors
 from model.helper_functions.message import message
 from game import Game
-from model.systems.ai_system import AISystem
-from model.systems.fighter_system import FighterSystem
-from model.systems.xp_system import XPSystem
 
 
 def monster_death(monster):
@@ -14,9 +11,9 @@ def monster_death(monster):
     monster.color = colors.dark_red
     monster.blocks = False
 
-    XPSystem.get_experience(Game.player).gain_xp(XPSystem.get_experience(monster).xp)
-    FighterSystem.remove_fighter(monster)
-    AISystem.remove_ai(monster)
+    Game.xp_sys.get(Game.player).gain_xp(Game.xp_sys.get(monster).xp)
+    Game.fighter_sys.remove(monster)
+    Game.ai_sys.remove(monster)
 
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)

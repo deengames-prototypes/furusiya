@@ -7,7 +7,6 @@ from constants import CONFUSE_NUM_TURNS
 from game import Game
 from model.helper_functions.message import message
 from model.components.ai.base import AbstractAI
-from model.systems.fighter_system import FighterSystem
 
 
 class BasicMonster(AbstractAI):
@@ -24,8 +23,8 @@ class BasicMonster(AbstractAI):
                 monster.move_towards(Game.player.x, Game.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif FighterSystem.get_fighter(Game.player).hp > 0:
-                FighterSystem.get_fighter(monster).attack(Game.player)
+            elif Game.fighter_sys.get(Game.player).hp > 0:
+                Game.fighter_sys.get(monster).attack(Game.player)
 
         else:
             if config.data.enemies.randomlyWalkWhenOutOfSight:

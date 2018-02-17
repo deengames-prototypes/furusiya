@@ -1,7 +1,7 @@
+from game import Game
 from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators import map_generator
-from model.systems.fighter_system import FighterSystem
 
 class TestMapGenerator:
 
@@ -16,7 +16,7 @@ class TestMapGenerator:
         assert len(area_map.entities) == expected_monsters
 
         for monster in area_map.entities:
-            assert FighterSystem.get_fighter(monster) is not None
+            assert Game.fighter_sys.get(monster) is not None
 
     def test_generate_items_generates_enough_items(self):
         expected_items = 10

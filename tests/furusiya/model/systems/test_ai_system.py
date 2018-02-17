@@ -22,13 +22,13 @@ def ai3():
 
 @pytest.fixture
 def ai_sys(ai1, ai2, ai3):
-    AISystem.ais = {}
+    ai_sys = AISystem()
 
-    AISystem.set_ai('owner1', ai1)
-    AISystem.set_ai('owner2', ai2)
-    AISystem.set_ai('owner3', ai3)
+    ai_sys.set('owner1', ai1)
+    ai_sys.set('owner2', ai2)
+    ai_sys.set('owner3', ai3)
 
-    yield AISystem
+    yield ai_sys
 
 
 def test_take_turn(ai_sys, ai1, ai2, ai3):

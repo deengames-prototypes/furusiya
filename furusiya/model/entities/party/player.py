@@ -7,8 +7,6 @@ from game import Game
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash
-from model.systems.fighter_system import FighterSystem
-from model.systems.xp_system import XPSystem
 
 
 class Player(GameObject):
@@ -20,7 +18,7 @@ class Player(GameObject):
         weapon_name = data.startingWeapon
         weapon_init = getattr(model.weapons, weapon_name)
 
-        FighterSystem.set_fighter(
+        Game.fighter_sys.set(
             self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
@@ -34,7 +32,7 @@ class Player(GameObject):
         def on_level_callback():
             self.stats_points += config.data.player.statsPointsOnLevelUp
 
-        XPSystem.set_experience(
+        Game.xp_sys.set(
             self, XPComponent(
                 owner=self,
                 xp=0,
@@ -69,13 +67,13 @@ class Player(GameObject):
         return int(config.data.skills.resting.percent/100 * max_hp)
 
     def rest(self):
-        fighter = FighterSystem.get_fighter(self)
+        fighter = Game.fighter_sys.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
         return 'rested'
 
     def calculate_turns_to_rest(self):
-        fighter = FighterSystem.get_fighter(self)
+        fighter = Game.fighter_sys.get(self)
         turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
         return turns_to_rest
@@ -88,7 +86,7 @@ class Player(GameObject):
 
         # try to find an attackable object there
         for obj in Game.area_map.get_entities_on(x, y):
-            if FighterSystem.has_fighter(obj):
+            if Game.fighter_sys.has(obj):
                 target = obj
                 break
         else:
@@ -103,6 +101,6 @@ class Player(GameObject):
             Game.renderer.recompute_fov = True
             return
 
-        FighterSystem.get_fighter(self).attack(target)
+        Game.fighter_sys.get(self).attack(target)
         if config.data.skills.omnislash.enabled:
             OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))

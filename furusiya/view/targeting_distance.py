@@ -1,5 +1,4 @@
 from game import Game
-from model.systems.fighter_system import FighterSystem
 
 
 def target_tile(max_range=None):
@@ -34,5 +33,5 @@ def target_monster(max_range=None):
 
         # return the first clicked monster, otherwise continue looping
         for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and FighterSystem.get_fighter(obj) and obj != Game.player:
+            if obj.x == x and obj.y == y and Game.fighter_sys.get(obj) and obj != Game.player:
                 return obj
