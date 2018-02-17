@@ -6,13 +6,13 @@ class ComponentSystem:
         self.component_dict = {}
 
     def set(self, owner, component):
-        self.component_dict[owner.id] = component
+        self.component_dict[owner] = component
 
     def remove(self, owner):
-        del self.component_dict[owner.id]
+        del self.component_dict[owner]
 
     def get(self, owner):
-        return self.component_dict.get(owner.id, None)
+        return self.component_dict.get(owner, None)
 
     def has(self, owner):
         return self.get(owner) is not None

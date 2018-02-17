@@ -1,54 +1,42 @@
 class GameMetaClass(type):
     def __new__(mcs, class_name, bases, dct):
+        cls = type.__new__(mcs, class_name, bases, dct)
+        cls._instance = cls()
+        return cls
 
-        dct['_player'] = 0
-        dct['_stallion'] = 0
-        dct['area_map'] = None
+    def __getattr__(cls, item):
+        return cls._instance.__dict__.get(item)
 
-        return type.__new__(mcs, class_name, bases, dct)
-
-    @property
-    def player(cls):
-        return cls.area_map.get_entity_with_id(cls._player)
-
-    @player.setter
-    def player(cls, value):
-        cls._player = value
-
-    @property
-    def stallion(cls):
-        return cls.area_map.get_entity_with_id(cls._stallion)
-    
-    @stallion.setter
-    def stallion(cls, value):
-        cls._stallion = value
+    def __setattr__(cls, key, value):
+        if key == '_instance':
+            super().__setattr__(key, value)
+        cls._instance.__setattr__(key, value)
 
 
 class Game(metaclass=GameMetaClass):
-    inventory = []
-    draw_bowsight = None
-    mouse_coord = (0, 0)
-    auto_target = None
-    target = None
-    game_messages = []
-    game_state = None
+    _instance = None
+    _dont_pickle = {'ui', 'save_manager', 'keybinder', 'renderer'}
 
-    area_map = None
-    renderer = None
-    ui = None
-    current_turn = None
+    def __init__(self):
+        self.inventory = []
+        self.draw_bowsight = None
+        self.mouse_coord = (0, 0)
+        self.auto_target = None
+        self.target = None
+        self.game_messages = []
+        self.game_state = None
 
-    save_manager = None
-    keybinder = None
+        self.area_map = None
+        self.renderer = None
+        self.ui = None
+        self.current_turn = None
 
-    fighter_sys = None
-    ai_sys = None
-    xp_sys = None
+        self.save_manager = None
+        self.keybinder = None
 
-    # indexes refering to actual objects in area_map.entities
-    # refer to above metaclass for actual properties
-    _player = 0
-    _stallion = 0
+        self.fighter_sys = None
+        self.ai_sys = None
+        self.xp_sys = None
 
-    # list of attribute names to not pickle
-    _dont_pickle = ['_dont_pickle', 'ui', 'renderer', 'save_manager']
+        self.player = None
+        self.stallion = None

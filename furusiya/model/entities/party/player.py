@@ -85,7 +85,7 @@ class Player(GameObject):
 
         # try to find an attackable object there
         target = Game.area_map.get_blocking_object_at(x, y)
-        if target is not None:
+        if target is not None and Game.fighter_sys.has(target):
             Game.fighter_sys.get(self).attack(target)
             if config.data.skills.omnislash.enabled:
                 OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))

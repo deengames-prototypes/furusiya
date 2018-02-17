@@ -17,9 +17,6 @@ class GameObject:
         self.blocks = blocks
         self.hostile = hostile
 
-        # id for pickle-safe component keeping
-        self.id = id(self)
-
         self._components = {}
 
     def _get_components_of_type(self, component_type):

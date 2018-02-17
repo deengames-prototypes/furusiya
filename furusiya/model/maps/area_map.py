@@ -27,13 +27,6 @@ class AreaMap:
             if (e.x, e.y) == (x, y)
         ]
 
-    def get_entity_with_id(self, entity_id):
-        for entity in self.entities:
-            if entity.id == entity_id:
-                return entity
-
-        return None
-
     def is_walkable(self, x, y):
         return (self.is_on_map(x, y)
                 and self.tiles[x][y].is_walkable

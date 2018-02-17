@@ -30,19 +30,16 @@ def new_game():
     Game.ai_sys = AISystem()
 
     Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
-    player = Player()
-    stallion = Stallion(player)
+    Game.player = Player()
+    Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
     generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
     generator = getattr(generators, generator_class_name, DungeonGenerator)
     generator(Game.area_map)
 
-    Game.area_map.place_on_random_ground(player)
-    Game.area_map.place_around(stallion, player.x, player.y)
-
-    Game.player = player.id
-    Game.stallion = stallion.id
+    Game.area_map.place_on_random_ground(Game.player)
+    Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
 
     Game.game_state = 'playing'
     Game.inventory = []

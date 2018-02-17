@@ -1,4 +1,5 @@
-import shelve
+import pickle
+from copy import copy
 
 
 class SaveManager:
@@ -7,14 +8,15 @@ class SaveManager:
 
     def save(self):
         # open a new empty shelve (possibly overwriting an old one) to write the game data
-        with shelve.open('savegame', 'n') as savefile:
-            for attr_name, value in self.game.__dict__.items():
-                if attr_name.startswith('__') or attr_name in self.game._dont_pickle:
-                    continue
-                savefile[attr_name] = value
+        to_pickle = copy(self.game._instance)
+
+        for attr_to_remove in self.game._dont_pickle:
+            delattr(to_pickle, attr_to_remove)
+
+        with open('savegame', 'wb') as f:
+            pickle.dump(to_pickle, f, pickle.HIGHEST_PROTOCOL)
 
     def load(self):
         # open the previously saved shelve and load the game data
-        with shelve.open('savegame', 'r') as savefile:
-            for attr_name, value in savefile.items():
-                setattr(self.game, attr_name, value)
+        with open('savegame', 'rb') as f:
+            self.game._instance.__dict__.update(pickle.load(f).__dict__)

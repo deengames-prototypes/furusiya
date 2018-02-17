@@ -10,7 +10,8 @@ class TestDungeonGenerator:
     @pytest.fixture
     def dg(self):
         Game.area_map = AreaMap(80, 43)
-        Game.player = Game.area_map.place_on_random_ground(Player())
+        Game.player = Player()
+        Game.area_map.place_on_random_ground(Game.player)
         yield DungeonGenerator(Game.area_map)
 
     def test_generate_generates_rooms(self, dg):
