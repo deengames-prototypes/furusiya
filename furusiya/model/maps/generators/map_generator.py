@@ -1,6 +1,6 @@
 import random
 
-from model import item_callbacks
+from model.helper_functions import item_callbacks
 from model.config import config
 from model.factories import item_factory
 from model.factories import monster_factory

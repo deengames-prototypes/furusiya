@@ -1,7 +1,7 @@
 from random import randint
 
 from game import Game
-from model.inventory import inventory_menu
+from model.helper_functions.inventory import inventory_menu
 from model.item import Item
 from model.keys.util import in_game
 from model.skills.whirlwind import Whirlwind
