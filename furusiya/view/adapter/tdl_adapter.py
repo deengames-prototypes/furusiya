@@ -5,6 +5,7 @@ import tdl
 
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from game import Game
 from model.config import config
 from view.adapter.extensible_app import ExtensibleApp
 
@@ -57,6 +58,8 @@ class TdlAdapter:
     def wait_for(self, event):
         user_input = None
         while user_input is None:
+            if Game.renderer is not None:
+                Game.renderer.render()
             user_input = tdl.event.wait()
             if user_input.type != event:
                 user_input = None
@@ -72,6 +75,8 @@ class TdlAdapter:
         """
         user_input = None
         while user_input is None:
+            if Game.renderer is not None:
+                Game.renderer.render()
             user_input = tdl.event.key_wait()
             if user_input.key == 'TEXT':
                 user_input = None
