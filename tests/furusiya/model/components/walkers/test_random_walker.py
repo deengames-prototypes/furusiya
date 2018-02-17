@@ -36,8 +36,8 @@ class TestRandomWalker(unittest.TestCase):
         area_map.tiles[entity.x][entity.y].is_walkable = True
         r = RandomWalker(area_map, entity)
 
-        with self.assertRaises(ValueError):
-            r.walk()
+        r.walk()
+        self.assertEqual((entity.x, entity.y), (3, 2))
 
     def test_walk_doesnt_walk_off_the_map(self):
         area_map = AreaMap(5, 5)
@@ -46,15 +46,15 @@ class TestRandomWalker(unittest.TestCase):
         entity = AttrDict({'x': 0, 'y': 0})
         r = RandomWalker(area_map, entity)
 
-        # Set position to (0, 0) and everything to solid: should throw (shouldn't walk off the LHS/top)
+        # Set position to (0, 0) and everything to solid: shouldn't move (shouldn't walk off the LHS/top)
         entity.x, entity.y = (0, 0)
-        with self.assertRaises(ValueError):
-            r.walk()
+        r.walk()
+        self.assertEqual((entity.x, entity.y), (0, 0))
 
-        # Set position to (width, height) and everything to solid, should throw (shouldn't walk off the RHS)
+        # Set position to (width, height) and everything to solid, shouldn't move (shouldn't walk off the RHS)
         entity.x, entity.y = (area_map.width - 1, area_map.height - 1)
-        with self.assertRaises(ValueError):
-            r.walk()
+        r.walk()
+        self.assertEqual((entity.x, entity.y), (area_map.width - 1, area_map.height - 1))
 
     def __make_unwalkable(self, area_map):
         for y in range(area_map.height):

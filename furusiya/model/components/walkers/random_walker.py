@@ -20,4 +20,4 @@ class RandomWalker:
                 self.parent.x, self.parent.y = tile_x, tile_y
                 return
 
-        raise ValueError("There are no available adjacent locations")
+        # if no free adjacent tiles, silently ignore
