@@ -43,7 +43,7 @@ def new_game():
     Game.inventory = []
 
     # create the list of game messages and their colors, starts empty
-    Game.game_msgs = []
+    Game.game_messages = []
 
     # a warm welcoming message!
     message('Another brave knight yearns to bring peace to the land.', colors.red)

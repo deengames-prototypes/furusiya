@@ -31,8 +31,8 @@ def test_new_game_creates_new_game():
     assert Game.game_state is not None
     assert Game.game_state == 'playing'
 
-    assert Game.game_msgs is not None
-    assert len(Game.game_msgs) == 5  # 1 welcoming message, 4 level up messages.
+    assert Game.game_messages is not None
+    assert len(Game.game_messages) == 5  # 1 welcoming message, 4 level up messages.
 
     old_tile = (Game.player.x, Game.player.y)
     assert Game.area_map.tiles[Game.player.x][Game.player.y].is_walkable
