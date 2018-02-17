@@ -2,7 +2,7 @@ from model.keys.callbacks import update_callback, quit_event, mousemotion_event
 from model.keys.key_callbacks import *
 
 
-keybinds = {
+KEY_BINDINGS = {
     'ESCAPE': exit_to_main_menu_callback,
     'ENTER': enter_callback,
 
@@ -25,7 +25,7 @@ keybinds = {
     'l': whirlwind_callback
 }
 
-events = {
+EVENT_BINDINGS = {
     'QUIT': quit_event,
 
     'MOUSEMOTION': mousemotion_event,
@@ -55,15 +55,15 @@ class KeyBinder:
 
     # Keybinds
     def register_all_keybinds(self):
-        for key, callback in keybinds.items():
+        for key, callback in KEY_BINDINGS.items():
             self.register_keybind(key, callback)
 
     def suspend_all_keybinds(self):
-        for key in keybinds.keys():
+        for key in KEY_BINDINGS.keys():
             self.suspend_keybind(key)
 
     def register_keybind(self, key, callback=None):
-        callback = callback or keybinds.get(key) or (lambda ev: None)
+        callback = callback or KEY_BINDINGS.get(key) or (lambda ev: None)
         setattr(self.game.ui.app, self._format_attr_key(key), callback)
 
     def suspend_keybind(self, key):
@@ -71,13 +71,13 @@ class KeyBinder:
 
     # Events
     def register_all_events(self):
-        for key, callback in events.items():
+        for key, callback in EVENT_BINDINGS.items():
             self.register_event(key, callback)
 
         self.register_update()
 
     def register_event(self, event_name, callback=None):
-        callback = callback or events.get(event_name) or (lambda ev: None)
+        callback = callback or EVENT_BINDINGS.get(event_name) or (lambda ev: None)
         setattr(self.game.ui.app, self._format_attr_event(event_name), callback)
 
     # Update
