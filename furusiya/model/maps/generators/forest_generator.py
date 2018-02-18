@@ -26,10 +26,10 @@ class ForestGenerator:
         self._generate_trees()
         
         map_generator.generate_monsters(self._area_map,
-                                        Game.random.randint(ForestGenerator.NUM_MONSTERS[0], ForestGenerator.NUM_MONSTERS[1]))
+            Game.random.randint(*ForestGenerator.NUM_MONSTERS))
 
-        map_generator.generate_items(self._area_map,
-                                     Game.random.randint(ForestGenerator.NUM_ITEMS[0], ForestGenerator.NUM_ITEMS[1]))
+        map_generator.generate_items(self._area_map, 
+            Game.random.randint(*ForestGenerator.NUM_ITEMS))
 
 
     def _generate_trees(self):

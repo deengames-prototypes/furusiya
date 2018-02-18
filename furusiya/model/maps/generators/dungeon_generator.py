@@ -21,9 +21,9 @@ class DungeonGenerator:
         self._generate_rooms()
 
         map_generator.generate_monsters(self._area_map,
-                                        Game.random.randint(DungeonGenerator.NUM_ROOMS[0], DungeonGenerator.NUM_ROOMS[1]))
+            Game.random.randint(*DungeonGenerator.NUM_ROOMS))
         map_generator.generate_items(self._area_map,
-                                     Game.random.randint(DungeonGenerator.NUM_ITEMS[0], DungeonGenerator.NUM_ITEMS[1]))
+            Game.random.randint(*DungeonGenerator.NUM_ITEMS))
 
     def _generate_rooms(self):
         # TODO: dry this block with forest generator
@@ -31,7 +31,7 @@ class DungeonGenerator:
             for y in range(0, self._area_map.height):
                 self._area_map.tiles[x][y].convert_to_wall()
 
-        rooms_to_generate = Game.random.randint(DungeonGenerator.NUM_ROOMS[0], DungeonGenerator.NUM_ROOMS[1])
+        rooms_to_generate = Game.random.randint(*DungeonGenerator.NUM_ROOMS)
 
         # If you generate a room overlapping another room, that's a fail.
         # After ten failures, we give up and return the dungeon as-is.
