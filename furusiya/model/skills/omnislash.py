@@ -2,6 +2,7 @@ import colors
 from game import Game
 from model.helper_functions.message import message
 from model.keys.in_game_decorator import in_game
+from model.keys.movement_callbacks import *
 
 
 class OmniSlash:
@@ -22,17 +23,16 @@ class OmniSlash:
             else:
                 player.move_or_attack(dx, dy)
 
-        # TODO: DRY with key_callback movement methods?
-        up_lambda = in_game(pass_turn=True)(lambda event: new_move_callback(0, -1))
-        down_lambda = in_game(pass_turn=True)(lambda event: new_move_callback(0, 1))
-        left_lambda = in_game(pass_turn=True)(lambda event: new_move_callback(-1, 0))
-        right_lambda = in_game(pass_turn=True)(lambda event: new_move_callback(1, 0))
+        up_lambda = lambda ev: up(new_move_callback)
+        down_lambda = lambda ev: down(new_move_callback)
+        left_lambda = lambda ev: left(new_move_callback)
+        right_lambda = lambda ev: right(new_move_callback)
 
         Game.keybinder.register_keybinds({
-            'UP': up_lambda,
-            'DOWN': down_lambda,
-            'LEFT': left_lambda,
-            'RIGHT': right_lambda,
+            'UP': in_game(up_lambda, pass_turn=True),
+            'DOWN': in_game(down_lambda, pass_turn=True),
+            'LEFT': in_game(left_lambda, pass_turn=True),
+            'RIGHT': in_game(right_lambda, pass_turn=True),
             'ESCAPE': new_escape_callback
         })
 

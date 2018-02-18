@@ -3,6 +3,7 @@ from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
+from model.keys.movement_callbacks import *
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
@@ -23,22 +24,22 @@ def enter_callback(event):
 # Movement
 @in_game(pass_turn=True)
 def up_callback(event):
-    Game.player.move_or_attack(0, -1)
+    up(Game.player.move_or_attack)
 
 
 @in_game(pass_turn=True)
 def down_callback(event):
-    Game.player.move_or_attack(0, 1)
+    down(Game.player.move_or_attack)
 
 
 @in_game(pass_turn=True)
 def left_callback(event):
-    Game.player.move_or_attack(-1, 0)
+    left(Game.player.move_or_attack)
 
 
 @in_game(pass_turn=True)
 def right_callback(event):
-    Game.player.move_or_attack(1, 0)
+    right(Game.player.move_or_attack)
 
 
 # Item pick up
