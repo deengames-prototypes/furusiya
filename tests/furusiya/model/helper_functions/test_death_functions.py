@@ -48,6 +48,8 @@ def test_monster_death_marks_monster_as_dead(monster, player):
 
 
 def test_player_death_affects_game_state(player):
+    Game.game_state = 'playing'
+
     player_death(player)
 
     assert Game.game_state == 'dead'
