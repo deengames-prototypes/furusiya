@@ -29,7 +29,7 @@ class Player(GameObject):
             )
         )
 
-        Game.xp_sys.set(
+        Game.xp_system.set(
             self, XPComponent(
                 owner=self,
                 xp=0,

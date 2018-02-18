@@ -20,7 +20,7 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    Game.xp_sys.set(
+    Game.xp_system.set(
         monster, XPComponent(
             owner=monster,
             xp=data.xp

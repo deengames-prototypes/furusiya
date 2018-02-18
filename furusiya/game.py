@@ -36,7 +36,7 @@ class Game(metaclass=GameMetaClass):
 
         self.fighter_system = None
         self.ai_system = None
-        self.xp_sys = None
+        self.xp_system = None
 
         self.player = None
         self.stallion = None

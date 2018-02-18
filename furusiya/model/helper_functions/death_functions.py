@@ -11,7 +11,7 @@ def monster_death(monster):
     monster.color = colors.dark_red
     monster.blocks = False
 
-    Game.xp_sys.get(Game.player).gain_xp(Game.xp_sys.get(monster).xp)
+    Game.xp_system.get(Game.player).gain_xp(Game.xp_system.get(monster).xp)
     Game.fighter_system.remove(monster)
     Game.ai_system.remove(monster)
 
