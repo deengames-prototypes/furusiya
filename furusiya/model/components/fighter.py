@@ -55,7 +55,7 @@ class Fighter(Component):
 
     def die(self):
         # Drop arrows if it's a monster
-        if config.data.features.limitedArrows and Game.ai_sys.has(self.owner):
+        if config.data.features.limitedArrows and Game.ai_system.has(self.owner):
             num_arrows = config.data.enemies.arrowDropsOnKill
             arrows = item_factory.create_item(
                 self.owner.x, self.owner.y,

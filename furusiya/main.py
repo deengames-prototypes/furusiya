@@ -27,7 +27,7 @@ def new_game():
 
     Game.fighter_system = ComponentSystem()
     Game.xp_sys = ComponentSystem()
-    Game.ai_sys = AISystem()
+    Game.ai_system = AISystem()
 
     Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
     Game.player = Player()

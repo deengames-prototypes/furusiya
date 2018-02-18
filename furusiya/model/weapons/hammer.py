@@ -12,7 +12,7 @@ class Hammer:
         self.owner = owner
 
     def attack(self, target):
-        if config.data.features.hammerKnocksBack and Game.ai_sys.has(target):
+        if config.data.features.hammerKnocksBack and Game.ai_system.has(target):
             # The directional vector of knockback is (defender - attacker)
             dx = target.x - self.owner.x
             dy = target.y - self.owner.y
@@ -36,7 +36,7 @@ class Hammer:
                 hit_something = target.move_towards(goal_x, goal_y)
                 if target.x == old_x and target.y == old_y:
                     # Didn't move: hit a solid wall
-                    Game.ai_sys.get(target).temporarily_switch_to(StunnedMonster(target))
+                    Game.ai_system.get(target).temporarily_switch_to(StunnedMonster(target))
 
                     # Take additional damage for hitting something; if (and only
                     # if) we actually flew backward one or more spaces.

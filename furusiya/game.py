@@ -35,7 +35,7 @@ class Game(metaclass=GameMetaClass):
         self.keybinder = None
 
         self.fighter_system = None
-        self.ai_sys = None
+        self.ai_system = None
         self.xp_sys = None
 
         self.player = None

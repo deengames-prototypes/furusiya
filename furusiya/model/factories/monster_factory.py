@@ -27,6 +27,6 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    Game.ai_sys.set(monster, BasicMonster(monster))
+    Game.ai_system.set(monster, BasicMonster(monster))
 
     return monster

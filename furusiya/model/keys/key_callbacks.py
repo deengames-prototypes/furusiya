@@ -148,7 +148,7 @@ def continuous_rest_callback(event):
             nonlocal turns_to_rest
             if can_rest():
                 for e in Game.area_map.entities:
-                    Game.ai_sys.take_turn(e)
+                    Game.ai_system.take_turn(e)
                 turns_to_rest -= 1
                 Game.player.rest()
             else:

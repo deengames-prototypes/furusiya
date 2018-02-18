@@ -13,7 +13,7 @@ def monster_death(monster):
 
     Game.xp_sys.get(Game.player).gain_xp(Game.xp_sys.get(monster).xp)
     Game.fighter_system.remove(monster)
-    Game.ai_sys.remove(monster)
+    Game.ai_system.remove(monster)
 
     monster.original_ai = None
     monster.name = "{} remains".format(monster.name)

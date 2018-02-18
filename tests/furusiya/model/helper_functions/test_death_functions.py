@@ -17,7 +17,7 @@ def monster():
 
     Game.xp_sys.set(obj, Mock(xp=MONSTER_XP))
     Game.fighter_system.set(obj, Mock())
-    Game.ai_sys.set(obj, Mock())
+    Game.ai_system.set(obj, Mock())
 
     yield obj
 
@@ -44,7 +44,7 @@ def test_monster_death_marks_monster_as_dead(monster, player):
     assert new_xp > old_xp
 
     assert not Game.fighter_system.has(monster)
-    assert not Game.ai_sys.has(monster)
+    assert not Game.ai_system.has(monster)
 
 
 def test_player_death_affects_game_state(player):
