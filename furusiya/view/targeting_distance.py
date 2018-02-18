@@ -33,5 +33,5 @@ def target_monster(max_range=None):
 
         # return the first clicked monster, otherwise continue looping
         for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and Game.fighter_sys.get(obj) and obj != Game.player:
+            if obj.x == x and obj.y == y and Game.fighter_system.get(obj) and obj != Game.player:
                 return obj

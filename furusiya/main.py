@@ -25,7 +25,7 @@ from view.map_renderer import MapRenderer
 
 def new_game():
 
-    Game.fighter_sys = ComponentSystem()
+    Game.fighter_system = ComponentSystem()
     Game.xp_sys = ComponentSystem()
     Game.ai_sys = AISystem()
 

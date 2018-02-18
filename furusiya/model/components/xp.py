@@ -24,5 +24,5 @@ class XPComponent(Component):
             if self.on_level_callback is not None:
                 self.on_level_callback()
             message(f"{self.owner.name.capitalize()} is now level {self.level}!")
-            fighter = Game.fighter_sys.get(self.owner)
+            fighter = Game.fighter_system.get(self.owner)
             fighter.heal(fighter.max_hp)

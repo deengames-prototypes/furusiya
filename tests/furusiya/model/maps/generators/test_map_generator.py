@@ -16,7 +16,7 @@ class TestMapGenerator:
         assert len(area_map.entities) == expected_monsters
 
         for monster in area_map.entities:
-            assert Game.fighter_sys.get(monster) is not None
+            assert Game.fighter_system.get(monster) is not None
 
     def test_generate_items_generates_enough_items(self):
         expected_items = 10

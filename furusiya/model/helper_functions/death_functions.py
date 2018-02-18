@@ -12,7 +12,7 @@ def monster_death(monster):
     monster.blocks = False
 
     Game.xp_sys.get(Game.player).gain_xp(Game.xp_sys.get(monster).xp)
-    Game.fighter_sys.remove(monster)
+    Game.fighter_system.remove(monster)
     Game.ai_sys.remove(monster)
 
     monster.original_ai = None

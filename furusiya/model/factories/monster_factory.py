@@ -10,7 +10,7 @@ from model.entities.game_object import GameObject
 def create_monster(data, x, y, colour, name):
     monster = GameObject(x, y, name[0], name, colour, blocks=True, hostile=True)
 
-    Game.fighter_sys.set(
+    Game.fighter_system.set(
         monster, Fighter(
             owner=monster,
             hp=data.health,

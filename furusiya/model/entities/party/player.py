@@ -18,7 +18,7 @@ class Player(GameObject):
         weapon_name = data.startingWeapon
         weapon_init = getattr(model.weapons, weapon_name)
 
-        Game.fighter_sys.set(
+        Game.fighter_system.set(
             self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
@@ -66,13 +66,13 @@ class Player(GameObject):
         return int(config.data.skills.resting.percent/100 * max_hp)
 
     def rest(self):
-        fighter = Game.fighter_sys.get(self)
+        fighter = Game.fighter_system.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
         return 'rested'
 
     def calculate_turns_to_rest(self):
-        fighter = Game.fighter_sys.get(self)
+        fighter = Game.fighter_system.get(self)
         turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
         return turns_to_rest
@@ -85,8 +85,8 @@ class Player(GameObject):
 
         # try to find an attackable object there
         target = Game.area_map.get_blocking_object_at(x, y)
-        if target is not None and Game.fighter_sys.has(target):
-            Game.fighter_sys.get(self).attack(target)
+        if target is not None and Game.fighter_system.has(target):
+            Game.fighter_system.get(self).attack(target)
             if config.data.skills.omnislash.enabled:
                 OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
         else:
