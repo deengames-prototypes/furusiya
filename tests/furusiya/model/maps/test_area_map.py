@@ -7,7 +7,7 @@ from model.maps.generators.forest_generator import ForestGenerator
 from model.rect import Rect
 
 
-class TestMap:
+class TestAreaMap:
     @pytest.fixture
     def basic_map(self):
         yield AreaMap(10, 10)
