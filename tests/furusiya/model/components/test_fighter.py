@@ -43,7 +43,7 @@ class TestFighter:
         # Assert
         assert fighter.hp == old_hp
 
-    def test_attack_decreases_damage(self, fighter, bushslime, bushslime_fighter):
+    def test_attack_decreases_health(self, fighter, bushslime, bushslime_fighter):
         old_hp = bushslime_fighter.hp
 
         # Act
@@ -51,6 +51,16 @@ class TestFighter:
 
         # Assert
         assert bushslime_fighter.hp < old_hp
+
+    def test_attack_doesnt_decrease_health_if_power_is_not_sufficient(self, fighter, bushslime, bushslime_fighter):
+        old_hp = bushslime_fighter.hp
+        fighter.power = 1
+
+        # Act
+        fighter.attack(bushslime)
+
+        # Assert
+        assert bushslime_fighter.hp == old_hp
 
     def test_attack_attacks_with_weapon_effect(self, fighter, bushslime, bushslime_fighter):
         fighter.weapon = Mock()
