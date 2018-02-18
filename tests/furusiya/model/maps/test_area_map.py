@@ -46,6 +46,13 @@ class TestAreaMap:
         basic_map.place_on_random_ground(e)
         assert not basic_map.is_walkable(e.x, e.y)
 
+    def test_is_visible_tile_returns_true_if_visible(self, basic_map):
+        basic_map.tiles[0][0].block_sight = True
+        basic_map.tiles[0][1].block_sight = False
+
+        assert not basic_map.is_visible_tile(0, 0)
+        assert basic_map.is_visible_tile(0, 1)
+
     def test_get_blocking_object_at_returns_object_if_object_is_there(self, basic_map):
         e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
         basic_map.place_on_random_ground(e)
