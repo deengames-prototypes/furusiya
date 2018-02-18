@@ -20,8 +20,8 @@ class TestFighter:
     @pytest.fixture
     def bushslime_fighter(self, bushslime):
         bush_fighter = Fighter(bushslime, 15, 2, 2)
-        Game.fighter_sys.set(bushslime, bush_fighter)
-        Game.ai_sys.set(bushslime, Mock())
+        Game.fighter_system.set(bushslime, bush_fighter)
+        Game.ai_system.set(bushslime, Mock())
         yield bush_fighter
 
     def test_take_damage_decreases_health(self, fighter):

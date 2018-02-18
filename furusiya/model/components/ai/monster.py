@@ -21,8 +21,8 @@ class BasicMonster(AbstractAI):
                 monster.move_towards(Game.player.x, Game.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif Game.fighter_sys.get(Game.player).hp > 0:
-                Game.fighter_sys.get(monster).attack(Game.player)
+            elif Game.fighter_system.get(Game.player).hp > 0:
+                Game.fighter_system.get(monster).attack(Game.player)
 
         else:
             if config.data.enemies.randomlyWalkWhenOutOfSight:

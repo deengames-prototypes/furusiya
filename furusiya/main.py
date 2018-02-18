@@ -25,9 +25,9 @@ from view.map_renderer import MapRenderer
 
 def new_game():
 
-    Game.fighter_sys = ComponentSystem()
-    Game.xp_sys = ComponentSystem()
-    Game.ai_sys = AISystem()
+    Game.fighter_system = ComponentSystem()
+    Game.xp_system = ComponentSystem()
+    Game.ai_system = AISystem()
 
     Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
     Game.player = Player()
@@ -51,7 +51,7 @@ def new_game():
     message('Another brave knight yearns to bring peace to the land.', colors.red)
 
     # Gain four levels
-    Game.xp_sys.get(Game.player).gain_xp(40 + 80 + 160 + 320)
+    Game.xp_system.get(Game.player).gain_xp(40 + 80 + 160 + 320)
 
 
 def play_game():
