@@ -17,6 +17,7 @@ prod_config.load(raw_json)
 
 @pytest.fixture(scope='session', autouse=True)
 def config(request):
+    prod_config.data.mapType = 'dungeon'
     return prod_config
 
 

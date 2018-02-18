@@ -1,9 +1,22 @@
 from unittest.mock import Mock
 
 import pickle
+
+import os
 import pytest
 
 from data.save_manager import SaveManager
+
+
+class MockGame:
+    _instance = None
+    _dont_pickle = {'totally_not_cool_attribute'}
+
+    def __init__(self):
+        self._instance = self
+        self.cool_attribute = True
+        self.cooler_attribute = 9001
+        self.totally_not_cool_attribute = False
 
 
 class TestSaveManager:
@@ -16,14 +29,7 @@ class TestSaveManager:
 
     @pytest.fixture
     def save_manager(self):
-        mock_game = Mock()
-
-        mock_game.cool_attribute.cool = True
-        mock_game.cooler_attribute = 9001
-        mock_game.totally_not_cool_attribute = False
-        mock_game._dont_pickle = {'totally_not_cool_attribute'}
-
-        yield SaveManager(mock_game)
+        yield SaveManager(MockGame())
 
     def test_save_saves_game(self, save_manager, patched_pickle):
         save_manager.save()
@@ -34,3 +40,14 @@ class TestSaveManager:
         save_manager.load()
 
         assert patched_pickle.load.called
+
+    def test_round_trip(self, save_manager):
+        save_manager.save()
+        save_manager.game.cool_attribute = False
+
+        save_manager.load()
+
+        assert save_manager.game.cool_attribute is True
+
+        # cleanup generated files
+        os.remove('savegame')

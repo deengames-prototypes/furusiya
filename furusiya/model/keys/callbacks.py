@@ -8,7 +8,7 @@ def update_callback(delta_time):
         pass
     else:  # it's everyone else's turn
         for e in Game.area_map.entities:
-            Game.ai_sys.take_turn(e)
+            Game.ai_system.take_turn(e)
 
         Game.current_turn = Game.player
 

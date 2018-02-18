@@ -7,7 +7,7 @@ from model.maps.generators.forest_generator import ForestGenerator
 from model.rect import Rect
 
 
-class TestMap:
+class TestAreaMap:
     @pytest.fixture
     def basic_map(self):
         yield AreaMap(10, 10)
@@ -46,6 +46,13 @@ class TestMap:
         basic_map.place_on_random_ground(e)
         assert not basic_map.is_walkable(e.x, e.y)
 
+    def test_is_visible_tile_returns_true_if_visible(self, basic_map):
+        basic_map.tiles[0][0].block_sight = True
+        basic_map.tiles[0][1].block_sight = False
+
+        assert not basic_map.is_visible_tile(0, 0)
+        assert basic_map.is_visible_tile(0, 1)
+
     def test_get_blocking_object_at_returns_object_if_object_is_there(self, basic_map):
         e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
         basic_map.place_on_random_ground(e)
@@ -57,6 +64,16 @@ class TestMap:
         assert e is blocking_object
 
     def test_get_blocking_object_at_returns_none_if_nothing_is_there(self, basic_map):
+        # Act
+        blocking_object = basic_map.get_blocking_object_at(0, 0)
+
+        # Assert
+        assert blocking_object is None
+
+    def test_get_blocking_object_at_returns_none_if_non_blocking_object_is_there(self, basic_map):
+        e = GameObject(0, 0, '#', 'item', (0, 0, 0), blocks=False)
+        basic_map.place_on_random_ground(e)
+
         # Act
         blocking_object = basic_map.get_blocking_object_at(0, 0)
 

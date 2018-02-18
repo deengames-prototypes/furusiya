@@ -15,9 +15,9 @@ class Sword:
         self.owner = owner
 
     def attack(self, target):
-        if config.data.features.swordStuns and Game.ai_sys.has(target):
+        if config.data.features.swordStuns and Game.ai_system.has(target):
             if Game.random.randint(0, 100) <= config.data.weapons.swordStunProbability:
-                target_ai = Game.ai_sys.get(target)
+                target_ai = Game.ai_system.get(target)
                 if config.data.features.stunsStack:
                     if isinstance(target_ai, StunnedMonster):
                         # Stack the stun
