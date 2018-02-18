@@ -35,7 +35,7 @@ class TestOmniSlash:
 
     def test_slash_hits_guaranteed_hits(self, player, player_fighter, monster, monster_fighter, conf):
         # Act
-        OmniSlash.slash(player, monster, conf)
+        OmniSlash.process(player, monster, conf)
 
         # Assert
         assert player_fighter.attack.call_count >= self.guaranteed_hits
@@ -46,7 +46,7 @@ class TestOmniSlash:
         conf.rehitPercent = 50
 
         # Act
-        OmniSlash.slash(player, monster, conf)
+        OmniSlash.process(player, monster, conf)
 
         # Assert
         assert player_fighter.attack.call_count >= self.guaranteed_hits + 5

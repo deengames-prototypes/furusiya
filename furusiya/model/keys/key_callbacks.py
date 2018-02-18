@@ -1,3 +1,4 @@
+import colors
 from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
@@ -166,7 +167,45 @@ def whirlwind_callback(event):
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
 
 
-@in_game(pass_turn=False)  # enter omnislash mode!
+@in_game(pass_turn=False)
 def omnislash_callback(event):
+    """Enter omnislash mode!"""
     if config.data.skills.omnislash.enabled:
-        OmniSlash.process(Game.player, config.data.skills.omnislash)
+        message('Attack an enemy to activate omnislash, or press escape to cancel.', colors.light_cyan)
+
+        Game.keybinder.suspend_all_keybinds()
+
+        def new_escape_callback(event):
+            Game.keybinder.register_all_keybinds()
+
+        def new_move_callback(dx, dy):
+            target = Game.area_map.get_blocking_object_at(Game.player.x + dx, Game.player.y + dy)
+            if target is not None and Game.fighter_system.has(target):
+                OmniSlash.process(Game.player, target, config.data.skills.omnislash)
+                new_escape_callback(None)
+            else:
+                Game.player.move_or_attack(dx, dy)
+
+        @in_game(pass_turn=True)
+        def new_up(event):
+            up(new_move_callback)
+
+        @in_game(pass_turn=True)
+        def new_down(event):
+            down(new_move_callback)
+
+        @in_game(pass_turn=True)
+        def new_left(event):
+            left(new_move_callback)
+
+        @in_game(pass_turn=True)
+        def new_right(event):
+            right(new_move_callback)
+
+        Game.keybinder.register_keybinds({
+            'UP': new_up,
+            'DOWN': new_down,
+            'LEFT': new_left,
+            'RIGHT': new_right,
+            'ESCAPE': new_escape_callback
+        })
