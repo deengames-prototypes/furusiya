@@ -63,6 +63,16 @@ class TestMap:
         # Assert
         assert blocking_object is None
 
+    def test_get_blocking_object_at_returns_none_if_non_blocking_object_is_there(self, basic_map):
+        e = GameObject(0, 0, '#', 'item', (0, 0, 0), blocks=False)
+        basic_map.place_on_random_ground(e)
+
+        # Act
+        blocking_object = basic_map.get_blocking_object_at(0, 0)
+
+        # Assert
+        assert blocking_object is None
+
     def test_get_walkable_tile_within_gets_tile_if_available(self, basic_map):
         # block top-left corner
         basic_map.tiles[2][2].is_walkable = False
