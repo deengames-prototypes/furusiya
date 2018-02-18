@@ -2,22 +2,23 @@ from unittest.mock import Mock
 
 import pytest
 
-from model.systems.system import System
+from model.systems.system import ComponentSystem
 
 
 @pytest.fixture()
 def system():
-    yield System('DummySystem', (), {'_component_name': 'component'})
+    yield ComponentSystem()
 
 
 def test_system_basic(system):
-    """Tests for basic System metaclass"""
+    """Tests for basic System"""
     component_1 = Mock()
+    owner = Mock(id=1)
 
-    system.set_component('owner1', component_1)
-    assert system.has_component('owner1')
-    assert system.get_component('owner1') == component_1
+    system.set(owner, component_1)
+    assert system.has(owner)
+    assert system.get(owner) == component_1
 
-    system.remove_component('owner1')
-    assert not system.has_component('owner1')
-    assert system.get_component('owner1') is None
+    system.remove(owner)
+    assert not system.has(owner)
+    assert system.get(owner) is None

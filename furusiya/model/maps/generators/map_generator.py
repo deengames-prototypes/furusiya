@@ -1,23 +1,23 @@
-import random
-
-from model import item_callbacks
+from game import Game
+from model.helper_functions import item_callbacks
 from model.config import config
 from model.factories import item_factory
 from model.factories import monster_factory
 import colors
 
+
 def generate_monsters(area_map, num_monsters):
     for i in range(num_monsters):
         # choose random spot for this monster
-        x = random.randint(0, area_map.width)
-        y = random.randint(0, area_map.width)
+        x = Game.random.randint(0, area_map.width)
+        y = Game.random.randint(0, area_map.width)
 
         # only place it if the tile is not blocked
         while not area_map.is_walkable(x, y):
-            x = random.randint(0, area_map.width)
-            y = random.randint(0, area_map.width)
+            x = Game.random.randint(0, area_map.width)
+            y = Game.random.randint(0, area_map.width)
             
-        choice = random.randint(0, 100)
+        choice = Game.random.randint(0, 100)
         
         if choice <= 55: 
             name = 'bushslime'
@@ -35,18 +35,19 @@ def generate_monsters(area_map, num_monsters):
         monster = monster_factory.create_monster(data, x, y, colour, name)
         area_map.entities.append(monster)
 
+
 def generate_items(area_map, num_items):
     for i in range(num_items):
         # choose random spot for this item
-        x = random.randint(0, area_map.width)
-        y = random.randint(0, area_map.width)
+        x = Game.random.randint(0, area_map.width)
+        y = Game.random.randint(0, area_map.width)
 
         # only place it if the tile is not blocked
         while not area_map.is_walkable(x, y):
-            x = random.randint(0, area_map.width)
-            y = random.randint(0, area_map.width)
+            x = Game.random.randint(0, area_map.width)
+            y = Game.random.randint(0, area_map.width)
 
-        choice = random.randint(0, 100)
+        choice = Game.random.randint(0, 100)
         if choice < 70:
             # create a healing potion (70% chance)
             char = '!'

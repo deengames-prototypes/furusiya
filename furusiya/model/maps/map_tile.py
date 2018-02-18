@@ -10,6 +10,8 @@ class MapTile:
 
     def __init__(self):
         self.is_explored = False
+        self.is_walkable = True
+        self.block_sight = False
         self.convert_to_ground()
 
     def convert_to_wall(self, character=WALL_CHARACTER, colour=LIGHT_WALL_COLOUR, dark_colour=DARK_WALL_COLOUR):

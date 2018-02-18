@@ -1,12 +1,12 @@
 import colors
+from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
-from death_functions import player_death
-from main_interface import Game, message
+from model.helper_functions.death_functions import player_death
+from game import Game
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.skills.omnislash import OmniSlash
-from model.systems.fighter_system import FighterSystem
 
 
 class Player(GameObject):
@@ -18,29 +18,38 @@ class Player(GameObject):
         weapon_name = data.startingWeapon
         weapon_init = getattr(model.weapons, weapon_name)
 
-        FighterSystem.set_fighter(
+        Game.fighter_sys.set(
             self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
                 power=data.startingPower,
-                xp=0,
                 weapon=weapon_init(self),
                 death_function=player_death
             )
         )
 
+        Game.xp_sys.set(
+            self, XPComponent(
+                owner=self,
+                xp=0,
+                on_level_callback=self.on_level_callback,
+                xp_required_base=config.data.player.expRequiredBase
+            )
+        )
+
         Game.draw_bowsight = False
 
-        self.level = 1
-        self.stats_points = 0
         self.arrows = config.data.player.startingArrows
 
+        self.stats_points = 0
         self.mounted = False
         self.moves_while_mounted = 0
-        self.turns_to_rest = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
+
+    def on_level_callback(self):
+        self.stats_points += config.data.player.statsPointsOnLevelUp
 
     def mount(self, horse):
         if config.data.features.horseIsMountable:
@@ -57,16 +66,16 @@ class Player(GameObject):
         return int(config.data.skills.resting.percent/100 * max_hp)
 
     def rest(self):
-        fighter = FighterSystem.get_fighter(self)
+        fighter = Game.fighter_sys.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
         return 'rested'
 
     def calculate_turns_to_rest(self):
-        fighter = FighterSystem.get_fighter(self)
-        self.turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
+        fighter = Game.fighter_sys.get(self)
+        turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
-        message(f'You rest for {self.turns_to_rest} turns.')
+        return turns_to_rest
 
     def move_or_attack(self, dx, dy):
         # TODO: Should this be part of the Fighter component?
@@ -75,10 +84,11 @@ class Player(GameObject):
         y = self.y + dy
 
         # try to find an attackable object there
-        for obj in Game.area_map.get_entities_on(x, y):
-            if FighterSystem.has_fighter(obj):
-                target = obj
-                break
+        target = Game.area_map.get_blocking_object_at(x, y)
+        if target is not None and Game.fighter_sys.has(target):
+            Game.fighter_sys.get(self).attack(target)
+            if config.data.skills.omnislash.enabled:
+                OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
         else:
             self.move(dx, dy)
             if self.mounted:
@@ -90,24 +100,3 @@ class Player(GameObject):
                 Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
             return
-
-        FighterSystem.get_fighter(self).attack(target)
-        if config.data.skills.omnislash.enabled:
-            OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
-
-    def _xp_next_level(self):
-        return 2 ** (self.level + 1) * config.data.player.expRequiredBase
-
-    def gain_xp(self, amount):
-        # TODO: make this a component and eventually remove this class?
-        fighter = FighterSystem.get_fighter(self)
-
-        fighter.xp += amount
-        # XP doubles every level. 40, 80, 160, ...
-        # First level = after four orcs. Yeah, low standards.
-        # DRY ya'ne
-        while fighter.xp >= self._xp_next_level():
-            self.level += 1
-            self.stats_points += config.data.player.statsPointsOnLevelUp
-            message("You are now level {}!".format(self.level))
-            fighter.heal(fighter.max_hp)

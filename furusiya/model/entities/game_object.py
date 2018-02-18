@@ -1,6 +1,6 @@
 import math
 
-from main_interface import Game, get_blocking_object_at
+from game import Game
 
 
 class GameObject:
@@ -55,7 +55,7 @@ class GameObject:
             self.x += dx
             self.y += dy
         else:
-            return get_blocking_object_at(self.x + dx, self.y + dy)
+            return Game.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 
     def move_towards(self, target_x, target_y):
         # vector from this object to the target, and distance
@@ -90,8 +90,8 @@ class GameObject:
         # only show if it's visible to the player
         if (self.x, self.y) in Game.renderer.visible_tiles:
             # draw the character that represents this object at its position
-            Game.ui.con.draw_char(self.x, self.y, self.char, self.color, bg=None)
+            Game.ui.con.draw_str(self.x, self.y, self.char, self.color)
 
     def clear(self):
         # erase the character that represents this object
-        Game.ui.con.draw_char(self.x, self.y, ' ', self.color, bg=None)
+        Game.ui.con.draw_str(self.x, self.y, ' ', self.color)
