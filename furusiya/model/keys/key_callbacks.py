@@ -176,11 +176,14 @@ def omnislash_callback(event):
         Game.keybinder.suspend_all_keybinds()
 
         def new_escape_callback(event):
+            message('Cancelled')
             Game.keybinder.register_all_keybinds()
 
         def new_move_callback(dx, dy):
             target = Game.area_map.get_blocking_object_at(Game.player.x + dx, Game.player.y + dy)
             if target is not None and Game.fighter_system.has(target):
+                message(f'{target.name.capitalize()} has been ruthlessly attacked by {Game.player.name}!',
+                        colors.dark_purple)
                 OmniSlash.process(Game.player, target, config.data.skills.omnislash)
                 new_escape_callback(None)
             else:
