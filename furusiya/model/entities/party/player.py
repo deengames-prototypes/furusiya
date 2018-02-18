@@ -6,7 +6,6 @@ from model.helper_functions.death_functions import player_death
 from game import Game
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
-from model.skills.omnislash import OmniSlash
 
 
 class Player(GameObject):
@@ -87,8 +86,6 @@ class Player(GameObject):
         target = Game.area_map.get_blocking_object_at(x, y)
         if target is not None and Game.fighter_system.has(target):
             Game.fighter_system.get(self).attack(target)
-            if config.data.skills.omnislash.enabled:
-                OmniSlash.process(self, config.data.skills.omnislash.rehitPercent, (dx, dy))
         else:
             self.move(dx, dy)
             if self.mounted:

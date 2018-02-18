@@ -3,6 +3,7 @@ from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
+from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
 from model.weapons import Bow
@@ -162,3 +163,9 @@ def continuous_rest_callback(event):
 def whirlwind_callback(event):
     if config.data.skills.whirlwind.enabled:
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
+
+
+@in_game(pass_turn=False)  # enter omnislash mode!
+def omnislash_callback(event):
+    if config.data.skills.omnislash.enabled:
+        OmniSlash.process(Game.player, config.data.skills.omnislash)
