@@ -19,7 +19,7 @@ def test_new_game_creates_new_game():
         for dy in range(-1, 2)
     )
 
-    assert Game.xp_sys.get(Game.player).level == 5
+    assert Game.xp_system.get(Game.player).level == 5
 
     assert Game.inventory is not None
     assert Game.inventory == []

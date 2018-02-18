@@ -34,9 +34,9 @@ class Game(metaclass=GameMetaClass):
         self.save_manager = None
         self.keybinder = None
 
-        self.fighter_sys = None
-        self.ai_sys = None
-        self.xp_sys = None
+        self.fighter_system = None
+        self.ai_system = None
+        self.xp_system = None
 
         self.player = None
         self.stallion = None

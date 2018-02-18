@@ -64,7 +64,7 @@ class MapRenderer:
 
             x1, y1 = self._player.x, self._player.y
             line = Game.ui.bresenham(x1, y1, x2, y2)
-            monster_on_target_tile = [x for x in self._area_map.get_entities_on(x2, y2) if Game.fighter_sys.has(x)]
+            monster_on_target_tile = [x for x in self._area_map.get_entities_on(x2, y2) if Game.fighter_system.has(x)]
             for pos in line:
                 if pos in self.visible_tiles:
                     if pos == (x2, y2) and monster_on_target_tile:
@@ -84,7 +84,7 @@ class MapRenderer:
             y += 1
 
         # show the player's stats
-        player_fighter = Game.fighter_sys.get(self._player)
+        player_fighter = Game.fighter_system.get(self._player)
         self._ui_adapter.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
 
         # display names of objects under the mouse

@@ -4,62 +4,118 @@ import pytest
 
 from game import Game
 from model.components.fighter import Fighter
+from model.config import config
+from model.factories import item_factory
 
 
-@pytest.fixture
-def fighter():
-    yield Fighter(Mock(), 30, 5, 5, death_function=Mock())
+class TestFighter:
+    @pytest.fixture
+    def fighter(self, ):
+        yield Fighter(Mock(), 30, 5, 5)
 
+    @pytest.fixture
+    def bushslime(self, ):
+        yield Mock()
 
-@pytest.fixture
-def bushslime():
-    yield Mock()
+    @pytest.fixture
+    def bushslime_fighter(self, bushslime):
+        bush_fighter = Fighter(bushslime, 15, 2, 2)
+        Game.fighter_system.set(bushslime, bush_fighter)
+        Game.ai_system.set(bushslime, Mock())
+        yield bush_fighter
 
+    def test_take_damage_decreases_health(self, fighter):
+        health_to_decrease = 5
+        old_hp = fighter.hp
 
-@pytest.fixture
-def bushslime_fighter(bushslime):
-    bush_fighter = Fighter(bushslime, 15, 2, 2, death_function=Mock())
-    Game.fighter_sys.set(bushslime, bush_fighter)
-    yield bush_fighter
+        # Act
+        fighter.take_damage(health_to_decrease)
 
+        # Assert
+        assert fighter.hp == old_hp - health_to_decrease
 
-def test_take_damage(fighter):
-    old_hp = fighter.hp
-    fighter.take_damage(5)
-    assert fighter.hp == old_hp - 5
+    def test_take_damage_ignore_negative_damage(self, fighter):
+        old_hp = fighter.hp
 
+        # Act
+        fighter.take_damage(-5)
 
-def test_take_damage_ignore_negative(fighter):
-    old_hp = fighter.hp
-    fighter.take_damage(-5)
-    assert fighter.hp == old_hp
+        # Assert
+        assert fighter.hp == old_hp
 
+    def test_attack_decreases_health(self, fighter, bushslime, bushslime_fighter):
+        old_hp = bushslime_fighter.hp
 
-def test_attack(fighter, bushslime, bushslime_fighter):
-    old_hp = bushslime_fighter.hp
-    fighter.attack(bushslime)
-    assert bushslime_fighter.hp < old_hp
+        # Act
+        fighter.attack(bushslime)
 
+        # Assert
+        assert bushslime_fighter.hp < old_hp
 
-def test_attack_weapon(fighter, bushslime, bushslime_fighter):
-    fighter.weapon = Mock()
-    test_attack(fighter, bushslime, bushslime_fighter)
-    fighter.weapon.attack.assert_called_with(bushslime)
+    def test_attack_doesnt_decrease_health_if_power_is_not_sufficient(self, fighter, bushslime, bushslime_fighter):
+        old_hp = bushslime_fighter.hp
+        fighter.power = 1
 
+        # Act
+        fighter.attack(bushslime)
 
-def test_heal(fighter):
-    test_take_damage(fighter)
-    old_hp = fighter.hp
-    fighter.heal(3)
-    assert fighter.hp == old_hp + 3
+        # Assert
+        assert bushslime_fighter.hp == old_hp
 
+    def test_attack_attacks_with_weapon_effect(self, fighter, bushslime, bushslime_fighter):
+        fighter.weapon = Mock()
 
-def test_heal_over_max(fighter):
-    test_take_damage(fighter)
-    fighter.heal(fighter.max_hp)
-    assert fighter.hp == fighter.max_hp
+        # Act
+        fighter.attack(bushslime)
 
+        # Assert
+        fighter.weapon.attack.assert_called_with(bushslime)
 
-def test_take_damage_die(fighter):
-    fighter.take_damage(fighter.hp)
-    fighter.death_function.assert_called_with(fighter.owner)
+    def test_heal_increases_health(self, fighter):
+        self.test_take_damage_decreases_health(fighter)
+        expected_health_gain = 3
+        old_hp = fighter.hp
+
+        # Act
+        fighter.heal(expected_health_gain)
+
+        # Assert
+        assert fighter.hp == old_hp + expected_health_gain
+
+    def test_heal_overhealing_heals_to_max(self, fighter):
+        self.test_take_damage_decreases_health(fighter)
+
+        # Act
+        fighter.heal(fighter.max_hp)
+
+        # Assert
+        assert fighter.hp == fighter.max_hp
+
+    def test_take_damage_kills_entity_if_out_of_health(self, fighter):
+        fighter.die = Mock()
+
+        # Act
+        fighter.take_damage(fighter.hp)
+
+        # Assert
+        assert fighter.die.called
+
+    def test_die_drops_arrows_if_monster(self, bushslime_fighter, monkeypatch):
+        create_item_mock = Mock()
+        monkeypatch.setattr(item_factory, 'create_item', create_item_mock)
+        config.data.features.limited_arrows = True
+
+        # Act
+        bushslime_fighter.die()
+
+        # Assert
+        assert create_item_mock.called
+
+    def test_die_calls_death_function(self, fighter):
+        fighter.death_function = Mock()
+
+        # Act
+        fighter.die()
+
+        # Assert
+        assert fighter.death_function.called
