@@ -1,10 +1,10 @@
 import colors
+from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
-from model.keys.movement_callbacks import *
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
@@ -25,22 +25,22 @@ def enter_callback(event):
 # Movement
 @in_game(pass_turn=True)
 def up_callback(event):
-    up(Game.player.move_or_attack)
+    Game.player.move_or_attack(*DELTA_UP)
 
 
 @in_game(pass_turn=True)
 def down_callback(event):
-    down(Game.player.move_or_attack)
+    Game.player.move_or_attack(*DELTA_DOWN)
 
 
 @in_game(pass_turn=True)
 def left_callback(event):
-    left(Game.player.move_or_attack)
+    Game.player.move_or_attack(*DELTA_LEFT)
 
 
 @in_game(pass_turn=True)
 def right_callback(event):
-    right(Game.player.move_or_attack)
+    Game.player.move_or_attack(*DELTA_RIGHT)
 
 
 # Item pick up
@@ -191,19 +191,19 @@ def omnislash_callback(event):
 
         @in_game(pass_turn=True)
         def new_up(event):
-            up(new_move_callback)
+            new_move_callback(*DELTA_UP)
 
         @in_game(pass_turn=True)
         def new_down(event):
-            down(new_move_callback)
+            new_move_callback(*DELTA_DOWN)
 
         @in_game(pass_turn=True)
         def new_left(event):
-            left(new_move_callback)
+            new_move_callback(*DELTA_LEFT)
 
         @in_game(pass_turn=True)
         def new_right(event):
-            right(new_move_callback)
+            new_move_callback(*DELTA_RIGHT)
 
         Game.keybinder.register_keybinds({
             'UP': new_up,
