@@ -7,6 +7,7 @@ path_ = os.path.join(os.getcwd(), 'furusiya')
 sys.path.append(path_)
 
 import model.config.config as prod_config
+from game import Game
 from main import init_game
 
 with open(os.path.join(path_, 'config.json'), 'rt') as f:
@@ -21,6 +22,11 @@ def config(request):
     return prod_config
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(scope='session', autouse=True)
 def initialize_game_for_tests():
     init_game()
+
+
+@pytest.fixture(scope='session', autouse=True)
+def seed():
+    Game.random.seed(1)
