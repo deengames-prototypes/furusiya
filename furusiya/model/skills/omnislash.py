@@ -13,7 +13,7 @@ class OmniSlash:
 
         # do lucky hits
         while True:
-            should_re_hit = Game.random.randint(0, 100) <= conf.rehitPercent
+            should_re_hit = Game.random.randint(0, 100) <= conf.probabilityOfAnotherHit
             if should_re_hit and Game.fighter_system.has(target):
                 Game.fighter_system.get(player).attack(target)
             else:

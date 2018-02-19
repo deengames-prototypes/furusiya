@@ -31,19 +31,23 @@ class TestOmniSlash:
 
     @pytest.fixture
     def conf(self):
-        yield Mock(guaranteedHits=self.guaranteed_hits, rehitPercent=self.rehit_percent)
+        yield Mock(guaranteedHits=self.guaranteed_hits, probabilityOfAnotherHit=self.rehit_percent)
 
     def test_slash_hits_guaranteed_hits(self, player, player_fighter, monster, monster_fighter, conf):
-        # Act
-        OmniSlash.process(player, monster, conf)
+        for _ in range(10):
+            # Act
+            OmniSlash.process(player, monster, conf)
 
-        # Assert
-        assert player_fighter.attack.call_count >= self.guaranteed_hits
+            # Assert
+            assert player_fighter.attack.call_count >= self.guaranteed_hits
+
+            # Clean up
+            player_fighter.reset_mock()
 
     def test_slash_hits_extra_hits(self, player, player_fighter, monster, monster_fighter, conf):
         # set random seed for deterministic extra hits
         Game.random.seed(2)
-        conf.rehitPercent = 50
+        conf.probabilityOfAnotherHit = 50
 
         # Act
         OmniSlash.process(player, monster, conf)
