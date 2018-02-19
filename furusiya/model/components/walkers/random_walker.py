@@ -1,3 +1,4 @@
+from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 
 
@@ -11,7 +12,7 @@ class RandomWalker:
         # Not ideal, but better than what was here previously.
         adjacent_tiles = [
             (self.parent.x + x_offset, self.parent.y + y_offset)
-            for x_offset, y_offset in [(1, 0), (-1, 0), (0, 1), (0, -1)]
+            for x_offset, y_offset in (DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT)
         ]
         Game.random.shuffle(adjacent_tiles)
 
