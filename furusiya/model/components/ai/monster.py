@@ -52,11 +52,12 @@ class ConfusedMonster(AbstractAI):
     """
     def __init__(self, owner, num_turns=None):
         super().__init__(owner, num_turns or CONFUSE_NUM_TURNS)
+        self.walker = RandomWalker(Game.area_map, owner)
 
     def _take_turn(self):
         if self.num_turns > 0:  # still confused...
             # move in a random direction, and decrease the number of turns confused
-            self.owner.move(Game.random.randint(-1, 1), Game.random.randint(-1, 1))
+            self.walker.walk()
             self.num_turns -= 1
 
         if self.num_turns == 0:
