@@ -72,9 +72,10 @@ def inventory_drop(event):
 # Bow
 @in_game(pass_turn=False)
 def bow_callback(event):
-    if (isinstance(Game.fighter_system.get(Game.player).weapon, Bow)
-            and not config.data.features.limitedArrows
-            or (config.data.features.limitedArrows and Game.player.arrows > 0)):
+    arrows_are_available = (not config.data.features.limitedArrows
+                            or (config.data.features.limitedArrows and Game.player.arrows > 0))
+
+    if isinstance(Game.fighter_system.get(Game.player).weapon, Bow) and arrows_are_available:
         Game.draw_bowsight = True
         Game.auto_target = True
 
