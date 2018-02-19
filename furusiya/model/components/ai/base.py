@@ -15,6 +15,9 @@ class AbstractAI(Component):
         raise NotImplementedError()
 
     def temporarily_switch_to(self, other):
+        # This assertion is in place because permanent AIs have `num_turns` set to None.
+        # On that note, it wouldn't make sense to set a permanent AI through this method,
+        # which is why it only accepts temporary ones.
         assert isinstance(other.num_turns, int), "The passed AI's num_turns attribute can only be an int."
 
         if type(other) == type(self):  # If they're the same AI type, extend this one
