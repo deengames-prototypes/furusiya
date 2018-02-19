@@ -53,4 +53,4 @@ class TestOmniSlash:
         OmniSlash.process(player, monster, conf)
 
         # Assert
-        assert player_fighter.attack.call_count >= self.guaranteed_hits + 5
+        assert player_fighter.attack.call_count > self.guaranteed_hits
