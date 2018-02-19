@@ -15,6 +15,14 @@ class AbstractAI(Component):
         raise NotImplementedError()
 
     def temporarily_switch_to(self, other):
+        assert isinstance(other.num_turns, int), "The passed AI's num_turns attribute can only be an int."
+
+        if type(other) == type(self):  # If they're the same AI type, extend this one
+            if self.num_turns is not None:
+                self.num_turns += other.num_turns
+                return
+            # Else, continue on setting it anyway
+
         Game.ai_system.set(self.owner, other)
 
         def temporary_take_turn():
