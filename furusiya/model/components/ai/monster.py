@@ -39,7 +39,7 @@ class StunnedMonster(AbstractAI):
     def _take_turn(self):
         if self.num_turns > 0:  # still stunned ...
             self.num_turns -= 1
-            self.owner.char = str(self.num_turns)[0]  # last digit
+            self.owner.char = str(self.num_turns)[-1]  # last digit
 
         if self.num_turns == 0:
             message('The ' + self.owner.name + ' is no longer stunned!', colors.red)
