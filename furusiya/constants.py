@@ -27,3 +27,8 @@ FOV_ALGO = 'BASIC'
 FOV_LIGHT_WALLS = True
 
 LIMIT_FPS = 20  # 20 frames-per-second maximum
+
+DELTA_UP = (0, -1)
+DELTA_DOWN = (0, 1)
+DELTA_LEFT = (-1, 0)
+DELTA_RIGHT = (1, 0)

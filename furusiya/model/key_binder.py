@@ -22,7 +22,8 @@ KEY_BINDINGS = {
     'r': rest_callback,
     'R': continuous_rest_callback,
 
-    'l': whirlwind_callback
+    'l': whirlwind_callback,
+    'o': omnislash_callback
 }
 
 EVENT_BINDINGS = {
@@ -59,12 +60,16 @@ class KeyBinder:
 
     # Keybinds
     def register_all_keybinds(self):
-        for key, callback in KEY_BINDINGS.items():
-            self.register_keybind(key, callback)
+        self.register_keybinds(KEY_BINDINGS)
 
     def suspend_all_keybinds(self):
         for key in KEY_BINDINGS.keys():
             self.suspend_keybind(key)
+
+    def register_keybinds(self, key_callback_dict):
+        """Helpful for avoiding a multiple register_keybind calls"""
+        for key, callback in key_callback_dict.items():
+            self.register_keybind(key, callback)
 
     def register_keybind(self, key, callback=None):
         callback = callback or KEY_BINDINGS.get(key) or placeholder_callback

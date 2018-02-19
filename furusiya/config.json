@@ -31,7 +31,8 @@
         },
         "omnislash": {
             "enabled": true,
-            "rehitPercent": 20
+            "guaranteedHits": 2,
+            "probabilityOfAnotherHit": 20
         },
         "whirlwind": {
             "enabled": true,

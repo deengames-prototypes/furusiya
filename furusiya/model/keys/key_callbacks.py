@@ -1,8 +1,11 @@
+import colors
+from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
+from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
 from model.weapons import Bow
@@ -22,22 +25,22 @@ def enter_callback(event):
 # Movement
 @in_game(pass_turn=True)
 def up_callback(event):
-    Game.player.move_or_attack(0, -1)
+    Game.player.move_or_attack(*DELTA_UP)
 
 
 @in_game(pass_turn=True)
 def down_callback(event):
-    Game.player.move_or_attack(0, 1)
+    Game.player.move_or_attack(*DELTA_DOWN)
 
 
 @in_game(pass_turn=True)
 def left_callback(event):
-    Game.player.move_or_attack(-1, 0)
+    Game.player.move_or_attack(*DELTA_LEFT)
 
 
 @in_game(pass_turn=True)
 def right_callback(event):
-    Game.player.move_or_attack(1, 0)
+    Game.player.move_or_attack(*DELTA_RIGHT)
 
 
 # Item pick up
@@ -162,3 +165,50 @@ def continuous_rest_callback(event):
 def whirlwind_callback(event):
     if config.data.skills.whirlwind.enabled:
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
+
+
+@in_game(pass_turn=False)
+def omnislash_callback(event):
+    """Enter omnislash mode!"""
+    if config.data.skills.omnislash.enabled:
+        message('Attack an enemy to activate omnislash, or press escape to cancel.', colors.light_cyan)
+
+        Game.keybinder.suspend_all_keybinds()
+
+        def new_escape_callback(event):
+            message('Cancelled')
+            Game.keybinder.register_all_keybinds()
+
+        def new_move_callback(dx, dy):
+            target = Game.area_map.get_blocking_object_at(Game.player.x + dx, Game.player.y + dy)
+            if target is not None and Game.fighter_system.has(target):
+                message(f'{target.name.capitalize()} has been ruthlessly attacked by {Game.player.name}!',
+                        colors.dark_purple)
+                OmniSlash.process(Game.player, target, config.data.skills.omnislash)
+                new_escape_callback(None)
+            else:
+                Game.player.move_or_attack(dx, dy)
+
+        @in_game(pass_turn=True)
+        def new_up(event):
+            new_move_callback(*DELTA_UP)
+
+        @in_game(pass_turn=True)
+        def new_down(event):
+            new_move_callback(*DELTA_DOWN)
+
+        @in_game(pass_turn=True)
+        def new_left(event):
+            new_move_callback(*DELTA_LEFT)
+
+        @in_game(pass_turn=True)
+        def new_right(event):
+            new_move_callback(*DELTA_RIGHT)
+
+        Game.keybinder.register_keybinds({
+            'UP': new_up,
+            'DOWN': new_down,
+            'LEFT': new_left,
+            'RIGHT': new_right,
+            'ESCAPE': new_escape_callback
+        })
