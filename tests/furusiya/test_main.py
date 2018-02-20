@@ -15,8 +15,8 @@ def test_new_game_creates_new_game():
 
     assert (Game.stallion.x, Game.stallion.y) in (
         (dx + Game.player.x, dy + Game.player.y)
-        for dx in range(-1, 2)
-        for dy in range(-1, 2)
+        for dx in range(-5, 6)
+        for dy in range(-5, 6)
     )
 
     assert Game.xp_system.get(Game.player).level == 5
