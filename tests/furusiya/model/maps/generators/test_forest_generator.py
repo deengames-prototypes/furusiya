@@ -9,19 +9,23 @@ from model.maps.area_map import AreaMap
 class TestForestGenerator(unittest.TestCase):
     def test_generate_generates_trees(self):
         width, height = (10, 10)
-        Game.area_map = AreaMap(width, height)
-        fg = ForestGenerator(Game.area_map)
         expected_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
         actual_num_trees = 0
+        num_trees_set = set()
 
-        for y in range(height):
-            for x in range(width):
-                if not Game.area_map.tiles[x][y].is_walkable:
-                    actual_num_trees += 1
+        for _ in range(10):
+            Game.area_map = AreaMap(width, height)
+            ForestGenerator(Game.area_map)
 
-        # might be more trees because of filled gaps between trees
-        self.assertGreaterEqual(actual_num_trees, expected_num_trees)
+            for y in range(height):
+                for x in range(width):
+                    if not Game.area_map.tiles[x][y].is_walkable:
+                        actual_num_trees += 1
+
+            num_trees_set.add(actual_num_trees)
+
+        self.assertTrue(x for x in num_trees_set if x >= expected_num_trees)
 
     def test_generate_fills_holes(self):
         
