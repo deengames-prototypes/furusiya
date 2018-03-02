@@ -46,6 +46,11 @@ class StunnedMonster(AbstractAI):
             self.owner.char = self.owner.name[0]
 
 
+class FrozenMonster(StunnedMonster):
+    def __init__(self, owner, num_turns=None):
+        super().__init__(owner, num_turns or config.data.skills.frostbomb.turnsToThaw)
+
+
 class ConfusedMonster(AbstractAI):
     """
     AI for a temporarily confused monster (reverts to previous AI after a while).

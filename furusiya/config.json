@@ -37,6 +37,11 @@
         "whirlwind": {
             "enabled": true,
             "radius": 2
+        },
+        "frostbomb": {
+            "enabled": true,
+            "radius": 5,
+            "turnsToThaw": 5
         }
     },
     "weapons": {

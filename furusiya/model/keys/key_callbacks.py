@@ -5,6 +5,7 @@ from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
 from model.keys.in_game_decorator import in_game
+from model.skills.frostbomb import FrostBomb
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
@@ -213,3 +214,9 @@ def omnislash_callback(event):
             'RIGHT': new_right,
             'ESCAPE': new_escape_callback
         })
+
+
+@in_game(pass_turn=True)
+def frost_bomb_callback(event):
+    if config.data.skills.frostbomb.enabled:
+        FrostBomb.process(Game.area_map, Game.player, Game.ai_system, config.data.skills.frostbomb)
