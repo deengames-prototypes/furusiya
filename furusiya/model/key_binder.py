@@ -23,7 +23,8 @@ KEY_BINDINGS = {
     'R': continuous_rest_callback,
 
     'l': whirlwind_callback,
-    'o': omnislash_callback
+    'o': omnislash_callback,
+    'h': frost_bomb_callback
 }
 
 EVENT_BINDINGS = {

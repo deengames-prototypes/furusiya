@@ -1,6 +1,5 @@
 from unittest.mock import Mock
 
-from model.components.ai.monster import StunnedMonster
 from model.maps.area_map import AreaMap
 from model.skills.frostbomb import FrostBomb
 from model.systems.system import ComponentSystem
@@ -16,12 +15,16 @@ def test_process_freezes_enemies():
     area_map.entities = [*enemies_in_range] + [*enemies_out_of_range] + [player]
 
     ai_system = ComponentSystem()
+
+    for entity in area_map.entities:
+        ai_system.set(entity, Mock())
+
     conf = Mock(radius=radius, turnsToThaw=turns_to_thaw)
 
     FrostBomb.process(area_map, player, ai_system, conf)
 
     for enemy in enemies_in_range:
-        assert isinstance(ai_system.get(enemy), StunnedMonster)
+        assert ai_system.get(enemy).temporarily_switch_to.called
 
     for enemy in enemies_out_of_range:
-        assert not isinstance(ai_system.get(enemy), StunnedMonster)
+        assert not ai_system.get(enemy).temporarily_switch_to.called

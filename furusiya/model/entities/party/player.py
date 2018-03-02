@@ -1,4 +1,5 @@
 import colors
+from model.components.ai.monster import FrozenMonster
 from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
@@ -85,7 +86,13 @@ class Player(GameObject):
         # try to find an attackable object there
         target = Game.area_map.get_blocking_object_at(x, y)
         if target is not None and Game.fighter_system.has(target):
-            Game.fighter_system.get(self).attack(target)
+            enemy_ai = Game.ai_system.get(target)
+            player_fighter = Game.fighter_system.get(self)
+
+            if isinstance(enemy_ai, FrozenMonster):
+                Game.fighter_system.get(target).die()
+            else:
+                player_fighter.attack(target)
         else:
             self.move(dx, dy)
             if self.mounted:
