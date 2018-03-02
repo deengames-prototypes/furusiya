@@ -53,6 +53,20 @@ class TestAreaMap:
         assert not basic_map.is_visible_tile(0, 0)
         assert basic_map.is_visible_tile(0, 1)
 
+    def test_get_random_tile_returns_tile_within_bounds(self, basic_map):
+        x, y = basic_map.get_random_tile()
+
+        assert (x, y) <= (basic_map.width, basic_map.height)
+
+    def test_get_random_tile_returns_random_tiles(self, basic_map):
+        """Gets 3, checks that they're not equal. Good enough for test purposes."""
+        assert basic_map.get_random_tile() != basic_map.get_random_tile() != basic_map.get_random_tile()
+
+    def test_get_random_walkable_tile_returns_walkable_tile(self, basic_map):
+        for _ in range(5):
+            tile = basic_map.get_random_walkable_tile()
+            assert basic_map.is_walkable(*tile)
+
     def test_get_blocking_object_at_returns_object_if_object_is_there(self, basic_map):
         e = GameObject(0, 0, '@', 'player', (0, 0, 0), blocks=True)
         basic_map.place_on_random_ground(e)

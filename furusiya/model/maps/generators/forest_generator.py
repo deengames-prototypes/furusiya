@@ -31,7 +31,6 @@ class ForestGenerator:
         map_generator.generate_items(self._area_map, 
             Game.random.randint(*ForestGenerator.NUM_ITEMS))
 
-
     def _generate_trees(self):
         for x in range(0, self._area_map.width):
             for y in range(0, self._area_map.height):
@@ -86,7 +85,7 @@ class ForestGenerator:
         return explored
 
     def _fill_ground_holes(self):
-        start_position = self._find_empty_ground()
+        start_position = self._area_map.get_random_walkable_tile()
 
         all_ground_tiles = [
             (x, y)
@@ -101,26 +100,6 @@ class ForestGenerator:
 
         for (x, y) in unreachable:
             self._area_map.tiles[x][y].convert_to_wall(colour=Game.random.choice(ForestGenerator.TREE_COLOURS))
-
-    def _find_empty_ground(self):
-        """
-        Look for a 3x3 patch of ground. It's unlikely that this is contained
-        within a copse of trees as an enclosed area. If we're wrong ... well.
-        I suppose you can always exit and re-enter the dungeon if that happens.
-        """
-        def is_empty_3x3(x, y):
-            cond = True
-            for i in range(x - 1, x + 2):
-                for j in range(y - 1, y + 2):
-                    cond = cond and self._area_map.tiles[i][j].is_walkable
-            return cond
-
-        for x in range(1, self._area_map.width - 1):
-            for y in range(1, self._area_map.height - 1):
-                if is_empty_3x3(x, y):
-                    return x, y
-
-        raise Exception("Can't find any empty ground with empty adjacent tiles!")
 
     def _random_walk(self, num_tiles):
         """

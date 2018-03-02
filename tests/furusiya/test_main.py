@@ -15,8 +15,8 @@ def test_new_game_creates_new_game():
 
     assert (Game.stallion.x, Game.stallion.y) in (
         (dx + Game.player.x, dy + Game.player.y)
-        for dx in range(-5, 6)
-        for dy in range(-5, 6)
+        for dx in range(-5, 6)  # make sure stallion is within 5 tiles from the player
+        for dy in range(-5, 6)  # in fact, it could be farther, but that's highly unlikely.
     )
 
     assert Game.xp_system.get(Game.player).level == 5

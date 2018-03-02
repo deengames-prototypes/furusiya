@@ -38,14 +38,17 @@ class AreaMap:
     def is_visible_tile(self, x, y):
         return self.is_on_map(x, y) and not self.tiles[x][y].block_sight
 
-    def place_on_random_ground(self, entity):
-        x = Game.random.randint(0, self.width)
-        y = Game.random.randint(0, self.height)
+    def get_random_tile(self):
+        return Game.random.randint(0, self.width), Game.random.randint(0, self.height)
 
-        # If the tile is a tree or occupied, pick a different one
-        while not self.is_walkable(x, y):
-            x = Game.random.randint(0, self.width)
-            y = Game.random.randint(0, self.height)
+    def get_random_walkable_tile(self):
+        while True:
+            x, y = self.get_random_tile()
+            if self.is_walkable(x, y):
+                return x, y
+
+    def place_on_random_ground(self, entity):
+        x, y = self.get_random_walkable_tile()
 
         entity.x = x
         entity.y = y
