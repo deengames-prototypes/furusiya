@@ -4,7 +4,7 @@ from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
-from model.keys.in_game_decorator import in_game, skill
+from model.keys.decorators import in_game, skill
 from model.skills.frostbomb import FrostBomb
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind

@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from game import Game
-from model.keys.in_game_decorator import in_game
+from model.keys.decorators import in_game
 
 
 @pytest.fixture(autouse=True, scope='module')
