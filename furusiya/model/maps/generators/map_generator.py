@@ -48,26 +48,27 @@ def generate_items(area_map, num_items):
             y = Game.random.randint(0, area_map.width)
 
         choice = Game.random.randint(0, 100)
-        if choice < 70:
-            # create a healing potion (70% chance)
+        if choice < 35:  # 35%
             char = '!'
             name = 'healing potion'
             color = colors.violet
             use_func = item_callbacks.cast_heal
-        elif choice < 70 + 10:
-            # create a lightning bolt scroll (15% chance)
+        elif choice < 35 + 35:  # 35%
+            char = '$'
+            name = 'skill potion'
+            color = colors.violet
+            use_func = item_callbacks.restore_skill_points
+        elif choice < 35 + 35 + 10:  # 10%
             char = '#'
             name = 'scroll of lightning bolt'
             color = colors.light_yellow
             use_func = item_callbacks.cast_lightning
-        elif choice < 70 + 10 + 10:
-            # create a fireball scroll (10% chance)
+        elif choice < 35 + 35 + 10 + 10:  # 10%
             char = '#'
             name = 'scroll of fireball'
             color = colors.light_yellow
             use_func = item_callbacks.cast_fireball
-        else: # 10
-            # create a confuse scroll (15% chance)
+        else:  # 10
             char = '#'
             name = 'scroll of confusion'
             color = colors.light_yellow

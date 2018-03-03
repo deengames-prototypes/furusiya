@@ -49,6 +49,11 @@
             "cost": 25
         }
     },
+    "item": {
+      "skillPointPotion": {
+          "restores": 15
+      }
+    },
     "weapons": {
         // Sword
         "swordStunProbability": 20,
