@@ -43,10 +43,24 @@ class Player(GameObject):
         self.arrows = config.data.player.startingArrows
 
         self.stats_points = 0
+        self.skill_points = config.data.player.maxSkillPoints
         self.mounted = False
         self.moves_while_mounted = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
+
+    def can_use_skill(self, skill_cost: int):
+        return self.skill_points - skill_cost >= 0
+
+    def use_skill(self, skill_cost: int):
+        self.skill_points -= skill_cost
+        if self.skill_points < 0:
+            self.skill_points = 0
+
+    def restore_skill_points(self, to_restore: int):
+        self.skill_points += to_restore
+        if self.skill_points > config.data.player.maxSkillPoints:
+            self.skill_points = config.data.player.maxSkillPoints
 
     def on_level_callback(self):
         self.stats_points += config.data.player.statsPointsOnLevelUp
@@ -62,14 +76,20 @@ class Player(GameObject):
             self.mounted = False
             horse.is_mounted = False
 
-    def _get_health_for_resting(self, max_hp):
+    @staticmethod
+    def _get_health_for_resting(max_hp):
         return int(config.data.skills.resting.percent/100 * max_hp)
+
+    @staticmethod
+    def _get_skillpoints_for_resting() -> int:
+        return int(config.data.skills.resting.skillPointsPercent/100 * config.data.player.maxSkillPoints)
 
     def rest(self):
         fighter = Game.fighter_system.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
-        return 'rested'
+
+        self.restore_skill_points(self._get_skillpoints_for_resting())
 
     def calculate_turns_to_rest(self):
         fighter = Game.fighter_system.get(self)

@@ -17,6 +17,7 @@
         "startingHealth": 30,
         "startingDefense": 2,
         "startingPower": 6,
+        "maxSkillPoints": 50,
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
         "lightRadius": 10,
@@ -27,21 +28,25 @@
     "skills": {
         "resting": {
             "enabled": true,
-            "percent": 5 // formula: this/100 * max_hp
+            "percent": 5, // formula: this/100 * max_hp
+            "skillPointsPercent": 5
         },
         "omnislash": {
             "enabled": true,
             "guaranteedHits": 2,
-            "probabilityOfAnotherHit": 20
+            "probabilityOfAnotherHit": 20,
+            "cost": 10
         },
         "whirlwind": {
             "enabled": true,
-            "radius": 2
+            "radius": 2,
+            "cost": 15
         },
         "frostbomb": {
             "enabled": true,
             "radius": 5,
-            "turnsToThaw": 5
+            "turnsToThaw": 5,
+            "cost": 25
         }
     },
     "weapons": {
