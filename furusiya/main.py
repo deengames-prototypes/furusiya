@@ -4,13 +4,15 @@ from datetime import datetime
 
 from tcod import image_load
 
+from model.config import file_watcher, config
+file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
+
 import colors
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT, MAP_WIDTH, MAP_HEIGHT, PANEL_HEIGHT, LIMIT_FPS
 from game import Game
 from data.save_manager import SaveManager
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
-from model.config import file_watcher, config
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.key_binder import KeyBinder
@@ -124,6 +126,5 @@ def main_menu():
 
 
 if __name__ == '__main__':
-    file_watcher.watch('config.json', lambda raw_json: config.load(raw_json))
     main_menu()
 

@@ -4,7 +4,7 @@ from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
-from model.keys.in_game_decorator import in_game
+from model.keys.decorators import in_game, skill
 from model.skills.frostbomb import FrostBomb
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
@@ -163,12 +163,14 @@ def continuous_rest_callback(event):
         Game.keybinder.register_update(new_update_callback)
 
 
+@skill(cost=config.data.skills.whirlwind.cost)
 @in_game(pass_turn=True)
 def whirlwind_callback(event):
     if config.data.skills.whirlwind.enabled:
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
 
 
+@skill(cost=config.data.skills.omnislash.cost)
 @in_game(pass_turn=False)
 def omnislash_callback(event):
     """Enter omnislash mode!"""
@@ -216,6 +218,7 @@ def omnislash_callback(event):
         })
 
 
+@skill(cost=config.data.skills.frostbomb.cost)
 @in_game(pass_turn=True)
 def frost_bomb_callback(event):
     if config.data.skills.frostbomb.enabled:

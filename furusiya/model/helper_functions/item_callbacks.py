@@ -3,6 +3,7 @@ from constants import HEAL_AMOUNT, LIGHTNING_RANGE, LIGHTNING_DAMAGE, CONFUSE_RA
 from view.targeting_distance import target_tile, target_monster
 from view.targeting_monster import closest_monster
 from game import Game
+from model.config import config
 from model.helper_functions.message import message
 from model.components.ai.monster import ConfusedMonster
 
@@ -68,3 +69,12 @@ def cast_fireball():
                     str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)
 
             obj_fighter.take_damage(FIREBALL_DAMAGE)
+
+
+def restore_skill_points():
+    if Game.player.skill_points == config.data.player.maxSkillPoints:
+        message("You already feel great and ready for action.", colors.red)
+        return 'cancelled'
+
+    message('You feel a lot more refreshed!', colors.light_violet)
+    Game.player.restore_skill_points(config.data.item.skillPointPotion.restores)

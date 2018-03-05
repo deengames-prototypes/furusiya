@@ -86,6 +86,8 @@ class MapRenderer:
         # show the player's stats
         player_fighter = Game.fighter_system.get(self._player)
         self._ui_adapter.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
+        self._ui_adapter.panel.draw_str(1, 2, "SP: {}/{}".format(self._player.skill_points,
+                                                                 config.data.player.maxSkillPoints))
 
         # display names of objects under the mouse
         self._ui_adapter.panel.draw_str(1, 0, get_names_under_mouse(), fg=colors.light_gray)
