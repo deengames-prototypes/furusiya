@@ -49,6 +49,19 @@ class StunnedMonster(AbstractAI):
 class FrozenMonster(StunnedMonster):
     def __init__(self, owner, num_turns=None):
         super().__init__(owner, num_turns or config.data.skills.frostbomb.turnsToThaw)
+        owner_fighter = Game.fighter_system.get(owner)
+
+        def new_take_damage_strategy(damage):
+            if owner_fighter.hp <= owner_fighter.max_hp // 2:
+                owner_fighter.die()
+            else:
+                owner_fighter.default_take_damage_strategy(damage)
+
+        owner_fighter.take_damage_strategy = new_take_damage_strategy
+
+    def cleanup(self):
+        owner_fighter = Game.fighter_system.get(self.owner)
+        owner_fighter.take_damage_strategy = owner_fighter.default_take_damage_strategy
 
 
 class ConfusedMonster(AbstractAI):

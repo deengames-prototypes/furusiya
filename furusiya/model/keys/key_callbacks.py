@@ -147,7 +147,7 @@ def continuous_rest_callback(event):
                 and not [
                     e
                     for e in Game.area_map.entities
-                    if Game.fighter_system.get(e).hostile and (e.x, e.y) in Game.renderer.visible_tiles
+                    if Game.fighter_system.has(e) and Game.fighter_system.get(e).hostile and (e.x, e.y) in Game.renderer.visible_tiles
                 ]
             )
 

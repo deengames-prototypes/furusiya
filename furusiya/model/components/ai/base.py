@@ -14,6 +14,9 @@ class AbstractAI(Component):
     def _take_turn(self):
         raise NotImplementedError()
 
+    def cleanup(self):
+        """optional method for temporary AIs"""
+
     def temporarily_switch_to(self, other):
         # This assertion is in place because permanent AIs have `num_turns` set to None.
         # On that note, it wouldn't make sense to set a permanent AI through this method,
@@ -32,6 +35,7 @@ class AbstractAI(Component):
             if other.num_turns > 0:
                 other._take_turn()
             else:
+                other.cleanup()
                 Game.ai_system.set(self.owner, self)
                 self.take_turn()
 

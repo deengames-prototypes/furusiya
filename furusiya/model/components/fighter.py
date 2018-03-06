@@ -1,5 +1,4 @@
 import colors
-from model.components.ai.monster import FrozenMonster
 from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
@@ -11,7 +10,7 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None, hostile=True):
+    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None, hostile=False):
         super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
@@ -22,21 +21,20 @@ class Fighter(Component):
         self.bow_crits = 0
 
         self.hostile = hostile
+        self.take_damage_strategy = self.default_take_damage_strategy
 
     def take_damage(self, damage):
         # apply damage if possible
         if damage > 0:
-            self.hp -= damage
-            # check for death
-            if self.hp <= 0:
-                self.die()
+            self.take_damage_strategy(damage)
+
+    def default_take_damage_strategy(self, damage):
+        self.hp -= damage
+        # check for death
+        if self.hp <= 0:
+            self.die()
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
-        enemy_ai = Game.ai_system.get(target)
-        if isinstance(enemy_ai, FrozenMonster):
-            Game.fighter_system.get(target).die()
-            return
-
         # a simple formula for attack damage
         target_fighter = Game.fighter_system.get(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
