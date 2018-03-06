@@ -1,5 +1,4 @@
 import colors
-from model.components.ai.monster import FrozenMonster
 from model.components.skill import SkillComponent
 from model.components.xp import XPComponent
 from model.config import config
@@ -116,9 +115,5 @@ class Player(GameObject):
             return
 
     def attack(self, target):
-        enemy_ai = Game.ai_system.get(target)
         player_fighter = Game.fighter_system.get(self)
-        if isinstance(enemy_ai, FrozenMonster):
-            Game.fighter_system.get(target).die()
-        else:
-            player_fighter.attack(target)
+        player_fighter.attack(target)

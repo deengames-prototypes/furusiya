@@ -1,4 +1,5 @@
 import colors
+from model.components.ai.monster import FrozenMonster
 from model.config import config
 from model.components.base import Component
 from model.factories import item_factory
@@ -31,6 +32,11 @@ class Fighter(Component):
                 self.die()
 
     def attack(self, target, damage_multiplier=1, is_critical=False):
+        enemy_ai = Game.ai_system.get(target)
+        if isinstance(enemy_ai, FrozenMonster):
+            Game.fighter_system.get(target).die()
+            return
+
         # a simple formula for attack damage
         target_fighter = Game.fighter_system.get(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
