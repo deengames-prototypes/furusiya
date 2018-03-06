@@ -25,6 +25,12 @@
         "startingArrows": 10,
         "stallionFollowDistance": 3
     },
+    "stallion": {
+        "startingHealth": 40,
+        "startingDefense": 5,
+        "startingPower": 10,
+        "maxSkillPoints": 50
+    },
     "skills": {
         "resting": {
             "enabled": true,
@@ -47,6 +53,12 @@
             "radius": 5,
             "turnsToThaw": 5,
             "cost": 25
+        },
+        "lanceCharge": {
+            "enabled": true,
+            "cost": 10,
+            "chargeDistance": 5,
+            "damage": 15
         }
     },
     "item": {
