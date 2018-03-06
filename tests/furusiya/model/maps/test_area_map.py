@@ -59,8 +59,8 @@ class TestAreaMap:
         assert (x, y) <= (basic_map.width, basic_map.height)
 
     def test_get_random_tile_returns_random_tiles(self, basic_map):
-        """Gets 3, checks that they're not equal. Good enough for test purposes."""
-        assert basic_map.get_random_tile() != basic_map.get_random_tile() != basic_map.get_random_tile()
+        """Gets random tiles, checks that they're not equal. Good enough for test purposes."""
+        assert basic_map.get_random_tile() != basic_map.get_random_tile()
 
     def test_get_random_walkable_tile_returns_walkable_tile(self, basic_map):
         for _ in range(5):
