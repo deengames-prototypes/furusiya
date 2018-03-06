@@ -84,10 +84,25 @@ class MapRenderer:
             y += 1
 
         # show the player's stats
+        self._ui_adapter.panel.draw_str(1, 1, "PLAYER")
+
         player_fighter = Game.fighter_system.get(self._player)
-        self._ui_adapter.panel.draw_str(1, 1, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
-        self._ui_adapter.panel.draw_str(1, 2, "SP: {}/{}".format(self._player.skill_points,
-                                                                 config.data.player.maxSkillPoints))
+        skill_component = Game.skill_system.get(self._player)
+
+        self._ui_adapter.panel.draw_str(10, 2, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
+        self._ui_adapter.panel.draw_str(10, 3, "SP: {}/{}".format(skill_component.skill_points,
+                                                                  config.data.player.maxSkillPoints))
+
+        # show the horse's stats, if mounted
+        if Game.stallion.is_mounted:
+            self._ui_adapter.panel.draw_str(1, 4, "STALLION")
+
+            stallion_fighter = Game.fighter_system.get(Game.stallion)
+            skill_component = Game.skill_system.get(Game.stallion)
+
+            self._ui_adapter.panel.draw_str(10, 5, "HP: {}/{}".format(stallion_fighter.hp, stallion_fighter.max_hp))
+            self._ui_adapter.panel.draw_str(10, 6, "SP: {}/{}".format(skill_component.skill_points,
+                                                                      config.data.stallion.maxSkillPoints))
 
         # display names of objects under the mouse
         self._ui_adapter.panel.draw_str(1, 0, get_names_under_mouse(), fg=colors.light_gray)

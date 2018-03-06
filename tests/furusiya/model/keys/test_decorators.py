@@ -62,8 +62,12 @@ class TestInGameDecorator:
 
 
 class TestSkillDecorator:
-    def test_skill_calls_callback_when_sufficient_skill_points(self):
-        Game.player.skill_points = old_skill_points = 50
+    @pytest.fixture
+    def skill_component(self):
+        yield Game.skill_system.get(Game.player)
+
+    def test_skill_calls_callback_when_sufficient_skill_points(self, skill_component):
+        skill_component.skill_points = old_skill_points = 50
         cost = 5
         actual_function = Mock()
         mock_event = Mock()
@@ -72,10 +76,10 @@ class TestSkillDecorator:
         skill_mock(mock_event)
 
         actual_function.assert_called_with(mock_event)
-        assert Game.player.skill_points == old_skill_points - cost
+        assert skill_component.skill_points == old_skill_points - cost
 
-    def test_skill_doesnt_call_callback_when_not_sufficient_skill_points(self):
-        Game.player.skill_points = old_skill_points = 1
+    def test_skill_doesnt_call_callback_when_not_sufficient_skill_points(self, skill_component):
+        skill_component.skill_points = old_skill_points = 1
         cost = 50
         actual_function = Mock()
         mock_event = Mock()
@@ -84,4 +88,4 @@ class TestSkillDecorator:
         skill_mock(mock_event)
 
         actual_function.assert_not_called()
-        assert Game.player.skill_points == old_skill_points
+        assert skill_component.skill_points == old_skill_points

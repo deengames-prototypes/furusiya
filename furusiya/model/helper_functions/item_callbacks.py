@@ -72,9 +72,11 @@ def cast_fireball():
 
 
 def restore_skill_points():
-    if Game.player.skill_points == config.data.player.maxSkillPoints:
+    skill_component = Game.skill_system.get(Game.player)
+
+    if skill_component.skill_points == config.data.player.maxSkillPoints:
         message("You already feel great and ready for action.", colors.red)
         return 'cancelled'
 
     message('You feel a lot more refreshed!', colors.light_violet)
-    Game.player.restore_skill_points(config.data.item.skillPointPotion.restores)
+    skill_component.restore_skill_points(config.data.item.skillPointPotion.restores)

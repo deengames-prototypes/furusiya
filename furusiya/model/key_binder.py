@@ -24,7 +24,8 @@ KEY_BINDINGS = {
 
     'l': whirlwind_callback,
     'o': omnislash_callback,
-    'h': frost_bomb_callback
+    'h': frost_bomb_callback,
+    'j': lance_charge_callback
 }
 
 EVENT_BINDINGS = {

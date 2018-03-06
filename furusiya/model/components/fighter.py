@@ -10,7 +10,7 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None):
+    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None, hostile=True):
         super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
@@ -19,6 +19,8 @@ class Fighter(Component):
         self.death_function = death_function
         self.weapon = weapon
         self.bow_crits = 0
+
+        self.hostile = hostile
 
     def take_damage(self, damage):
         # apply damage if possible

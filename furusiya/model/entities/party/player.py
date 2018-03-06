@@ -1,5 +1,6 @@
 import colors
 from model.components.ai.monster import FrozenMonster
+from model.components.skill import SkillComponent
 from model.components.xp import XPComponent
 from model.config import config
 import model.weapons
@@ -38,29 +39,23 @@ class Player(GameObject):
             )
         )
 
+        Game.skill_system.set(
+            self, SkillComponent(
+                owner=self,
+                max_skill_points=config.data.player.maxSkillPoints
+
+            )
+        )
+
         Game.draw_bowsight = False
 
         self.arrows = config.data.player.startingArrows
 
         self.stats_points = 0
-        self.skill_points = config.data.player.maxSkillPoints
         self.mounted = False
         self.moves_while_mounted = 0
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
-
-    def can_use_skill(self, skill_cost: int):
-        return self.skill_points - skill_cost >= 0
-
-    def use_skill(self, skill_cost: int):
-        self.skill_points -= skill_cost
-        if self.skill_points < 0:
-            self.skill_points = 0
-
-    def restore_skill_points(self, to_restore: int):
-        self.skill_points += to_restore
-        if self.skill_points > config.data.player.maxSkillPoints:
-            self.skill_points = config.data.player.maxSkillPoints
 
     def on_level_callback(self):
         self.stats_points += config.data.player.statsPointsOnLevelUp
@@ -89,7 +84,8 @@ class Player(GameObject):
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
 
-        self.restore_skill_points(self._get_skillpoints_for_resting())
+        skills = Game.skill_system.get(self)
+        skills.restore_skill_points(self._get_skillpoints_for_resting())
 
     def calculate_turns_to_rest(self):
         fighter = Game.fighter_system.get(self)
@@ -106,13 +102,7 @@ class Player(GameObject):
         # try to find an attackable object there
         target = Game.area_map.get_blocking_object_at(x, y)
         if target is not None and Game.fighter_system.has(target):
-            enemy_ai = Game.ai_system.get(target)
-            player_fighter = Game.fighter_system.get(self)
-
-            if isinstance(enemy_ai, FrozenMonster):
-                Game.fighter_system.get(target).die()
-            else:
-                player_fighter.attack(target)
+            self.attack(target)
         else:
             self.move(dx, dy)
             if self.mounted:
@@ -124,3 +114,11 @@ class Player(GameObject):
                 Game.stallion.x, Game.stallion.y = self.x, self.y
             Game.renderer.recompute_fov = True
             return
+
+    def attack(self, target):
+        enemy_ai = Game.ai_system.get(target)
+        player_fighter = Game.fighter_system.get(self)
+        if isinstance(enemy_ai, FrozenMonster):
+            Game.fighter_system.get(target).die()
+        else:
+            player_fighter.attack(target)

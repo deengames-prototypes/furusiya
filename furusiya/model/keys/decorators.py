@@ -30,8 +30,28 @@ def skill(callback=None, *, cost=0):
     def decorator(callback):
         @wraps(callback)
         def _inner_function(event):
-            if Game.player.can_use_skill(cost):
-                Game.player.use_skill(cost)
+            skill_component = Game.skill_system.get(Game.player)
+            if skill_component.can_use_skill(cost):
+                skill_component.use_skill(cost)
+                callback(event)
+            else:
+                message(f"Not enough skill points to use skill!", colors.dark_red)
+
+        return _inner_function
+
+    if callback is None:
+        return decorator
+    else:
+        return decorator(callback)
+
+
+def horse_skill(callback=None, *, cost=0):
+    def decorator(callback):
+        @wraps(callback)
+        def _inner_function(event):
+            skill_component = Game.skill_system.get(Game.stallion)
+            if skill_component.can_use_skill(cost) and Game.stallion.is_mounted:
+                skill_component.use_skill(cost)
                 callback(event)
             else:
                 message(f"Not enough skill points to use skill!", colors.dark_red)

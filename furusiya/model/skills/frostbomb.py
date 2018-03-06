@@ -1,3 +1,4 @@
+from game import Game
 from model.components.ai.monster import FrozenMonster
 
 
@@ -10,7 +11,8 @@ class FrostBomb:
                 entities = (
                     e
                     for e in area_map.get_entities_on(x, y)
-                    if e.hostile
+                    if (Game.fighter_system.get(e) is not None
+                        and Game.fighter_system.get(e).hostile)
                 )
                 for entity in entities:
                     ai_system.get(entity).temporarily_switch_to(FrozenMonster(entity, config.turnsToThaw))

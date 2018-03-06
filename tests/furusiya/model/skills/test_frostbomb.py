@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 
+from game import Game
 from model.maps.area_map import AreaMap
 from model.skills.frostbomb import FrostBomb
 from model.systems.system import ComponentSystem
@@ -13,6 +14,9 @@ def test_process_freezes_enemies():
 
     area_map = AreaMap(10, 10)
     area_map.entities = [*enemies_in_range] + [*enemies_out_of_range] + [player]
+
+    for entity in area_map.entities:
+        Game.fighter_system.set(entity, Mock())
 
     ai_system = ComponentSystem()
 

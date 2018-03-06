@@ -4,8 +4,10 @@ from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.item import Item
-from model.keys.decorators import in_game, skill
+from model.keys.decorators import in_game, skill, horse_skill
+from model.keys.util import map_movement_callback
 from model.skills.frostbomb import FrostBomb
+from model.skills.lance_charge import LanceCharge
 from model.skills.omnislash import OmniSlash
 from model.skills.whirlwind import Whirlwind
 from model.config import config
@@ -145,7 +147,7 @@ def continuous_rest_callback(event):
                 and not [
                     e
                     for e in Game.area_map.entities
-                    if e.hostile and (e.x, e.y) in Game.renderer.visible_tiles
+                    if Game.fighter_system.get(e).hostile and (e.x, e.y) in Game.renderer.visible_tiles
                 ]
             )
 
@@ -170,7 +172,7 @@ def whirlwind_callback(event):
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
 
 
-@skill(cost=config.data.skills.omnislash.cost)
+@skill(cost=0)
 @in_game(pass_turn=False)
 def omnislash_callback(event):
     """Enter omnislash mode!"""
@@ -188,34 +190,14 @@ def omnislash_callback(event):
             if target is not None and Game.fighter_system.has(target):
                 message(f'{target.name.capitalize()} has been ruthlessly attacked by {Game.player.name}!',
                         colors.dark_purple)
+                Game.skill_system.get(Game.player).use_skill(config.data.skills.omnislash.cost)
                 OmniSlash.process(Game.player, target, config.data.skills.omnislash)
-                new_escape_callback(None)
+                Game.keybinder.register_all_keybinds()
             else:
                 Game.player.move_or_attack(dx, dy)
 
-        @in_game(pass_turn=True)
-        def new_up(event):
-            new_move_callback(*DELTA_UP)
-
-        @in_game(pass_turn=True)
-        def new_down(event):
-            new_move_callback(*DELTA_DOWN)
-
-        @in_game(pass_turn=True)
-        def new_left(event):
-            new_move_callback(*DELTA_LEFT)
-
-        @in_game(pass_turn=True)
-        def new_right(event):
-            new_move_callback(*DELTA_RIGHT)
-
-        Game.keybinder.register_keybinds({
-            'UP': new_up,
-            'DOWN': new_down,
-            'LEFT': new_left,
-            'RIGHT': new_right,
-            'ESCAPE': new_escape_callback
-        })
+        map_movement_callback(new_move_callback)
+        Game.keybinder.register_keybind('ESCAPE', new_escape_callback)
 
 
 @skill(cost=config.data.skills.frostbomb.cost)
@@ -223,3 +205,34 @@ def omnislash_callback(event):
 def frost_bomb_callback(event):
     if config.data.skills.frostbomb.enabled:
         FrostBomb.process(Game.area_map, Game.player, Game.ai_system, config.data.skills.frostbomb)
+
+
+@horse_skill(cost=0)
+@in_game(pass_turn=True)
+def lance_charge_callback(event):
+    if config.data.skills.lanceCharge.enabled:
+        message('Move to charge with your lance, or press escape to cancel.', colors.light_cyan)
+
+        Game.keybinder.suspend_all_keybinds()
+
+        def new_escape_callback(event):
+            message('Cancelled')
+            Game.keybinder.register_all_keybinds()
+
+        def new_move_callback(dx, dy):
+            charge_distance = config.data.skills.lanceCharge.chargeDistance
+
+            for _ in range(charge_distance):
+                target = Game.area_map.get_blocking_object_at(Game.player.x + dx, Game.player.y + dy)
+                if target is not None and Game.fighter_system.has(target):
+                    message(f'{target.name.capitalize()} has been charged by {Game.player.name}!',
+                            colors.dark_purple)
+                    LanceCharge.process(target, config.data.skills.lanceCharge)
+
+                Game.player.move_or_attack(dx, dy)
+
+            Game.skill_system.get(Game.stallion).use_skill(config.data.skills.lanceCharge.cost)
+            Game.keybinder.register_all_keybinds()
+
+        map_movement_callback(new_move_callback)
+        Game.keybinder.register_keybind('ESCAPE', new_escape_callback)

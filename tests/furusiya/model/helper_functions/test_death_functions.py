@@ -5,15 +5,14 @@ import pytest
 from game import Game
 from model.components.xp import XPComponent
 from model.entities.game_object import GameObject
-from model.helper_functions.death_functions import monster_death, player_death
-
+from model.helper_functions.death_functions import monster_death, player_death, horse_death
 
 MONSTER_XP = 50
 
 
 @pytest.fixture
 def monster():
-    obj = GameObject(2, 2, 's', 'scary monster', (0, 0, 0), blocks=True, hostile=True)
+    obj = GameObject(2, 2, 's', 'scary monster', (0, 0, 0), blocks=True)
 
     Game.xp_system.set(obj, Mock(xp=MONSTER_XP))
     Game.fighter_system.set(obj, Mock())
@@ -39,7 +38,6 @@ def test_monster_death_marks_monster_as_dead(monster, player):
 
     assert monster.char == '%'
     assert monster.blocks is False
-    assert monster.hostile is False
 
     assert new_xp > old_xp
 
@@ -54,3 +52,13 @@ def test_player_death_affects_game_state(player):
 
     assert Game.game_state == 'dead'
     assert player.char == '%'
+
+
+def test_horse_death_removes_components(monster):
+    horse_death(monster)
+
+    assert monster.char == '%'
+    assert monster.blocks is False
+
+    assert not Game.fighter_system.has(monster)
+    assert not Game.ai_system.has(monster)

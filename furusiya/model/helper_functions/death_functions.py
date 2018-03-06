@@ -7,18 +7,13 @@ def monster_death(monster):
     # transform it into a nasty corpse! it doesn't block, can't be
     # attacked and doesn't move
     message(monster.name.capitalize() + ' is dead!', colors.orange)
-    monster.char = '%'
-    monster.color = colors.dark_red
-    monster.blocks = False
+    _mark_entity_as_dead(monster)
 
     Game.xp_system.get(Game.player).gain_xp(Game.xp_system.get(monster).xp)
     Game.fighter_system.remove(monster)
     Game.ai_system.remove(monster)
 
     monster.original_ai = None
-    monster.name = "{} remains".format(monster.name)
-    monster.hostile = False
-    monster.send_to_back()
 
 
 def player_death(player):
@@ -30,3 +25,22 @@ def player_death(player):
     # for added effect, transform the player into a corpse!
     player.char = '%'
     player.color = colors.dark_red
+
+
+def horse_death(horse):
+    message('Stallion is dead!', colors.red)
+    _mark_entity_as_dead(horse)
+
+    Game.fighter_system.remove(horse)
+    Game.ai_system.remove(horse)
+
+    if Game.player.mounted:
+        Game.player.unmount(Game.stallion)
+
+
+def _mark_entity_as_dead(entity):
+    entity.char = '%'
+    entity.color = colors.dark_red
+    entity.blocks = False
+    entity.name = "{} remains".format(entity.name)
+    entity.send_to_back()
