@@ -117,3 +117,5 @@ class MapRenderer:
                 tile = self._area_map.tiles[x][y]
                 if tile.is_explored:
                     self._ui_adapter.con.draw_str(x, y, tile.character, tile.dark_colour)
+                else:
+                    self._ui_adapter.con.draw_str(x, y, ' ')
