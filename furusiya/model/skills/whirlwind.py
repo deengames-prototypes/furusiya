@@ -7,5 +7,5 @@ class Whirlwind:
     @staticmethod
     def process(player, radius, area_map):
         for obj in area_map.entities:
-            if obj.distance(player.x, player.y) <= radius and Game.fighter_system.has(obj) and obj is not player:
+            if obj.distance(player.x, player.y) <= radius and Game.fighter_system.has(obj) and Game.fighter_system.get(obj).hostile:
                 Game.fighter_system.get(player).attack(obj)
