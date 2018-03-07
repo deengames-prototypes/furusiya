@@ -61,6 +61,11 @@
             "cost": 10,
             "chargeDistance": 5,
             "damage": 15
+        },
+        "ruqya": {
+          "enabled": true,
+          "percent": 15,
+          "cost": 10
         }
     },
     "item": {

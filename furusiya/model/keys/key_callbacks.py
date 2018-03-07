@@ -3,12 +3,14 @@ from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
+from model.helper_functions.skills import can_use_skill
 from model.item import Item
 from model.keys.decorators import in_game, skill, horse_skill
 from model.keys.util import map_movement_callback
 from model.skills.frostbomb import FrostBomb
 from model.skills.lance_charge import LanceCharge
 from model.skills.omnislash import OmniSlash
+from model.skills.ruqya import Ruqya
 from model.skills.whirlwind import Whirlwind
 from model.config import config
 from model.weapons import Bow
@@ -172,7 +174,6 @@ def whirlwind_callback(event):
         Whirlwind.process(Game.player, config.data.skills.whirlwind.radius, Game.area_map)
 
 
-@skill(cost=0)
 @in_game(pass_turn=False)
 def omnislash_callback(event):
     """Enter omnislash mode!"""
@@ -236,3 +237,16 @@ def lance_charge_callback(event):
 
         map_movement_callback(new_move_callback)
         Game.keybinder.register_keybind('ESCAPE', new_escape_callback)
+
+
+@in_game(pass_turn=False)
+def ruqya_callback(event):
+    if config.data.skills.ruqya.enabled:
+        player_fighter = Game.fighter_system.get(Game.player)
+        if player_fighter.hp == player_fighter.max_hp:
+            message("You are already at full health.", colors.red)
+            return
+
+        if can_use_skill(config.data.skills.ruqya.cost):
+            Ruqya.process(player_fighter, config.data.skills.ruqya)
+            Game.current_turn = None

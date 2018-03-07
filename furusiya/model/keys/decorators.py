@@ -3,6 +3,7 @@ from functools import wraps
 import colors
 from game import Game
 from model.helper_functions.message import message
+from model.helper_functions.skills import can_use_horse_skill, can_use_skill
 
 
 def in_game(callback=None, *, pass_turn=False):
@@ -30,9 +31,7 @@ def skill(callback=None, *, cost=0):
     def decorator(callback):
         @wraps(callback)
         def _inner_function(event):
-            skill_component = Game.skill_system.get(Game.player)
-            if skill_component.can_use_skill(cost):
-                skill_component.use_skill(cost)
+            if can_use_skill(cost):
                 callback(event)
             else:
                 message(f"Not enough skill points to use skill!", colors.dark_red)
@@ -49,9 +48,7 @@ def horse_skill(callback=None, *, cost=0):
     def decorator(callback):
         @wraps(callback)
         def _inner_function(event):
-            skill_component = Game.skill_system.get(Game.stallion)
-            if skill_component.can_use_skill(cost) and Game.stallion.is_mounted:
-                skill_component.use_skill(cost)
+            if can_use_horse_skill(cost):
                 callback(event)
             else:
                 message(f"Not enough skill points to use skill!", colors.dark_red)
