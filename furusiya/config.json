@@ -112,10 +112,10 @@
         }
     },
     "skillsOnLevelUp": {  // TO BE REMOVED, PROTOTYPE ONLY
-        "6": "omnislash",
-        "7": "whirlwind",
-        "8": "ruqya",
-        "9": "frostbomb",
-        "10": "lanceCharge"
+        "2": "omnislash",
+        "3": "whirlwind",
+        "4": "ruqya",
+        "5": "frostbomb",
+        "6": "lanceCharge"
     }
 }

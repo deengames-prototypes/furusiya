@@ -10,6 +10,7 @@ class AbstractAI(Component):
         super().__init__(owner)
         self.num_turns = num_turns
         self.take_turn = self._take_turn
+        self.other = None
 
     def _take_turn(self):
         raise NotImplementedError()
@@ -30,13 +31,14 @@ class AbstractAI(Component):
             # Else, continue on setting it anyway
 
         Game.ai_system.set(self.owner, other)
+        self.other = other
 
-        def temporary_take_turn():
-            if other.num_turns > 0:
-                other._take_turn()
-            else:
-                other.cleanup()
-                Game.ai_system.set(self.owner, self)
-                self.take_turn()
+        other.take_turn = self.temporary_take_turn
 
-        other.take_turn = temporary_take_turn
+    def temporary_take_turn(self):
+        if self.other.num_turns > 0:
+            self.other._take_turn()
+        else:
+            self.other.cleanup()
+            Game.ai_system.set(self.owner, self)
+            self.take_turn()
