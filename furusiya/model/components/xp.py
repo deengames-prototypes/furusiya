@@ -22,7 +22,7 @@ class XPComponent(Component):
         while self.xp >= self._xp_next_level():
             self.level += 1
             if self.on_level_callback is not None:
-                self.on_level_callback()
+                self.on_level_callback(self.level)
             message(f"{self.owner.name.capitalize()} is now level {self.level}!")
             fighter = Game.fighter_system.get(self.owner)
             fighter.heal(fighter.max_hp)

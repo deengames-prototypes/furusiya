@@ -56,7 +56,7 @@ class Player(GameObject):
 
         print("You hold your wicked-looking {} at the ready!".format(weapon_name))
 
-    def on_level_callback(self):
+    def on_level_callback(self, new_level):
         self.stats_points += config.data.player.statsPointsOnLevelUp
 
     def mount(self, horse):
