@@ -99,7 +99,7 @@ class Player(GameObject):
 
         # try to find an attackable object there
         target = Game.area_map.get_blocking_object_at(x, y)
-        if target is not None and Game.fighter_system.has(target):
+        if target is not None and Game.fighter_system.has(target) and Game.fighter_system.get(target).hostile:
             self.attack(target)
         else:
             self.move(dx, dy)
