@@ -22,13 +22,7 @@ KEY_BINDINGS = {
     'm': mount_callback,
 
     'r': rest_callback,
-    'R': continuous_rest_callback,
-
-    'l': whirlwind_callback,
-    'o': omnislash_callback,
-    'h': frost_bomb_callback,
-    'j': lance_charge_callback,
-    'u': ruqya_callback
+    'R': continuous_rest_callback
 }
 
 EVENT_BINDINGS = {
