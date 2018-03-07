@@ -13,7 +13,7 @@ class AbstractAI(Component):
         self.other = None
 
     def _take_turn(self):
-        raise NotImplementedError()
+        pass
 
     def cleanup(self):
         """optional method for temporary AIs"""
