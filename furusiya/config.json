@@ -110,5 +110,12 @@
             "health": 10,
             "xp": 35
         }
+    },
+    "skillsOnLevelUp": {  // TO BE REMOVED, PROTOTYPE ONLY
+        "6": "omnislash",
+        "7": "whirlwind",
+        "8": "ruqya",
+        "9": "frostbomb",
+        "10": "lanceCharge"
     }
 }

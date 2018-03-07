@@ -7,6 +7,7 @@ from model.helper_functions.death_functions import player_death
 from game import Game
 from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
+from model.key_binder import add_skill
 
 
 class Player(GameObject):
@@ -58,6 +59,11 @@ class Player(GameObject):
 
     def on_level_callback(self, new_level):
         self.stats_points += config.data.player.statsPointsOnLevelUp
+        conf = config.data.skillsOnLevelUp
+        skill_to_add = conf.get(str(new_level))
+
+        if skill_to_add is not None:
+            add_skill(skill_to_add)
 
     def mount(self, horse):
         if config.data.features.horseIsMountable:

@@ -1,5 +1,7 @@
 from model.keys.callbacks import update_callback, quit_event, mousemotion_event
 from model.keys.key_callbacks import *
+from model.keys.key_callbacks import whirlwind_callback, omnislash_callback, frost_bomb_callback, lance_charge_callback, \
+    ruqya_callback
 
 
 KEY_BINDINGS = {
@@ -79,7 +81,10 @@ class KeyBinder:
         setattr(self.game.ui.app, self._format_attr_key(key), callback)
 
     def suspend_keybind(self, key):
-        delattr(self.game.ui.app, self._format_attr_key(key))
+        try:
+            delattr(self.game.ui.app, self._format_attr_key(key))
+        except AttributeError:
+            pass
 
     # Events
     def register_all_events(self):
@@ -100,3 +105,17 @@ class KeyBinder:
 
         callback = update if new_callback is not None else update_callback
         setattr(self.game.ui.app, 'update', callback)
+
+
+SKILL_KEYBINDINGS = {
+    "whirlwind": {'l': whirlwind_callback},
+    "omnislash": {'o': omnislash_callback},
+    "frostbomb": {'h': frost_bomb_callback},
+    "lanceCharge": {'j': lance_charge_callback},
+    "ruqya": {'u': ruqya_callback}
+}
+
+
+def add_skill(skill_name):
+    skill_keybind = SKILL_KEYBINDINGS.get(skill_name)
+    Game.keybinder.register_keybinds(skill_keybind)
