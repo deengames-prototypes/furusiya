@@ -17,7 +17,10 @@
         "startingHealth": 30,
         "startingDefense": 2,
         "startingPower": 6,
+
         "maxSkillPoints": 50,
+        "skillPointsPerTurn": 2,
+
         "expRequiredBase": 10, // formula: 2^(n+1) * this
         "startingWeapon": "Bow",
         "lightRadius": 10,
@@ -34,8 +37,7 @@
     "skills": {
         "resting": {
             "enabled": true,
-            "percent": 5, // formula: this/100 * max_hp
-            "skillPointsPercent": 5
+            "percent": 5 // formula: this/100 * max_hp
         },
         "omnislash": {
             "enabled": true,

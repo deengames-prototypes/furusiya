@@ -74,17 +74,10 @@ class Player(GameObject):
     def _get_health_for_resting(max_hp):
         return int(config.data.skills.resting.percent/100 * max_hp)
 
-    @staticmethod
-    def _get_skillpoints_for_resting() -> int:
-        return int(config.data.skills.resting.skillPointsPercent/100 * config.data.player.maxSkillPoints)
-
     def rest(self):
         fighter = Game.fighter_system.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
-
-        skills = Game.skill_system.get(self)
-        skills.restore_skill_points(self._get_skillpoints_for_resting())
 
     def calculate_turns_to_rest(self):
         fighter = Game.fighter_system.get(self)
