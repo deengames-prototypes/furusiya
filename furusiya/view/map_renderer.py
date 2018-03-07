@@ -88,7 +88,9 @@ class MapRenderer:
 
         player_fighter = Game.fighter_system.get(self._player)
         skill_component = Game.skill_system.get(self._player)
+        xp_component = Game.xp_system.get(self._player)
 
+        self._ui_adapter.panel.draw_str(11, 1, "LEVEL {}".format(xp_component.level))
         self._ui_adapter.panel.draw_str(10, 2, "HP: {}/{}".format(player_fighter.hp, player_fighter.max_hp))
         self._ui_adapter.panel.draw_str(10, 3, "SP: {}/{}".format(skill_component.skill_points,
                                                                   config.data.player.maxSkillPoints))
