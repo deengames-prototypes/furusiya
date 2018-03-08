@@ -78,12 +78,12 @@ class GameObject:
         # return the distance to some coordinates
         return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
 
-    def send_to_back(self):
+    def send_to_back(self, area_map):
         # make this object be drawn first, so all others appear above it if
         # they're in the same tile.
-        if self in Game.area_map.entities:
-            Game.area_map.entities.remove(self)
-        Game.area_map.entities.insert(0, self)
+        if self in area_map.entities:
+            area_map.entities.remove(self)
+        area_map.entities.insert(0, self)
 
     def draw(self):
         # only show if it's visible to the player

@@ -4,11 +4,13 @@ from model.rect import Rect
 
 
 class AreaMap:
-    def __init__(self, width, height):
+    def __init__(self, width, height, floor_num=0):
         self.tiles = []
         self.entities = []
         self.width = width
         self.height = height
+        self.stairs = (None, None)
+        self.floor_num = floor_num
 
         # Create a 2D structure of tiles
         for x in range(0, self.width):

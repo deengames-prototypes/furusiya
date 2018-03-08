@@ -77,4 +77,4 @@ def generate_items(area_map, num_items):
         item = item_factory.create_item(x, y, char, name, color, use_func)
 
         area_map.entities.append(item)
-        item.send_to_back()  # items appear below other objects
+        item.send_to_back(area_map)  # items appear below other objects

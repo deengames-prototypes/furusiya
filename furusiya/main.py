@@ -18,7 +18,7 @@ from model.entities.party.stallion import Stallion
 from model.key_binder import KeyBinder
 from model.maps import generators
 from model.maps.area_map import AreaMap
-from model.maps.generators import DungeonGenerator
+from model.maps.generators import ForestGenerator
 from model.systems.ai_system import AISystem
 from model.systems.system import ComponentSystem
 from view.adapter.tdl_adapter import TdlAdapter
@@ -32,15 +32,21 @@ def new_game():
     Game.skill_system = ComponentSystem()
     Game.ai_system = AISystem()
 
-    Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
     Game.player = Player()
     if config.data.stallion.enabled:
         Game.stallion = Stallion(Game.player)
 
-    # generate map (at this point it's not drawn to the screen)
-    generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
-    generator = getattr(generators, generator_class_name, DungeonGenerator)
-    generator(Game.area_map)
+    for i in range(1, config.data.numFloors + 1):
+        area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
+
+        # generate map (at this point it's not drawn to the screen)
+        generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
+        generator = getattr(generators, generator_class_name, ForestGenerator)
+        generator(area_map)
+
+        Game.floors.append(area_map)
+
+    Game.area_map = Game.floors[Game.current_floor-1]
 
     Game.area_map.place_on_random_ground(Game.player)
     if config.data.stallion.enabled:

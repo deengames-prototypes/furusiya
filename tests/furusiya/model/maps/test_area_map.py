@@ -3,7 +3,7 @@ import pytest
 from game import Game
 from model.entities.game_object import GameObject
 from model.maps.area_map import AreaMap
-from model.maps.generators.forest_generator import ForestGenerator
+from model.maps.generators import DungeonGenerator
 from model.rect import Rect
 
 
@@ -21,9 +21,9 @@ class TestAreaMap:
         yield basic_map
 
     def test_place_on_random_ground_places_entity_on_random_ground(self):
-        width, height = (10, 10)
+        width, height = (50, 50)
         Game.area_map = AreaMap(width, height)
-        fg = ForestGenerator(Game.area_map)
+        fg = DungeonGenerator(Game.area_map)
 
         e = GameObject(0, 0, 'a', 'test', (255, 0, 0))
         Game.area_map.place_on_random_ground(e)

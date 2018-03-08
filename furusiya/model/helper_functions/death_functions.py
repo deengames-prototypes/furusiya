@@ -43,4 +43,4 @@ def _mark_entity_as_dead(entity):
     entity.color = colors.dark_red
     entity.blocks = False
     entity.name = "{} remains".format(entity.name)
-    entity.send_to_back()
+    entity.send_to_back(Game.area_map)

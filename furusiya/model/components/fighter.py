@@ -71,7 +71,7 @@ class Fighter(Component):
             )
 
             Game.area_map.entities.append(arrows)
-            arrows.send_to_back()
+            arrows.send_to_back(Game.area_map)
 
         # if there's a death function, call it
         death_function = self.death_function
