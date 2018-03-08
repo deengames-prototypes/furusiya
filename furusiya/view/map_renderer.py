@@ -96,7 +96,7 @@ class MapRenderer:
                                                                   config.data.player.maxSkillPoints))
 
         # show the horse's stats, if mounted
-        if Game.stallion.is_mounted:
+        if config.data.stallion.enabled:
             self._ui_adapter.panel.draw_str(1, 4, "STALLION")
 
             stallion_fighter = Game.fighter_system.get(Game.stallion)

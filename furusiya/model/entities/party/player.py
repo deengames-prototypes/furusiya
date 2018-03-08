@@ -66,13 +66,13 @@ class Player(GameObject):
             add_skill(skill_to_add)
 
     def mount(self, horse):
-        if config.data.features.horseIsMountable:
+        if config.data.stallion.enabled and config.data.features.horseIsMountable:
             self.x, self.y = horse.x, horse.y
             self.mounted = True
             horse.is_mounted = True
 
     def unmount(self, horse):
-        if config.data.features.horseIsMountable:
+        if config.data.stallion.enabled and config.data.features.horseIsMountable:
             self.mounted = False
             horse.is_mounted = False
 

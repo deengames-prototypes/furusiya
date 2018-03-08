@@ -122,7 +122,7 @@ def bow_callback(event):
 # Mount
 @in_game(pass_turn=True)
 def mount_callback(event):
-    if Game.player.distance_to(Game.stallion) <= 1:
+    if config.data.stallion.enabled and Game.player.distance_to(Game.stallion) <= 1:
         if Game.player.mounted:
             Game.player.unmount(Game.stallion)
         else:
@@ -213,9 +213,9 @@ def frost_bomb_callback(event):
 
 
 @horse_skill(cost=0)
-@in_game(pass_turn=True)
+@in_game(pass_turn=False)
 def lance_charge_callback(event):
-    if config.data.skills.lanceCharge.enabled:
+    if config.data.stallion.enabled and config.data.skills.lanceCharge.enabled:
         message('Move to charge with your lance, or press escape to cancel.', colors.light_cyan)
 
         Game.keybinder.suspend_all_keybinds()

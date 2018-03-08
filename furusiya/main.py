@@ -34,7 +34,8 @@ def new_game():
 
     Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
     Game.player = Player()
-    Game.stallion = Stallion(Game.player)
+    if config.data.stallion.enabled:
+        Game.stallion = Stallion(Game.player)
 
     # generate map (at this point it's not drawn to the screen)
     generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
@@ -42,7 +43,8 @@ def new_game():
     generator(Game.area_map)
 
     Game.area_map.place_on_random_ground(Game.player)
-    Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
+    if config.data.stallion.enabled:
+        Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
 
     Game.game_state = 'playing'
     Game.inventory = []

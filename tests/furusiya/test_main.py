@@ -1,5 +1,6 @@
 from game import Game
 from main import new_game
+from model.config import config
 
 
 def test_new_game_creates_new_game():
@@ -11,13 +12,15 @@ def test_new_game_creates_new_game():
     assert Game.area_map.tiles != []  # map has been generated
 
     assert Game.player is not None
-    assert Game.stallion is not None
 
-    assert (Game.stallion.x, Game.stallion.y) in (
-        (dx + Game.player.x, dy + Game.player.y)
-        for dx in range(-5, 6)  # make sure stallion is within 5 tiles from the player
-        for dy in range(-5, 6)  # in fact, it could be farther, but that's highly unlikely.
-    )
+    if config.data.stallion.enabled:
+        assert Game.stallion is not None
+
+        assert (Game.stallion.x, Game.stallion.y) in (
+            (dx + Game.player.x, dy + Game.player.y)
+            for dx in range(-5, 6)  # make sure stallion is within 5 tiles from the player
+            for dy in range(-5, 6)  # in fact, it could be farther, but that's highly unlikely.
+        )
 
     assert Game.xp_system.get(Game.player).level == 5
 
