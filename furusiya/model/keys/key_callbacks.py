@@ -210,6 +210,7 @@ def omnislash_callback(event):
 def frost_bomb_callback(event):
     if config.data.skills.frostbomb.enabled:
         FrostBomb.process(Game.area_map, Game.player, Game.ai_system, config.data.skills.frostbomb)
+        message("A cold wind gushes forward as enemies around you freeze!", colors.cyan)
 
 
 @horse_skill(cost=0)
@@ -226,12 +227,11 @@ def lance_charge_callback(event):
 
         def new_move_callback(dx, dy):
             charge_distance = config.data.skills.lanceCharge.chargeDistance
+            message("With a mighty charge, you bolster your lance towards your enemies!")
 
             for _ in range(charge_distance):
                 target = Game.area_map.get_blocking_object_at(Game.player.x + dx, Game.player.y + dy)
                 if target is not None and Game.fighter_system.has(target):
-                    message(f'{target.name.capitalize()} has been charged by {Game.player.name}!',
-                            colors.dark_purple)
                     LanceCharge.process(target, config.data.skills.lanceCharge)
 
                 Game.player.move_or_attack(dx, dy)
