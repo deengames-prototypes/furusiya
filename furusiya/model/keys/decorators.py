@@ -49,9 +49,12 @@ def horse_skill(callback=None, *, cost=0):
         @wraps(callback)
         def _inner_function(event):
             if can_use_horse_skill(cost):
-                callback(event)
+                if Game.stallion.is_mounted:
+                    callback(event)
+                else:
+                    message("You can only use this skill on a horse!", colors.dark_red)
             else:
-                message(f"Not enough skill points to use skill!", colors.dark_red)
+                message("Not enough skill points to use skill!", colors.dark_red)
 
         return _inner_function
 

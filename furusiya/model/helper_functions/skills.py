@@ -14,7 +14,7 @@ def can_use_skill(cost: int) -> bool:
 def can_use_horse_skill(cost: int) -> bool:
     if config.data.stallion.enabled:
         skill_component = Game.skill_system.get(Game.stallion)
-        if skill_component.can_use_skill(cost) and Game.stallion.is_mounted:
+        if skill_component.can_use_skill(cost):
             skill_component.use_skill(cost)
             return True
 
