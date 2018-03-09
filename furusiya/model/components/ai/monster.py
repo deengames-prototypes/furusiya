@@ -60,8 +60,7 @@ class FrozenMonster(StunnedMonster):
             self.owner_fighter.default_take_damage_strategy(damage)
 
     def cleanup(self):
-        owner_fighter = Game.fighter_system.get(self.owner)
-        owner_fighter.take_damage_strategy = owner_fighter.default_take_damage_strategy
+        self.owner_fighter.take_damage_strategy = self.owner_fighter.default_take_damage_strategy
 
 
 class ConfusedMonster(AbstractAI):

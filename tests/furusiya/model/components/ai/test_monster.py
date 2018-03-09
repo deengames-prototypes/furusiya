@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from game import Game
-from model.components.ai.monster import BasicMonster, StunnedMonster
+from model.components.ai.monster import BasicMonster, StunnedMonster, FrozenMonster
 from model.config import config
 
 
@@ -65,3 +65,40 @@ class TestStunnedMonster:
         ai.take_turn()
         assert ai.num_turns == 0
         assert ai.owner.char == 't'
+
+
+class TestFrozenMonster:
+    @pytest.fixture
+    def ai(self):
+        mock_owner = Mock()
+        Game.fighter_system.set(mock_owner, Mock())
+        mock_ai = FrozenMonster(mock_owner)
+
+        mock_ai.owner_fighter.max_hp = 1000
+        yield mock_ai
+
+    def test_new_take_damage_strategy_kills_if_equal_half_health(self, ai):
+        ai.owner_fighter.hp = 500
+
+        ai.new_take_damage_strategy(50)
+
+        assert ai.owner_fighter.die.called
+
+    def test_new_take_damage_strategy_kills_if_below_half_health(self, ai):
+        ai.owner_fighter.hp = 499
+
+        ai.new_take_damage_strategy(50)
+
+        assert ai.owner_fighter.die.called
+
+    def test_new_take_damage_strategy_damages_normally_if_above_half_health(self, ai):
+        ai.owner_fighter.hp = 501
+
+        ai.new_take_damage_strategy(50)
+
+        assert ai.owner_fighter.default_take_damage_strategy.called
+
+    def test_cleanup_resets_attack_strategy(self, ai):
+        assert ai.owner_fighter.take_damage_strategy == ai.new_take_damage_strategy
+        ai.cleanup()
+        assert ai.owner_fighter.take_damage_strategy == ai.owner_fighter.default_take_damage_strategy
