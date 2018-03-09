@@ -23,7 +23,7 @@
         "skillPointsPerTurn": 2,
 
         "expRequiredBase": 10, // formula: 2^(n+1) * this
-        "startingWeapon": "Bow",
+        "startingWeapon": "Spear",
         "lightRadius": 10,
         "statsPointsOnLevelUp": 5,
         "startingArrows": 10,
@@ -89,7 +89,11 @@
         // Bow
         "arrowDamageMultiplier": 0.5, // 0.5 => arrows do 0.5x damage
         "bowCriticalProbability": 50,
-        "bowCriticalDamageMultiplier": 0.25 // 0.1 => (1.0 + 0.1)x damage on crit
+        "bowCriticalDamageMultiplier": 0.25, // 0.1 => (1.0 + 0.1)x damage on crit
+
+        "spear": {
+            "pierceRange": 3
+        }
     },
     "enemies": {
         "arrowDropsOnKill": 3,

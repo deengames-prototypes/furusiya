@@ -11,7 +11,7 @@ class Sword(Weapon):
     inflicted. As a class, it doesn't calculate or deal damage; merely adds
     effects on top of the combat algorithms. (This is true of all weapons.)
     """
-    def attack(self, target, game):
+    def attack(self, target, game, **kwargs):
         if config.data.features.swordStuns and game.ai_system.has(target):
             if game.random.randint(0, 100) <= config.data.weapons.swordStunProbability:
                 target_ai = game.ai_system.get(target)
