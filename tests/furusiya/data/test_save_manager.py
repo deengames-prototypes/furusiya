@@ -6,6 +6,7 @@ import os
 import pytest
 
 from data.save_manager import SaveManager
+from game import Game
 
 
 class MockGame:
@@ -41,7 +42,7 @@ class TestSaveManager:
 
         assert patched_pickle.load.called
 
-    def test_round_trip(self, save_manager):
+    def test_round_trip_with_fake_game(self, save_manager):
         save_manager.save()
         save_manager.game.cool_attribute = False
 
@@ -51,3 +52,9 @@ class TestSaveManager:
 
         # cleanup generated files
         os.remove('savegame')
+
+    def test_load_loads_saved_game_without_raising(self):
+        save_manager = SaveManager(Game)
+        save_manager.save()
+        save_manager.load()
+        os.remove('savegame')        

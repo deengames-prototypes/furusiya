@@ -12,9 +12,9 @@ from view.adapter.tdl_adapter import TdlAdapter
 
 SCREEN_WIDTH = 50
 SCREEN_HEIGHT = 50
-MAP_WIDTH = 20
-MAP_HEIGHT = 20
-PANEL_HEIGHT = 10
+MAP_WIDTH = 10
+MAP_HEIGHT = 10
+PANEL_HEIGHT = 7
 
 
 class TestMapRenderer(unittest.TestCase):

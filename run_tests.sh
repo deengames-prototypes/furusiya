@@ -1,4 +1,4 @@
 #!/bin/sh
 
-# use of >... here suppresses print statements!
-python3 -m pytest >/dev/null
+# add ">/dev/null" here to suppress print statements!
+python3 -m pytest
