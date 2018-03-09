@@ -5,7 +5,6 @@ from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.helper_functions.skills import can_use_skill
 from model.item import Item
-from model.keys.callbacks import enemy_turn_callback
 from model.keys.decorators import in_game, skill, horse_skill
 from model.keys.util import map_movement_callback
 from model.skills.frostbomb import FrostBomb
@@ -152,18 +151,18 @@ def continuous_rest_callback(event):
                         and (e.x, e.y) in Game.renderer.visible_tiles)
                 ]
 
-        def new_update_callback(delta_time):
+        def new_update_callback(delta_time, update_manager):
             nonlocal turns_to_rest
             if turns_to_rest > 0:
                 if can_rest():
-                    enemy_turn_callback()
+                    update_manager.take_enemy_turns()
                     turns_to_rest -= 1
                     Game.player.rest()
                     Game.current_turn = None
                 else:
                     message("Your resting is interrupted; there are enemies nearby!", colors.red)
                     turns_to_rest = 0
-                    new_update_callback(delta_time)
+                    new_update_callback(delta_time, update_manager)
             else:
                 Game.keybinder.register_all_keybinds_and_events()
 

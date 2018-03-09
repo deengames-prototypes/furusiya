@@ -12,7 +12,9 @@ class TestDungeonGenerator:
         Game.area_map = AreaMap(80, 43)
         Game.player = Player()
         Game.area_map.place_on_random_ground(Game.player)
-        yield DungeonGenerator(Game.area_map)
+        dungeongen = DungeonGenerator(Game.area_map)
+        dungeongen.generate()
+        yield dungeongen
 
     def test_generate_generates_rooms(self, dg):
         assert len(dg._rooms) > 0

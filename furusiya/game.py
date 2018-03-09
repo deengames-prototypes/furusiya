@@ -43,3 +43,5 @@ class Game(metaclass=GameMetaClass):
         self.stallion = None
 
         self.random = None
+        self.floors = []
+        self.current_floor = 1

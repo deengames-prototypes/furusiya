@@ -18,6 +18,8 @@ class DungeonGenerator:
     def __init__(self, area_map):
         self._rooms = []
         self._area_map = area_map
+
+    def generate(self):
         self._generate_rooms()
 
         map_generator.generate_monsters(self._area_map,

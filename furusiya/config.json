@@ -2,6 +2,7 @@
     "seed": null,  // null for a random seed; seeds the game.
     "fullscreen": false,
     "mapType": "forest",  // "forest" or "dungeon"
+    "numFloors": 5,
     "features": {
         "swordStuns": true,
         "stunsStack": true,

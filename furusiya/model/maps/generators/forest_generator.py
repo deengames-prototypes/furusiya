@@ -2,9 +2,11 @@ import math
 
 from attrdict import AttrDict
 
+import colors
 from game import Game
 from model.components.walkers.random_walker import RandomWalker
 from model.maps.generators import map_generator
+from model.config import config
 
 
 class ForestGenerator:
@@ -23,6 +25,8 @@ class ForestGenerator:
 
     def __init__(self, area_map):
         self._area_map = area_map
+
+    def generate(self):
         self._generate_trees()
         
         map_generator.generate_monsters(self._area_map,
@@ -30,6 +34,8 @@ class ForestGenerator:
 
         map_generator.generate_items(self._area_map, 
             Game.random.randint(*ForestGenerator.NUM_ITEMS))
+
+        self.place_stairs()
 
     def _generate_trees(self):
         for x in range(0, self._area_map.width):
@@ -124,3 +130,16 @@ class ForestGenerator:
 
                 e.x += dx
                 e.y += dy
+
+    def place_stairs(self):
+        if self._area_map.floor_num < config.data.numFloors:
+            tile = self._area_map.get_random_walkable_tile()
+            self._area_map.next_floor_stairs = tile
+            self._area_map.tiles[tile[0]][tile[1]].convert_to_ground(character='>', colour=colors.white,
+                                                                     dark_colour=colors.grey)
+
+        if self._area_map.floor_num > 1:
+            tile = self._area_map.get_random_walkable_tile()
+            self._area_map.previous_floor_stairs = tile
+            self._area_map.tiles[tile[0]][tile[1]].convert_to_ground(character='<', colour=colors.white,
+                                                                     dark_colour=colors.grey)
