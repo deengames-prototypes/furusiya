@@ -21,7 +21,7 @@ def cast_heal():
 
 def cast_lightning():
     # find closest enemy (inside a maximum range) and damage it
-    monster = closest_monster(LIGHTNING_RANGE)
+    monster = closest_monster(Game, LIGHTNING_RANGE)
     if monster is None:  # no enemy found within maximum range
         message('No enemy is close enough to strike.', colors.red)
         return 'cancelled'

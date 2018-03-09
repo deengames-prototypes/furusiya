@@ -61,7 +61,7 @@ class MapRenderer:
             e.draw()
 
         if Game.draw_bowsight:
-            Game.target = closest_monster(config.data.player.lightRadius) if Game.auto_target else None
+            Game.target = closest_monster(Game, config.data.player.lightRadius) if Game.auto_target else None
             x2, y2 = (Game.target.x, Game.target.y) if Game.target is not None else Game.mouse_coord
 
             x1, y1 = self._player.x, self._player.y
