@@ -70,7 +70,7 @@ def play_game():
     Game.ui.blit_map_and_panel()
 
     Game.mouse_coord = (0, 0)
-    Game.renderer = MapRenderer(Game.area_map, Game.player, Game.ui)
+    Game.renderer = MapRenderer(Game.player, Game.ui)
     Game.renderer.recompute_fov = True
     Game.renderer.refresh_all()
 

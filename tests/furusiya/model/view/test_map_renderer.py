@@ -47,7 +47,8 @@ class TestMapRenderer(unittest.TestCase):
         )
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
-        renderer = MapRenderer(map, player, tdl_adapter)
+        renderer = MapRenderer(player, tdl_adapter)
+        Game.area_map = map
         Game.renderer = renderer
         Game.ui = tdl_adapter
         renderer.render()
@@ -78,8 +79,9 @@ class TestMapRenderer(unittest.TestCase):
         )
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
-        renderer = MapRenderer(map, player, tdl_adapter)
+        renderer = MapRenderer(player, tdl_adapter)
         self.assertTrue(renderer.recompute_fov)
+        Game.area_map = map
         Game.renderer = renderer
         Game.ui = tdl_adapter
         renderer.render()  # calls calculate_fov
