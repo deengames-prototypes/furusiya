@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from game import Game
-from model.components.ai.monster import BasicMonster, StunnedMonster, FrozenMonster
+from model.components.ai.monster import BasicMonster, StunnedMonster, FrozenMonster, ConfusedMonster
 from model.config import config
 
 
@@ -105,3 +105,28 @@ class TestFrozenMonster:
         assert ai.owner_fighter.take_damage_strategy == ai.new_take_damage_strategy
         ai.cleanup()
         assert ai.owner_fighter.take_damage_strategy == ai.owner_fighter.default_take_damage_strategy
+
+
+class TestConfusedMonster:
+    @pytest.fixture
+    def ai(self):
+        owner = Mock()
+        owner.name = 'mock_owner'
+        mock_ai = ConfusedMonster(owner)
+        mock_ai.walker = Mock()
+        yield mock_ai
+
+    def test_take_turn_randomly_walks_when_confused_for_num_turns(self, ai):
+        ai.num_turns = num_turns = 5
+
+        for i in range(num_turns - 1):
+            old_num_turns = ai.num_turns
+
+            ai.take_turn()
+            assert ai.walker.walk.called
+            ai.walker.walk.reset_mock()
+
+            assert ai.num_turns == old_num_turns - 1
+
+        ai.take_turn()
+        assert ai.num_turns == 0
