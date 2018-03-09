@@ -52,3 +52,9 @@ class TestSaveManager:
 
         # cleanup generated files
         os.remove('savegame')
+
+    def test_load_loads_saved_game_without_raising(self):
+        save_manager = SaveManager(Game)
+        save_manager.save()
+        save_manager.load()
+        os.remove('savegame')        
