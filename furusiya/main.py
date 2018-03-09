@@ -37,14 +37,14 @@ def new_game():
         Game.stallion = Stallion(Game.player)
 
     for i in range(1, config.data.numFloors + 1):
-        area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
+        Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
 
         # generate map (at this point it's not drawn to the screen)
         generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
         generator = getattr(generators, generator_class_name, ForestGenerator)
-        generator(area_map)
+        generator(Game.area_map)
 
-        Game.floors.append(area_map)
+        Game.floors.append(Game.area_map)
 
     Game.area_map = Game.floors[Game.current_floor-1]
 
