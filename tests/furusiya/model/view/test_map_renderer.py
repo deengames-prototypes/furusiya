@@ -14,7 +14,7 @@ SCREEN_WIDTH = 50
 SCREEN_HEIGHT = 50
 MAP_WIDTH = 10
 MAP_HEIGHT = 10
-PANEL_HEIGHT = 6
+PANEL_HEIGHT = 7
 
 
 class TestMapRenderer(unittest.TestCase):
