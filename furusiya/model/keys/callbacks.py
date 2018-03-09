@@ -19,9 +19,7 @@ def next_floor_callback():
         else:
             Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
 
-    Game.renderer.recompute_fov = True
-    Game.renderer._all_tiles_rendered = False
-    Game.renderer.visible_tiles = []
+    Game.renderer.reset()
     Game.renderer.refresh_all()
 
 

@@ -12,6 +12,9 @@ class MapRenderer:
         self._player = player
         self._ui_adapter = ui_adapter
 
+        self.reset()
+        
+    def reset(self):
         self.recompute_fov = True
         self.visible_tiles = []
         self._all_tiles_rendered = False
