@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from game import Game
-from model.components.ai.monster import BasicMonster
+from model.components.ai.monster import BasicMonster, StunnedMonster
 from model.config import config
 
 
@@ -45,3 +45,23 @@ class TestBasicMonster:
 
             assert mock_walker.called
             assert mock_walker().walk.called
+
+
+class TestStunnedMonster:
+    @pytest.fixture
+    def ai(self):
+        yield StunnedMonster(Mock())
+
+    def test_take_turn_stays_stunned_for_num_turns(self, ai):
+        ai.num_turns = num_turns = 5
+        ai.owner.name = 'tiger'
+
+        for i in range(num_turns, 1, -1):
+            old_num_turns = ai.num_turns
+            ai.take_turn()
+            assert ai.owner.char == str(i-1)[-1]
+            assert ai.num_turns == old_num_turns - 1
+
+        ai.take_turn()
+        assert ai.num_turns == 0
+        assert ai.owner.char == 't'
