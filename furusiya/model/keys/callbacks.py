@@ -2,63 +2,65 @@ from game import Game
 from model.config import config
 
 
-def load_proper_area_map():
-    Game.area_map.entities.remove(Game.player)
-    if config.data.stallion.enabled:
-        Game.area_map.entities.remove(Game.stallion)
+class UpdateManager:
+    def __init__(self, game):
+        self.game = game
 
-    Game.area_map = Game.floors[Game.current_floor - 1]
+    def load_next_floors_area_map(self):
+        self.game.area_map.entities.remove(self.game.player)
+        if config.data.stallion.enabled:
+            self.game.area_map.entities.remove(self.game.stallion)
 
+        self.game.area_map = self.game.floors[self.game.current_floor - 1]
 
-def switch_floor_callback(tile_to_spawn_player_around):
-    Game.area_map.place_around(Game.player, *tile_to_spawn_player_around)
-    if config.data.stallion.enabled:
-        if Game.stallion.is_mounted:
-            Game.area_map.entities.append(Game.stallion)
-            Game.stallion.x, Game.stallion.y = Game.player.x, Game.player.y
-        else:
-            Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
-    Game.renderer.reset()
-    Game.renderer.refresh_all()
+    def place_player_in_floor(self, tile_to_spawn_player_around):
+        self.game.area_map.place_around(self.game.player, *tile_to_spawn_player_around)
+        if config.data.stallion.enabled:
+            if self.game.stallion.is_mounted:
+                self.game.area_map.entities.append(self.game.stallion)
+                self.game.stallion.x, self.game.stallion.y = self.game.player.x, self.game.player.y
+            else:
+                self.game.area_map.place_around(self.game.stallion, self.game.player.x, self.game.player.y)
 
+    def refresh_renderer(self):
+        self.game.renderer.reset()
+        self.game.renderer.refresh_all()
 
-def next_floor_callback():
-    Game.current_floor += 1
-    load_proper_area_map()
-    switch_floor_callback(Game.area_map.previous_floor_stairs)
+    def next_floor(self):
+        self.game.current_floor += 1
+        self.load_next_floors_area_map()
+        self.place_player_in_floor(self.game.area_map.previous_floor_stairs)
+        self.refresh_renderer()
 
+    def previous_floor(self):
+        self.game.current_floor -= 1
+        self.load_next_floors_area_map()
+        self.place_player_in_floor(self.game.area_map.next_floor_stairs)
+        self.refresh_renderer()
 
-def previous_floor_callback():
-    Game.current_floor -= 1
-    load_proper_area_map()
-    switch_floor_callback(Game.area_map.next_floor_stairs)
+    def base_update(self):
+        if self.game.renderer.recompute_fov:
+            if (self.game.player.x, self.game.player.y) == self.game.area_map.next_floor_stairs:
+                self.next_floor()
+            elif (self.game.player.x, self.game.player.y) == self.game.area_map.previous_floor_stairs:
+                self.previous_floor()
+        self.game.renderer.render()
 
+    def update(self, delta_time):
+        self.base_update()
+        if self.game.current_turn is self.game.player:
+            pass
+        else:  # it's everyone else's turn
+            self.take_enemy_turns()
 
-def base_update():
-    if Game.renderer.recompute_fov:
-        if (Game.player.x, Game.player.y) == Game.area_map.next_floor_stairs:
-            next_floor_callback()
-        elif (Game.player.x, Game.player.y) == Game.area_map.previous_floor_stairs:
-            previous_floor_callback()
-    Game.renderer.render()
+    def take_enemy_turns(self):
+        for e in self.game.area_map.entities:
+            self.game.ai_system.take_turn(e)
 
+        self.game.current_turn = self.game.player
 
-def update_callback(delta_time):
-    base_update()
-    if Game.current_turn is Game.player:
-        pass
-    else:  # it's everyone else's turn
-        enemy_turn_callback()
-
-
-def enemy_turn_callback():
-    for e in Game.area_map.entities:
-        Game.ai_system.take_turn(e)
-
-    Game.current_turn = Game.player
-
-    skills = Game.skill_system.get(Game.player)
-    skills.restore_skill_points(config.data.player.skillPointsPerTurn)
+        skills = self.game.skill_system.get(self.game.player)
+        skills.restore_skill_points(config.data.player.skillPointsPerTurn)
 
 
 def quit_event(event):

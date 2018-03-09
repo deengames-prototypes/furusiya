@@ -1,4 +1,4 @@
-from model.keys.callbacks import update_callback, quit_event, mousemotion_event, base_update
+from model.keys.callbacks import quit_event, mousemotion_event, UpdateManager
 from model.keys.key_callbacks import *
 from model.keys.key_callbacks import whirlwind_callback, omnislash_callback, frost_bomb_callback, lance_charge_callback, \
     ruqya_callback
@@ -93,11 +93,13 @@ class KeyBinder:
 
     # Update
     def register_update(self, new_callback=None):
-        def update(delta_time):
-            base_update()
-            new_callback(delta_time)
+        update_manager = UpdateManager(Game)
 
-        callback = update if new_callback is not None else update_callback
+        def update(delta_time):
+            update_manager.base_update()
+            new_callback(delta_time, update_manager)
+
+        callback = update if new_callback is not None else update_manager.update
         setattr(self.game.ui.app, 'update', callback)
 
 
