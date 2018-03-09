@@ -5,12 +5,10 @@ from game import Game
 from model.config import config
 from model.helper_functions.message import message
 from model.components.ai.monster import StunnedMonster
+from model.weapons.base import Weapon
 
 
-class Hammer:
-    def __init__(self, owner):
-        self.owner = owner
-
+class Hammer(Weapon):
     def attack(self, target):
         if config.data.features.hammerKnocksBack and Game.ai_system.has(target):
             # The directional vector of knockback is (defender - attacker)
