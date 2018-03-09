@@ -77,6 +77,9 @@ class TestFrozenMonster:
         mock_ai.owner_fighter.max_hp = 1000
         yield mock_ai
 
+    def test_take_turn_stays_stunned_for_num_turns(self, ai):
+        TestStunnedMonster.test_take_turn_stays_stunned_for_num_turns(self, ai)
+
     def test_new_take_damage_strategy_kills_if_equal_half_health(self, ai):
         ai.owner_fighter.hp = 500
 
