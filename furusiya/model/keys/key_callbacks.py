@@ -156,6 +156,7 @@ def continuous_rest_callback(event):
             if turns_to_rest > 0:
                 if can_rest():
                     update_manager.take_enemy_turns()
+                    update_manager.restore_skill_points()
                     turns_to_rest -= 1
                     Game.player.rest()
                     Game.current_turn = None
