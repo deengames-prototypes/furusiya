@@ -42,7 +42,7 @@ def new_game():
         # generate map (at this point it's not drawn to the screen)
         generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
         generator = getattr(generators, generator_class_name, ForestGenerator)
-        generator(Game.area_map)
+        generator(Game.area_map).generate()
 
         Game.floors.append(Game.area_map)
 

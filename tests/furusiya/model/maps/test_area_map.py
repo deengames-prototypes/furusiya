@@ -23,7 +23,7 @@ class TestAreaMap:
     def test_place_on_random_ground_places_entity_on_random_ground(self):
         width, height = (50, 50)
         Game.area_map = AreaMap(width, height)
-        fg = DungeonGenerator(Game.area_map)
+        DungeonGenerator(Game.area_map).generate()
 
         e = GameObject(0, 0, 'a', 'test', (255, 0, 0))
         Game.area_map.place_on_random_ground(e)

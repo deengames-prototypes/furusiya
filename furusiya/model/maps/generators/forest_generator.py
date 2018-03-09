@@ -25,6 +25,8 @@ class ForestGenerator:
 
     def __init__(self, area_map):
         self._area_map = area_map
+
+    def generate(self):
         self._generate_trees()
         
         map_generator.generate_monsters(self._area_map,
