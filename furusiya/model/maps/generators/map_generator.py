@@ -9,13 +9,7 @@ import colors
 def generate_monsters(area_map, num_monsters):
     for i in range(num_monsters):
         # choose random spot for this monster
-        x = Game.random.randint(0, area_map.width)
-        y = Game.random.randint(0, area_map.width)
-
-        # only place it if the tile is not blocked
-        while not area_map.is_walkable(x, y):
-            x = Game.random.randint(0, area_map.width)
-            y = Game.random.randint(0, area_map.width)
+        x, y = area_map.get_random_walkable_tile()
             
         choice = Game.random.randint(0, 100)
         
@@ -39,13 +33,7 @@ def generate_monsters(area_map, num_monsters):
 def generate_items(area_map, num_items):
     for i in range(num_items):
         # choose random spot for this item
-        x = Game.random.randint(0, area_map.width)
-        y = Game.random.randint(0, area_map.width)
-
-        # only place it if the tile is not blocked
-        while not area_map.is_walkable(x, y):
-            x = Game.random.randint(0, area_map.width)
-            y = Game.random.randint(0, area_map.width)
+        x, y = area_map.get_random_walkable_tile()
 
         choice = Game.random.randint(0, 100)
         if choice < 35:  # 35%

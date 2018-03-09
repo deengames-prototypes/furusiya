@@ -134,6 +134,12 @@ class ForestGenerator:
     def place_stairs(self):
         if self._area_map.floor_num < config.data.numFloors:
             tile = self._area_map.get_random_walkable_tile()
-            self._area_map.stairs = tile
-            self._area_map.tiles[tile[0]][tile[1]].convert_to_ground(character='O', colour=colors.cyan,
-                                                                     dark_colour=colors.dark_cyan)
+            self._area_map.next_floor_stairs = tile
+            self._area_map.tiles[tile[0]][tile[1]].convert_to_ground(character='>', colour=colors.white,
+                                                                     dark_colour=colors.grey)
+
+        if self._area_map.floor_num > 1:
+            tile = self._area_map.get_random_walkable_tile()
+            self._area_map.previous_floor_stairs = tile
+            self._area_map.tiles[tile[0]][tile[1]].convert_to_ground(character='<', colour=colors.white,
+                                                                     dark_colour=colors.grey)

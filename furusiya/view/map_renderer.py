@@ -97,7 +97,9 @@ class MapRenderer:
         self._ui_adapter.panel.draw_str(10, 3, "SP: {}/{}".format(skill_component.skill_points,
                                                                   config.data.player.maxSkillPoints))
 
-        # show the horse's stats, if mounted
+        self._ui_adapter.panel.draw_str(11, 4, "FLOOR {}".format(Game.area_map.floor_num))
+
+        # show the horse's stats
         if config.data.stallion.enabled:
             self._ui_adapter.panel.draw_str(1, 4, "STALLION")
 
