@@ -2,5 +2,5 @@ class Weapon:
     def __init__(self, owner):
         self.owner = owner
 
-    def attack(self, game):
+    def attack(self, target, game):
         pass

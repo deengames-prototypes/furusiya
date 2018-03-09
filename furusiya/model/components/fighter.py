@@ -51,7 +51,7 @@ class Fighter(Component):
 
         # Regardless of damage, apply weapon effects
         if self.weapon:
-            self.weapon.attack(target)
+            self.weapon.attack(target, Game)
 
     def heal(self, amount):
         # heal by the given amount, without going over the maximum

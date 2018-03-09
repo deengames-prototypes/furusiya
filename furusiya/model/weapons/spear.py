@@ -1,6 +1,6 @@
-class Spear:
-    def __init__(self, owner):
-        self.owner = owner
+from model.weapons.base import Weapon
 
-    def attack(self):
+
+class Spear(Weapon):
+    def attack(self, target, game):
         pass
