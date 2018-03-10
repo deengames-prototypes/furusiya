@@ -69,7 +69,7 @@ class TestFighter:
         fighter.attack(bushslime)
 
         # Assert
-        fighter.weapon.attack.assert_called_with(bushslime, Game, recursion=True)
+        fighter.weapon.attack.assert_called_with(bushslime, Game, recurse=True)
 
     def test_heal_increases_health(self, fighter):
         self.test_take_damage_decreases_health(fighter)

@@ -34,7 +34,7 @@ class Fighter(Component):
         if self.hp <= 0:
             self.die()
 
-    def attack(self, target, damage_multiplier=1, is_critical=False, *, recursion=True):
+    def attack(self, target, damage_multiplier=1, is_critical=False, *, recurse=True):
         # a simple formula for attack damage
         target_fighter = Game.fighter_system.get(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
@@ -51,7 +51,7 @@ class Fighter(Component):
 
         # Regardless of damage, apply weapon effects
         if self.weapon:
-            self.weapon.attack(target, Game, recursion=recursion)
+            self.weapon.attack(target, Game, recurse=recurse)
 
     def heal(self, amount):
         # heal by the given amount, without going over the maximum

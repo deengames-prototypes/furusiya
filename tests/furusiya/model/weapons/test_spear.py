@@ -86,4 +86,4 @@ class TestSpear:
     def test_attack_pierces_enemies(self, spear, game, fighter, target, target2):
         spear.attack(target, game)
 
-        fighter.attack.assert_any_call(target2, recursion=False)
+        fighter.attack.assert_any_call(target2, recurse=False)

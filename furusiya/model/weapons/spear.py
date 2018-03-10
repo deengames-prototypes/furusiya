@@ -6,7 +6,7 @@ from model.config import config
 
 class Spear(Weapon):
     def attack(self, target, game, **kwargs):
-        if not kwargs.get('recursion', True):
+        if not kwargs.get('recurse', True):
             return
 
         dx = (target.x - self.owner.x) * config.data.weapons.spear.pierceRange
@@ -31,4 +31,4 @@ class Spear(Weapon):
                     and obj is not target
                     and game.fighter_system.has(obj)
                     and game.fighter_system.get(obj).hostile):
-                owner_fighter.attack(obj, recursion=False)
+                owner_fighter.attack(obj, recurse=False)
