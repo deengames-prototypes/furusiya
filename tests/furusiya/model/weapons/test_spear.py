@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from model.weapons import Spear
+from model.config import config
 
 
 class TestSpear:
@@ -22,14 +23,6 @@ class TestSpear:
     @pytest.fixture
     def immediate_target(self):
         yield self._get_target(x=6, y=5)
-
-    @pytest.fixture
-    def pierced_target(self):
-        yield self._get_target(x=7, y=5)
-
-    @pytest.fixture
-    def not_pierced_target(self):
-        yield self._get_target(x=8, y=5)
 
     @pytest.fixture
     def spear(self, fighter):
@@ -65,7 +58,7 @@ class TestSpear:
 
         assert not fighter.attack.called
 
-    def test_attack_ignores_target(self, spear, game, fighter, immediate_target):
+    def test_attack_doesnt_apply_pierce_to_immediate_target(self, spear, game, fighter, immediate_target):
         game.area_map.get_blocking_object_at = lambda x, y: immediate_target
 
         spear.attack(immediate_target, game)
@@ -87,9 +80,23 @@ class TestSpear:
 
         assert not fighter.attack.called
 
-    def test_attack_pierces_enemies(self, spear, game, fighter, immediate_target, pierced_target, not_pierced_target):
+    def test_attack_pierces_enemies(self, spear, game, fighter, immediate_target):
+        targetls = []
+
+        # minus two: to exclude spear owner and immediate target
+        # plus one: to circumvent end-inclusivity of range() function
+        # sum is minus one
+        pierce_range = config.data.weapons.spear.pierceRange - 1
+        for i in range(1, pierce_range):
+            targetls.append(self._get_target(immediate_target.x + i, immediate_target.y))
+        else:
+            # we don't need to add one to the x offset because range() is end-inclusive;
+            # it already doesn't include pierce_range itself
+            out_of_range_target = self._get_target(immediate_target.x + pierce_range, immediate_target.y)
+
         spear.attack(immediate_target, game)
 
-        fighter.attack.assert_any_call(pierced_target, recurse=False)
+        for e in targetls:
+            fighter.attack.assert_any_call(e, recurse=False)
         with pytest.raises(AssertionError):
-            fighter.attack.assert_any_call(not_pierced_target, recurse=False)
+            fighter.attack.assert_any_call(out_of_range_target, recurse=False)
