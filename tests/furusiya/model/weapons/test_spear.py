@@ -13,11 +13,11 @@ class TestSpear:
         yield Mock(hostile=False)
 
     @pytest.fixture
-    def target(self):
+    def immediate_target(self):
         yield Mock(x=6, y=5)
 
     @pytest.fixture
-    def target2(self):
+    def pierced_target(self):
         yield Mock(x=7, y=5)
 
     @pytest.fixture
@@ -25,19 +25,19 @@ class TestSpear:
         yield Spear(Mock(x=5, y=5))
 
     @pytest.fixture
-    def game(self, spear, fighter, target, target2):
+    def game(self, spear, fighter, immediate_target, pierced_target):
         game = Mock()
 
         self.fighter_dict.update({
             spear.owner: fighter,
-            target: Mock(hostile=True),
-            target2: Mock(hostile=True)
+            immediate_target: Mock(hostile=True),
+            pierced_target: Mock(hostile=True)
         })
 
         game.fighter_system.get.side_effect = lambda e: self.fighter_dict.get(e, Mock())
         game.fighter_system.has.return_value = True
 
-        entities = [spear.owner, target, target2]
+        entities = [spear.owner, immediate_target, pierced_target]
 
         def get_blocking_object_at(x, y):
             objects = [
@@ -54,36 +54,36 @@ class TestSpear:
 
         yield game
 
-    def test_attack_ignores_empty_tiles(self, spear, game, fighter, target):
+    def test_attack_ignores_empty_tiles(self, spear, game, fighter, immediate_target):
         game.area_map.get_blocking_object_at = lambda x, y: None
 
-        spear.attack(target, game)
+        spear.attack(immediate_target, game)
 
         assert not fighter.attack.called
 
-    def test_attack_ignores_target(self, spear, game, fighter, target):
-        game.area_map.get_blocking_object_at = lambda x, y: target
+    def test_attack_ignores_target(self, spear, game, fighter, immediate_target):
+        game.area_map.get_blocking_object_at = lambda x, y: immediate_target
 
-        spear.attack(target, game)
+        spear.attack(immediate_target, game)
 
         assert not fighter.attack.called
 
-    def test_attack_ignores_non_fighters(self, spear, game, fighter, target):
+    def test_attack_ignores_non_fighters(self, spear, game, fighter, immediate_target):
         game.fighter_system.has.return_value = False
 
-        spear.attack(target, game)
+        spear.attack(immediate_target, game)
 
         assert not fighter.attack.called
 
-    def test_attack_ignores_non_hostiles(self, spear, game, fighter, target, target2):
-        self.fighter_dict[target].hostile = False
-        self.fighter_dict[target2].hostile = False
+    def test_attack_ignores_non_hostiles(self, spear, game, fighter, immediate_target, pierced_target):
+        self.fighter_dict[immediate_target].hostile = False
+        self.fighter_dict[pierced_target].hostile = False
 
-        spear.attack(target, game)
+        spear.attack(immediate_target, game)
 
         assert not fighter.attack.called
 
-    def test_attack_pierces_enemies(self, spear, game, fighter, target, target2):
-        spear.attack(target, game)
+    def test_attack_pierces_enemies(self, spear, game, fighter, immediate_target, pierced_target):
+        spear.attack(immediate_target, game)
 
-        fighter.attack.assert_any_call(target2, recurse=False)
+        fighter.attack.assert_any_call(pierced_target, recurse=False)
