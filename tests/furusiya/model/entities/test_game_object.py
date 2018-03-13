@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from game import Game
 from model.components.base import Component
 from model.entities.game_object import GameObject
 
@@ -69,3 +70,13 @@ def test_replace_component(obj, comp):
 
     assert obj.get_component(comp) is new_instance
     assert len(obj._components) == 1
+
+
+def test_die_kills_entity(obj):
+    Game.area_map.entities.append(obj)
+
+    obj.die()
+
+    assert obj not in Game.area_map.entities
+    assert obj.name == ''
+    assert obj.blocks is False
