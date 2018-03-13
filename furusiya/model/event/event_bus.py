@@ -6,7 +6,7 @@ class EventBus:
         if not isinstance(self.events.get(event_name, None), list):
             self.events[event_name] = []
 
-    def tigger(self, event_name, *args, **kwargs):
+    def trigger(self, event_name, *args, **kwargs):
         self._ensure_exists(event_name)
 
         for callback in self.events[event_name]:
