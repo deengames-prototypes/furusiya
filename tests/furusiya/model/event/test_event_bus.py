@@ -1,16 +1,11 @@
 from unittest.mock import Mock
 
-import pytest
-
 from model.event.event_bus import EventBus
 
 
 class TestEventBus:
-    @pytest.fixture
-    def event_bus(self):
-        yield EventBus()
-
-    def test_bind_registers_event(self, event_bus):
+    def test_bind_registers_event(self):
+        event_bus = EventBus()
         event_name = 'event 1'
         callbacks = [Mock(), Mock(), Mock()]
 
@@ -19,7 +14,8 @@ class TestEventBus:
 
         assert event_bus.events[event_name] == callbacks
 
-    def test_unbind_unregisters_event(self, event_bus):
+    def test_unbind_unregisters_event(self):
+        event_bus = EventBus()
         event_name = 'event 1'
         callback = Mock()
         event_bus.bind(event_name, callback)
@@ -28,7 +24,8 @@ class TestEventBus:
 
         assert event_bus.events[event_name] == []
 
-    def test_trigger_triggers_event(self, event_bus):
+    def test_trigger_triggers_event(self):
+        event_bus = EventBus()
         event_name = 'event 1'
         callback = Mock()
         event_bus.bind(event_name, callback)
@@ -37,7 +34,8 @@ class TestEventBus:
 
         assert callback.called
 
-    def test_trigger_triggers_event_with_arguments(self, event_bus):
+    def test_trigger_triggers_event_with_arguments(self):
+        event_bus = EventBus()
         event_name = 'event 1'
         callback = Mock()
         args = [1, 'test', ';']
