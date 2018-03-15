@@ -1,3 +1,6 @@
+from model.systems.system import ComponentSystem
+import random
+
 class Game:
     instance = None
     _dont_pickle = {'ui', 'save_manager', 'keybinder', 'renderer'}
@@ -21,15 +24,15 @@ class Game:
         self.save_manager = None
         self.keybinder = None
 
-        self.fighter_system = None
-        self.ai_system = None
-        self.xp_system = None
-        self.skill_system = None
+        self.fighter_system = ComponentSystem()
+        self.ai_system = ComponentSystem()
+        self.xp_system = ComponentSystem()
+        self.skill_system = ComponentSystem()
 
         self.player = None
         self.stallion = None
 
-        self.random = None
+        self.random = random.Random()
         self.floors = []
         self.current_floor = 1
 

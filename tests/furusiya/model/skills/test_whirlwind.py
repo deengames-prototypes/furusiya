@@ -1,10 +1,10 @@
 from unittest.mock import Mock
 
-import math
-import pytest
-
 from game import Game
+import math
 from model.skills.whirlwind import Whirlwind
+from model.systems.system import ComponentSystem
+import pytest
 
 
 def _mock_factory(*args, fighter=None, **kwargs):
@@ -19,8 +19,7 @@ def _mock_factory(*args, fighter=None, **kwargs):
 def whirlwind():
     yield Whirlwind
 
-
-def test_process(whirlwind):
+def test_process(whirlwind):    
     player_fighter = Mock()
     player = _mock_factory(x=1, y=2, fighter=player_fighter)
 

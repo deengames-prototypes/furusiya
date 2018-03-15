@@ -2,6 +2,7 @@ from unittest.mock import Mock
 
 from game import Game
 from model.skills.lance_charge import LanceCharge
+from model.systems.system import ComponentSystem
 
 
 class TestLanceCharge:
@@ -11,6 +12,7 @@ class TestLanceCharge:
         mock_target = Mock()
         mock_config = Mock(damage=damage)
 
+        Game()
         Game.instance.fighter_system.set(mock_target, mock_fighter)
 
         LanceCharge.process(mock_target, mock_config)
