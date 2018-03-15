@@ -15,6 +15,7 @@ from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
+from model.event.event_bus import EventBus
 from model.key_binder import KeyBinder
 from model.maps import generators
 from model.maps.area_map import AreaMap
@@ -94,6 +95,8 @@ def init_game():
     seed = config.get("seed") or int(datetime.now().timestamp())
     Game.random = Random(seed)
     print("Seeding as universe #{}".format(seed))
+
+    Game.events = EventBus()
 
 
 def main_menu():

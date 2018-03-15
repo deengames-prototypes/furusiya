@@ -98,6 +98,11 @@
     "enemies": {
         "arrowDropsOnKill": 3,
         "randomlyWalkWhenOutOfSight": true,
+        "fire": {
+          "damage": 5,
+          "spreadChance": 10,
+          "selfExtinguishTurns": 4
+        },
         "bushslime": {
             "attack": 3,
             "defense": 3,

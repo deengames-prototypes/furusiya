@@ -119,3 +119,10 @@ class TestFighter:
 
         # Assert
         assert fighter.death_function.called
+
+    def test_die_calls_owner_die_if_death_function_not_defined(self, fighter):
+        fighter.death_function = None
+
+        fighter.die()
+
+        assert fighter.owner.die.called

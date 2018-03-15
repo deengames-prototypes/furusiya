@@ -53,6 +53,7 @@ class GameObject:
         if Game.area_map.is_walkable(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
+            Game.events.trigger('on_entity_move', self)
         else:
             return Game.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 
@@ -94,3 +95,9 @@ class GameObject:
     def clear(self):
         # erase the character that represents this object
         Game.ui.con.draw_str(self.x, self.y, ' ', self.color)
+
+    def die(self):
+        Game.area_map.entities.remove(self)
+        self.clear()
+        self.name = ''
+        self.blocks = False

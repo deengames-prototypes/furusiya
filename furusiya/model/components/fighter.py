@@ -77,3 +77,5 @@ class Fighter(Component):
         death_function = self.death_function
         if death_function is not None:
             death_function(self.owner)
+        else:
+            self.owner.die()
