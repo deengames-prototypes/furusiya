@@ -23,7 +23,7 @@ class Fire(GameObject):
         self.turns_passed_alight += 1
         if self.turns_passed_alight >= config.data.enemies.fire.selfExtinguishTurns:
             self.die()
-        if config.data.enemies.fire.spreadChance >= Game.random.randint(1, 100):
+        if config.data.enemies.fire.spreadProbability >= Game.random.randint(1, 100):
             dx, dy = Game.random.choice([DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT])
             created_fire = Fire(self.x + dx, self.y + dy)
             Game.area_map.entities.append(created_fire)

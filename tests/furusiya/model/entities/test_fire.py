@@ -56,7 +56,7 @@ class TestFire:
         assert fire.die.called
 
     def test_on_turn_passed_spreads_to_nearby_tiles(self, fire, monkeypatch):
-        monkeypatch.setattr(Game.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadChance))
+        monkeypatch.setattr(Game.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
 
         def append(e):
             assert fire.x == e.x or fire.y == e.y
