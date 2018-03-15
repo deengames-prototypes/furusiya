@@ -13,6 +13,7 @@ from game import Game
 from data.save_manager import SaveManager
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
+from model.entities.fire import Fire
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.event.event_bus import EventBus
@@ -52,6 +53,11 @@ def new_game():
     Game.area_map.place_on_random_ground(Game.player)
     if config.data.stallion.enabled:
         Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
+
+    Game.area_map.entities.append(Fire(Game.player.x + 1, Game.player.y + 1))
+    Game.area_map.entities.append(Fire(Game.player.x + 1, Game.player.y - 1))
+    Game.area_map.entities.append(Fire(Game.player.x - 1, Game.player.y + 1))
+    Game.area_map.entities.append(Fire(Game.player.x - 1, Game.player.y - 1))
 
     Game.game_state = 'playing'
     Game.inventory = []
