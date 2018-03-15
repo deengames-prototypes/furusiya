@@ -60,6 +60,19 @@ class TestInGameDecorator:
         passes_turn(mock_event)
         actual_function.assert_not_called()
 
+    def test_in_game_calls_on_turn_passed_event_on_event_bus_when_pass_turn_is_true(self):
+        Game()
+        Game.game_state = 'playing'
+        Game.player = Mock(x = 3, y = 38)
+        Game.current_turn = Game.player
+
+        Game.events = Mock()
+
+        ig = in_game(lambda e: None, pass_turn=True)
+        ig(Mock())
+
+        Game.events.trigger.assert_called_with('on_turn_pass')
+
 
 class TestSkillDecorator:
     @pytest.fixture
