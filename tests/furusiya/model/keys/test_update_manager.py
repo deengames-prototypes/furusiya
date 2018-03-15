@@ -1,9 +1,7 @@
-from unittest.mock import MagicMock
-
-import pytest
-
 from model.keys.update_manager import UpdateManager
-
+from game import Game
+import pytest
+from unittest.mock import Mock, MagicMock
 
 class TestUpdateManager:
     @pytest.fixture
@@ -143,3 +141,20 @@ class TestUpdateManager:
 
         assert game.renderer.reset.called
         assert game.renderer.refresh_all.called
+
+    def test_update_triggers_on_turn_passed_event_on_bus(self):
+        g = Game()
+        g.current_turn = 123 # not player, which is None
+        g.events = Mock()
+
+        u = UpdateManager(g)
+
+        do_nothing = lambda: None
+        # Stub/nullify some methods
+        u.base_update = do_nothing
+        u.take_enemy_turns = do_nothing
+        u.restore_skill_points = do_nothing
+
+        u.update(1)
+
+        g.events.trigger.assert_called_with('on_turn_pass')

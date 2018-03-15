@@ -17,7 +17,6 @@ def in_game(callback=None, *, pass_turn=False):
             if Game.instance.game_state == 'playing' and Game.instance.current_turn is Game.instance.player:
                 if pass_turn:
                     Game.instance.current_turn = None
-                    Game.instance.events.trigger('on_turn_pass')
                 callback(event)
 
         return _inner_function
