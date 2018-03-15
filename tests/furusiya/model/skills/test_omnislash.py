@@ -16,7 +16,7 @@ class TestOmniSlash:
     @pytest.fixture
     def player_fighter(self, player):
         fighter = Mock()
-        Game.fighter_system.set(player, fighter)
+        Game.instance.fighter_system.set(player, fighter)
         yield fighter
 
     @pytest.fixture
@@ -26,7 +26,7 @@ class TestOmniSlash:
     @pytest.fixture
     def monster_fighter(self, monster):
         fighter = Mock()
-        Game.fighter_system.set(monster, fighter)
+        Game.instance.fighter_system.set(monster, fighter)
         yield fighter
 
     @pytest.fixture
@@ -46,7 +46,7 @@ class TestOmniSlash:
 
     def test_slash_hits_extra_hits(self, player, player_fighter, monster, monster_fighter, conf):
         # set random seed for deterministic extra hits
-        Game.random.seed(2)
+        Game.instance.random.seed(2)
         conf.probabilityOfAnotherHit = 50
 
         # Act

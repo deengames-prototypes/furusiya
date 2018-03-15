@@ -10,7 +10,7 @@ from model.skills.whirlwind import Whirlwind
 def _mock_factory(*args, fighter=None, **kwargs):
     fighter = fighter or Mock()
     m = Mock(*args, **kwargs)
-    Game.fighter_system.set(m, fighter)
+    Game.instance.fighter_system.set(m, fighter)
     m.distance.side_effect = lambda x, y: math.sqrt((x - m.x) ** 2 + (y - m.y) ** 2)
     return m
 

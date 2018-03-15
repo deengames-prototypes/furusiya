@@ -14,7 +14,7 @@ class RandomWalker:
             (self.parent.x + x_offset, self.parent.y + y_offset)
             for x_offset, y_offset in (DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT)
         ]
-        Game.random.shuffle(adjacent_tiles)
+        Game.instance.random.shuffle(adjacent_tiles)
 
         for tile_x, tile_y in adjacent_tiles:
             if self.area_map.is_walkable(tile_x, tile_y):

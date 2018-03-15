@@ -73,10 +73,10 @@ def test_replace_component(obj, comp):
 
 
 def test_die_kills_entity(obj):
-    Game.area_map.entities.append(obj)
+    Game.instance.area_map.entities.append(obj)
 
     obj.die()
 
-    assert obj not in Game.area_map.entities
+    assert obj not in Game.instance.area_map.entities
     assert obj.name == ''
     assert obj.blocks is False

@@ -14,23 +14,23 @@ MONSTER_XP = 50
 def monster():
     obj = GameObject(2, 2, 's', 'scary monster', (0, 0, 0), blocks=True)
 
-    Game.xp_system.set(obj, Mock(xp=MONSTER_XP))
-    Game.fighter_system.set(obj, Mock())
-    Game.ai_system.set(obj, Mock())
+    Game.instance.xp_system.set(obj, Mock(xp=MONSTER_XP))
+    Game.instance.fighter_system.set(obj, Mock())
+    Game.instance.ai_system.set(obj, Mock())
 
     yield obj
 
 
 @pytest.fixture
 def player():
-    Game.xp_system.set(Game.player, XPComponent(Game.player))
-    Game.keybinder = Mock()
+    Game.instance.xp_system.set(Game.instance.player, XPComponent(Game.instance.player))
+    Game.instance.keybinder = Mock()
 
-    yield Game.player
+    yield Game.instance.player
 
 
 def test_monster_death_marks_monster_as_dead(monster, player):
-    playerxp = Game.xp_system.get(player)
+    playerxp = Game.instance.xp_system.get(player)
     old_xp = playerxp.xp
 
     monster_death(monster)
@@ -41,16 +41,16 @@ def test_monster_death_marks_monster_as_dead(monster, player):
 
     assert new_xp > old_xp
 
-    assert not Game.fighter_system.has(monster)
-    assert not Game.ai_system.has(monster)
+    assert not Game.instance.fighter_system.has(monster)
+    assert not Game.instance.ai_system.has(monster)
 
 
 def test_player_death_affects_game_state(player):
-    Game.game_state = 'playing'
+    Game.instance.game_state = 'playing'
 
     player_death(player)
 
-    assert Game.game_state == 'dead'
+    assert Game.instance.game_state == 'dead'
     assert player.char == '%'
 
 
@@ -60,5 +60,5 @@ def test_horse_death_removes_components(monster):
     assert monster.char == '%'
     assert monster.blocks is False
 
-    assert not Game.fighter_system.has(monster)
-    assert not Game.ai_system.has(monster)
+    assert not Game.instance.fighter_system.has(monster)
+    assert not Game.instance.ai_system.has(monster)

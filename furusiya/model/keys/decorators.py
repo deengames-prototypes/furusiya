@@ -14,10 +14,10 @@ def in_game(callback=None, *, pass_turn=False):
     def decorator(callback):
         @wraps(callback)
         def _inner_function(event):
-            if Game.game_state == 'playing' and Game.current_turn is Game.player:
+            if Game.instance.game_state == 'playing' and Game.instance.current_turn is Game.instance.player:
                 if pass_turn:
-                    Game.current_turn = None
-                    Game.events.trigger('on_turn_pass')
+                    Game.instance.current_turn = None
+                    Game.instance.events.trigger('on_turn_pass')
                 callback(event)
 
         return _inner_function
@@ -50,7 +50,7 @@ def horse_skill(callback=None, *, cost=0):
         @wraps(callback)
         def _inner_function(event):
             if can_use_horse_skill(cost):
-                if Game.stallion.is_mounted:
+                if Game.instance.stallion.is_mounted:
                     callback(event)
                 else:
                     message("You can only use this skill on a horse!", colors.dark_red)

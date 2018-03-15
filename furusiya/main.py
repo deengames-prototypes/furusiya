@@ -28,59 +28,61 @@ from view.map_renderer import MapRenderer
 
 def new_game():
 
-    Game.fighter_system = ComponentSystem()
-    Game.xp_system = ComponentSystem()
-    Game.skill_system = ComponentSystem()
-    Game.ai_system = AISystem()
+    Game.instance.fighter_system = ComponentSystem()
+    Game.instance.xp_system = ComponentSystem()
+    Game.instance.skill_system = ComponentSystem()
+    Game.instance.ai_system = AISystem()
 
-    Game.player = Player()
+    Game.instance.player = Player()
     if config.data.stallion.enabled:
-        Game.stallion = Stallion(Game.player)
+        Game.instance.stallion = Stallion(Game.instance.player)
 
     for i in range(1, config.data.numFloors + 1):
-        Game.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
+        Game.instance.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
 
         # generate map (at this point it's not drawn to the screen)
         generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
         generator = getattr(generators, generator_class_name, ForestGenerator)
-        generator(Game.area_map).generate()
+        generator(Game.instance.area_map).generate()
 
-        Game.floors.append(Game.area_map)
+        Game.instance.floors.append(Game.instance.area_map)
 
-    Game.area_map = Game.floors[Game.current_floor-1]
+    Game.instance.area_map = Game.instance.floors[Game.instance.current_floor-1]
 
-    Game.area_map.place_on_random_ground(Game.player)
+    Game.instance.area_map.place_on_random_ground(Game.instance.player)
     if config.data.stallion.enabled:
-        Game.area_map.place_around(Game.stallion, Game.player.x, Game.player.y)
+        Game.instance.area_map.place_around(Game.instance.stallion, Game.instance.player.x, Game.instance.player.y)
 
-    Game.game_state = 'playing'
-    Game.inventory = []
+    Game.instance.game_state = 'playing'
+    Game.instance.inventory = []
 
     # create the list of game messages and their colors, starts empty
-    Game.game_messages = []
+    Game.instance.game_messages = []
 
     # a warm welcoming message!
     message('Another brave knight yearns to bring peace to the land.', colors.red)
 
     # Gain four levels
-    Game.xp_system.get(Game.player).gain_xp(40 + 80 + 160 + 320)
+    Game.instance.xp_system.get(Game.instance.player).gain_xp(40 + 80 + 160 + 320)
 
 
 def play_game():
-    Game.ui.clear()
-    Game.ui.blit_map_and_panel()
+    Game.instance.ui.clear()
+    Game.instance.ui.blit_map_and_panel()
 
-    Game.mouse_coord = (0, 0)
-    Game.renderer = MapRenderer(Game.player, Game.ui)
-    Game.renderer.recompute_fov = True
-    Game.renderer.refresh_all()
+    Game.instance.mouse_coord = (0, 0)
+    Game.instance.renderer = MapRenderer(Game.instance.player, Game.instance.ui)
+    Game.instance.renderer.recompute_fov = True
+    Game.instance.renderer.refresh_all()
 
-    Game.current_turn = Game.player
-    Game.ui.run()
+    Game.instance.current_turn = Game.instance.player
+    Game.instance.ui.run()
 
 
 def init_game():
-    Game.ui = TdlAdapter(
+    Game() # initializes Game.instance
+
+    Game.instance.ui = TdlAdapter(
         "Roguelike",
         screen=(SCREEN_WIDTH, SCREEN_HEIGHT),
         map=(MAP_WIDTH, MAP_HEIGHT),
@@ -88,33 +90,33 @@ def init_game():
         fps_limit=LIMIT_FPS
     )
 
-    Game.save_manager = SaveManager(Game)
-    Game.keybinder = KeyBinder(Game)
-    Game.keybinder.register_all_keybinds_and_events()
+    Game.instance.save_manager = SaveManager(Game)
+    Game.instance.keybinder = KeyBinder(Game)
+    Game.instance.keybinder.register_all_keybinds_and_events()
 
     seed = config.get("seed") or int(datetime.now().timestamp())
-    Game.random = Random(seed)
+    Game.instance.random = Random(seed)
     print("Seeding as universe #{}".format(seed))
 
-    Game.events = EventBus()
+    Game.instance.events = EventBus()
 
 
 def main_menu():
     init_game()
     img = image_load('menu_background.png')
 
-    while not Game.ui.event_closed():
+    while not Game.instance.ui.event_closed():
         # show the background image, at twice the regular console resolution
-        img.blit_2x(Game.ui.root, 0, 0)
+        img.blit_2x(Game.instance.ui.root, 0, 0)
 
         # show the game's title, and some credits!
         title = 'FURUSIYA'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.ui.draw_root(center, SCREEN_HEIGHT // 2 - 4, title, colors.light_yellow)
+        Game.instance.ui.draw_root(center, SCREEN_HEIGHT // 2 - 4, title, colors.light_yellow)
 
         title = 'By nightblade9 and NegativeScript'
         center = (SCREEN_WIDTH - len(title)) // 2
-        Game.ui.draw_root(center, SCREEN_HEIGHT - 2, title, colors.light_yellow)
+        Game.instance.ui.draw_root(center, SCREEN_HEIGHT - 2, title, colors.light_yellow)
 
         # show options and wait for the player's choice
         choice = create_menu('', ['Play a new game', 'Continue last game', 'Quit'], 24)
@@ -124,7 +126,7 @@ def main_menu():
             play_game()
         if choice == 1:  # load last game
             try:
-                Game.save_manager.load()
+                Game.instance.save_manager.load()
             except Exception as e:
                 message_box('\n No saved game to load.\n', 24)
                 continue

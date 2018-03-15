@@ -9,26 +9,26 @@ class Fire(GameObject):
     def __init__(self, x, y):
         super().__init__(x, y, '*', 'Fire', colors.red, blocks=False)
 
-        Game.events.bind('on_entity_move', self.on_entity_move)
-        Game.events.bind('on_turn_pass', self.on_turn_passed)
+        Game.instance.events.bind('on_entity_move', self.on_entity_move)
+        Game.instance.events.bind('on_turn_pass', self.on_turn_passed)
 
         self.turns_passed_alight = 0
 
     def on_entity_move(self, entity):
         if (entity.x, entity.y) == (self.x, self.y):
-            Game.fighter_system.get(entity).take_damage(config.data.enemies.fire.damage)
+            Game.instance.fighter_system.get(entity).take_damage(config.data.enemies.fire.damage)
             self.die()
 
     def on_turn_passed(self):
         self.turns_passed_alight += 1
         if self.turns_passed_alight >= config.data.enemies.fire.selfExtinguishTurns:
             self.die()
-        if config.data.enemies.fire.spreadProbability >= Game.random.randint(1, 100):
-            dx, dy = Game.random.choice([DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT])
+        if config.data.enemies.fire.spreadProbability >= Game.instance.random.randint(1, 100):
+            dx, dy = Game.instance.random.choice([DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT])
             created_fire = Fire(self.x + dx, self.y + dy)
-            Game.area_map.entities.append(created_fire)
+            Game.instance.area_map.entities.append(created_fire)
 
     def die(self):
         super().die()
-        Game.events.unbind('on_entity_move', self.on_entity_move)
-        Game.events.unbind('on_turn_pass', self.on_turn_passed)
+        Game.instance.events.unbind('on_entity_move', self.on_entity_move)
+        Game.instance.events.unbind('on_turn_pass', self.on_turn_passed)

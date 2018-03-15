@@ -42,7 +42,7 @@ class AreaMap:
         return self.is_on_map(x, y) and not self.tiles[x][y].block_sight
 
     def get_random_tile(self):
-        return Game.random.randint(0, self.width), Game.random.randint(0, self.height)
+        return Game.instance.random.randint(0, self.width), Game.instance.random.randint(0, self.height)
 
     def get_random_walkable_tile(self):
         while True:

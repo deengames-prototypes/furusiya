@@ -14,19 +14,19 @@ class BasicMonster(AbstractAI):
     def _take_turn(self):
         # a basic monster takes its turn. If you can see it, it can see you
         monster = self.owner
-        if (monster.x, monster.y) in Game.renderer.visible_tiles:
+        if (monster.x, monster.y) in Game.instance.renderer.visible_tiles:
 
             # move towards player if far away
-            if monster.distance_to(Game.player) >= 2:
-                monster.move_towards(Game.player.x, Game.player.y)
+            if monster.distance_to(Game.instance.player) >= 2:
+                monster.move_towards(Game.instance.player.x, Game.instance.player.y)
 
             # close enough, attack! (if the player is still alive.)
-            elif Game.fighter_system.get(Game.player).hp > 0:
-                Game.fighter_system.get(monster).attack(Game.player)
+            elif Game.instance.fighter_system.get(Game.instance.player).hp > 0:
+                Game.instance.fighter_system.get(monster).attack(Game.instance.player)
 
         else:
             if config.data.enemies.randomlyWalkWhenOutOfSight:
-                RandomWalker(Game.area_map, monster).walk()
+                RandomWalker(Game.instance.area_map, monster).walk()
 
 
 class StunnedMonster(AbstractAI):
@@ -49,7 +49,7 @@ class StunnedMonster(AbstractAI):
 class FrozenMonster(StunnedMonster):
     def __init__(self, owner, num_turns=None):
         super().__init__(owner, num_turns or config.data.skills.frostbomb.turnsToThaw)
-        self.owner_fighter = Game.fighter_system.get(owner)
+        self.owner_fighter = Game.instance.fighter_system.get(owner)
 
         self.owner_fighter.take_damage_strategy = self.new_take_damage_strategy
 
@@ -69,7 +69,7 @@ class ConfusedMonster(AbstractAI):
     """
     def __init__(self, owner, num_turns=None):
         super().__init__(owner, num_turns or CONFUSE_NUM_TURNS)
-        self.walker = RandomWalker(Game.area_map, owner)
+        self.walker = RandomWalker(Game.instance.area_map, owner)
 
     def _take_turn(self):
         if self.num_turns > 0:  # still confused...

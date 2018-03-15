@@ -50,12 +50,12 @@ class GameObject:
 
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked
-        if Game.area_map.is_walkable(self.x + dx, self.y + dy):
+        if Game.instance.area_map.is_walkable(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
-            Game.events.trigger('on_entity_move', self)
+            Game.instance.events.trigger('on_entity_move', self)
         else:
-            return Game.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
+            return Game.instance.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 
     def move_towards(self, target_x, target_y):
         # vector from this object to the target, and distance
@@ -82,22 +82,22 @@ class GameObject:
     def send_to_back(self):
         # make this object be drawn first, so all others appear above it if
         # they're in the same tile.
-        if self in Game.area_map.entities:
-            Game.area_map.entities.remove(self)
-        Game.area_map.entities.insert(0, self)
+        if self in Game.instance.area_map.entities:
+            Game.instance.area_map.entities.remove(self)
+        Game.instance.area_map.entities.insert(0, self)
 
     def draw(self):
         # only show if it's visible to the player
-        if (self.x, self.y) in Game.renderer.visible_tiles:
+        if (self.x, self.y) in Game.instance.renderer.visible_tiles:
             # draw the character that represents this object at its position
-            Game.ui.con.draw_str(self.x, self.y, self.char, self.color)
+            Game.instance.ui.con.draw_str(self.x, self.y, self.char, self.color)
 
     def clear(self):
         # erase the character that represents this object
-        Game.ui.con.draw_str(self.x, self.y, ' ', self.color)
+        Game.instance.ui.con.draw_str(self.x, self.y, ' ', self.color)
 
     def die(self):
-        Game.area_map.entities.remove(self)
+        Game.instance.area_map.entities.remove(self)
         self.clear()
         self.name = ''
         self.blocks = False

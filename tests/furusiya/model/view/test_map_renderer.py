@@ -19,7 +19,7 @@ PANEL_HEIGHT = 7
 
 class TestMapRenderer(unittest.TestCase):
     def setUp(self):
-        Game.game_messages = []
+        Game.instance.game_messages = []
 
     def test_render_marks_current_fov_as_explored(self):
         map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
@@ -48,9 +48,9 @@ class TestMapRenderer(unittest.TestCase):
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
         renderer = MapRenderer(player, tdl_adapter)
-        Game.area_map = map
-        Game.renderer = renderer
-        Game.ui = tdl_adapter
+        Game.instance.area_map = map
+        Game.instance.renderer = renderer
+        Game.instance.ui = tdl_adapter
         renderer.render()
 
         # Just check straight horizontal/vertical, as per our expectation
@@ -81,9 +81,9 @@ class TestMapRenderer(unittest.TestCase):
 
         renderer = MapRenderer(player, tdl_adapter)
         self.assertTrue(renderer.recompute_fov)
-        Game.area_map = map
-        Game.renderer = renderer
-        Game.ui = tdl_adapter
+        Game.instance.area_map = map
+        Game.instance.renderer = renderer
+        Game.instance.ui = tdl_adapter
         renderer.render()  # calls calculate_fov
         
         self.assertFalse(renderer.recompute_fov)        

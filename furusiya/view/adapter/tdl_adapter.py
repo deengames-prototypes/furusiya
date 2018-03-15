@@ -59,8 +59,8 @@ class TdlAdapter:
     def wait_for(self, event, *, flush=True, condition=lambda i: True):
         while True:
             if flush:
-                if Game.renderer is not None:
-                    Game.renderer.render()
+                if Game.instance.renderer is not None:
+                    Game.instance.renderer.render()
                 else:
                     self.flush()
 

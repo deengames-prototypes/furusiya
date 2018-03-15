@@ -12,7 +12,7 @@ class TestRestoreSkillPoints:
     @pytest.fixture()
     def skill_component(self):
         skill_component = SkillComponent(Mock(), 50)
-        Game.skill_system.set(Game.player, skill_component)
+        Game.instance.skill_system.set(Game.instance.player, skill_component)
         yield skill_component
 
     def test_restore_skill_points_restores_skill_points(self, skill_component):

@@ -18,7 +18,7 @@ def create_menu(header, options, width):
     height = len(options) + header_height
 
     # create an off-screen console that represents the menu's window
-    window = Game.ui.managed_console(width, height)
+    window = Game.instance.ui.managed_console(width, height)
 
     # print the header, with wrapped text
     window.draw_rect(0, 0, width, height, None, fg=colors.white)
@@ -37,9 +37,9 @@ def create_menu(header, options, width):
     x = SCREEN_WIDTH // 2 - width // 2
     y = SCREEN_HEIGHT // 2 - height // 2
 
-    Game.ui.blit_at(window, x, y, width, height, 0, 0, bg_alpha=0.7)
-    key = Game.ui.wait_for_key()
-    Game.ui.unblit(window)
+    Game.instance.ui.blit_at(window, x, y, width, height, 0, 0, bg_alpha=0.7)
+    key = Game.instance.ui.wait_for_key()
+    Game.instance.ui.unblit(window)
 
     key_char = key.text
     if key_char == '':
@@ -58,14 +58,14 @@ def message_box(text, width=50):
 
 def inventory_menu(header):
     # show a menu with each item of the inventory as an option
-    if len(Game.inventory) == 0:
+    if len(Game.instance.inventory) == 0:
         options = ['Inventory is empty.']
     else:
-        options = [item.name for item in Game.inventory]
+        options = [item.name for item in Game.instance.inventory]
 
     index = create_menu(header, options, INVENTORY_WIDTH)
 
     # if an item was chosen, return it
-    if index is None or len(Game.inventory) == 0:
+    if index is None or len(Game.instance.inventory) == 0:
         return None
-    return Game.inventory[index].get_component(Item)
+    return Game.instance.inventory[index].get_component(Item)

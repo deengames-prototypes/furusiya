@@ -22,13 +22,13 @@ class TestAreaMap:
 
     def test_place_on_random_ground_places_entity_on_random_ground(self):
         width, height = (50, 50)
-        Game.area_map = AreaMap(width, height)
-        DungeonGenerator(Game.area_map).generate()
+        Game.instance.area_map = AreaMap(width, height)
+        DungeonGenerator(Game.instance.area_map).generate()
 
         e = GameObject(0, 0, 'a', 'test', (255, 0, 0))
-        Game.area_map.place_on_random_ground(e)
+        Game.instance.area_map.place_on_random_ground(e)
         
-        assert Game.area_map.tiles[e.x][e.y].is_walkable is True
+        assert Game.instance.area_map.tiles[e.x][e.y].is_walkable is True
 
     def test_is_walkable_returns_true_for_empty_ground_within_bounds(self, basic_map):
         basic_map.tiles[0][0].is_walkable = False

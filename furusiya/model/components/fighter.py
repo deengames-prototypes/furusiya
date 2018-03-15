@@ -36,7 +36,7 @@ class Fighter(Component):
 
     def attack(self, target, damage_multiplier=1, is_critical=False, *, recurse=True):
         # a simple formula for attack damage
-        target_fighter = Game.fighter_system.get(target)
+        target_fighter = Game.instance.fighter_system.get(target)
         damage = int(self.power * damage_multiplier) - target_fighter.defense
 
         msg = f'{self.owner.name.capitalize()} attacks {target.name}'
@@ -61,7 +61,7 @@ class Fighter(Component):
 
     def die(self):
         # Drop arrows if it's a monster
-        if config.data.features.limitedArrows and Game.ai_system.has(self.owner):
+        if config.data.features.limitedArrows and Game.instance.ai_system.has(self.owner):
             num_arrows = config.data.enemies.arrowDropsOnKill
             arrows = item_factory.create_item(
                 self.owner.x, self.owner.y,
@@ -70,7 +70,7 @@ class Fighter(Component):
                 colors.brass
             )
 
-            Game.area_map.entities.append(arrows)
+            Game.instance.area_map.entities.append(arrows)
             arrows.send_to_back()
 
         # if there's a death function, call it

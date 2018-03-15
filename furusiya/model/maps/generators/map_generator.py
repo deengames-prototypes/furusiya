@@ -11,7 +11,7 @@ def generate_monsters(area_map, num_monsters):
         # choose random spot for this monster
         x, y = area_map.get_random_walkable_tile()
             
-        choice = Game.random.randint(0, 100)
+        choice = Game.instance.random.randint(0, 100)
         
         if choice <= 55: 
             name = 'bushslime'
@@ -35,7 +35,7 @@ def generate_items(area_map, num_items):
         # choose random spot for this item
         x, y = area_map.get_random_walkable_tile()
 
-        choice = Game.random.randint(0, 100)
+        choice = Game.instance.random.randint(0, 100)
         if choice < 35:  # 35%
             char = '!'
             name = 'healing potion'

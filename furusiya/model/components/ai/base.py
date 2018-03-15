@@ -30,7 +30,7 @@ class AbstractAI(Component):
                 return
             # Else, continue on setting it anyway
 
-        Game.ai_system.set(self.owner, other)
+        Game.instance.ai_system.set(self.owner, other)
         self.other = other
 
         other.take_turn = self.temporary_take_turn
@@ -40,5 +40,5 @@ class AbstractAI(Component):
             self.other._take_turn()
         else:
             self.other.cleanup()
-            Game.ai_system.set(self.owner, self)
+            Game.instance.ai_system.set(self.owner, self)
             self.take_turn()

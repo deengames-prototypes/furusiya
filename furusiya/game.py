@@ -1,23 +1,10 @@
-class GameMetaClass(type):
-    def __new__(mcs, class_name, bases, dct):
-        cls = type.__new__(mcs, class_name, bases, dct)
-        cls._instance = cls()
-        return cls
-
-    def __getattr__(cls, item):
-        return cls._instance.__dict__.get(item)
-
-    def __setattr__(cls, key, value):
-        if key == '_instance':
-            super().__setattr__(key, value)
-        cls._instance.__setattr__(key, value)
-
-
-class Game(metaclass=GameMetaClass):
-    _instance = None
+class Game:
+    instance = None
     _dont_pickle = {'ui', 'save_manager', 'keybinder', 'renderer'}
 
     def __init__(self):
+        Game.instance = self
+
         self.inventory = []
         self.draw_bowsight = None
         self.mouse_coord = (0, 0)

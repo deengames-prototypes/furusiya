@@ -16,7 +16,7 @@ def test_process_freezes_enemies():
     area_map.entities = [*enemies_in_range] + [*enemies_out_of_range] + [player]
 
     for entity in area_map.entities:
-        Game.fighter_system.set(entity, Mock())
+        Game.instance.fighter_system.set(entity, Mock())
 
     ai_system = ComponentSystem()
 

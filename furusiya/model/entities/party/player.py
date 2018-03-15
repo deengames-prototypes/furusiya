@@ -19,7 +19,7 @@ class Player(GameObject):
         weapon_name = data.startingWeapon
         weapon_init = getattr(model.weapons, weapon_name)
 
-        Game.fighter_system.set(
+        Game.instance.fighter_system.set(
             self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
@@ -30,7 +30,7 @@ class Player(GameObject):
             )
         )
 
-        Game.xp_system.set(
+        Game.instance.xp_system.set(
             self, XPComponent(
                 owner=self,
                 xp=0,
@@ -39,7 +39,7 @@ class Player(GameObject):
             )
         )
 
-        Game.skill_system.set(
+        Game.instance.skill_system.set(
             self, SkillComponent(
                 owner=self,
                 max_skill_points=config.data.player.maxSkillPoints
@@ -47,7 +47,7 @@ class Player(GameObject):
             )
         )
 
-        Game.draw_bowsight = False
+        Game.instance.draw_bowsight = False
 
         self.arrows = config.data.player.startingArrows
 
@@ -81,12 +81,12 @@ class Player(GameObject):
         return int(config.data.skills.resting.percent/100 * max_hp)
 
     def rest(self):
-        fighter = Game.fighter_system.get(self)
+        fighter = Game.instance.fighter_system.get(self)
         hp_gained = self._get_health_for_resting(fighter.max_hp)
         fighter.heal(hp_gained)
 
     def calculate_turns_to_rest(self):
-        fighter = Game.fighter_system.get(self)
+        fighter = Game.instance.fighter_system.get(self)
         turns_to_rest = int((fighter.max_hp - fighter.hp) / self._get_health_for_resting(fighter.max_hp))
 
         return turns_to_rest
@@ -98,8 +98,8 @@ class Player(GameObject):
         y = self.y + dy
 
         # try to find an attackable object there
-        target = Game.area_map.get_blocking_object_at(x, y)
-        if target is not None and Game.fighter_system.has(target) and Game.fighter_system.get(target).hostile:
+        target = Game.instance.area_map.get_blocking_object_at(x, y)
+        if target is not None and Game.instance.fighter_system.has(target) and Game.instance.fighter_system.get(target).hostile:
             self.attack(target)
         else:
             self.move(dx, dy)
@@ -107,12 +107,12 @@ class Player(GameObject):
                 if self.moves_while_mounted >= 1:
                     self.moves_while_mounted = 0
                 else:
-                    Game.current_turn = self
+                    Game.instance.current_turn = self
                     self.moves_while_mounted += 1
-                Game.stallion.x, Game.stallion.y = self.x, self.y
-            Game.renderer.recompute_fov = True
+                Game.instance.stallion.x, Game.instance.stallion.y = self.x, self.y
+            Game.instance.renderer.recompute_fov = True
             return
 
     def attack(self, target):
-        player_fighter = Game.fighter_system.get(self)
+        player_fighter = Game.instance.fighter_system.get(self)
         player_fighter.attack(target)

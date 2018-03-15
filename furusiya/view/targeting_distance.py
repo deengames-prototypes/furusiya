@@ -8,15 +8,15 @@ def target_tile(max_range=None):
     """
     def get_tile(event):
         if event.button == 'LEFT':
-            if (event.cell in Game.renderer.visible_tiles and
-                    (max_range is None or Game.player.distance(*event.cell) <= max_range)):
+            if (event.cell in Game.instance.renderer.visible_tiles and
+                    (max_range is None or Game.instance.player.distance(*event.cell) <= max_range)):
                 return event.cell
         elif event.button == 'RIGHT':
             return None, None
 
     tile = None
     while tile is None:
-        mousedown_event = Game.ui.wait_for_mouse()
+        mousedown_event = Game.instance.ui.wait_for_mouse()
         tile = get_tile(mousedown_event)
 
     return tile
@@ -32,6 +32,6 @@ def target_monster(max_range=None):
             return None
 
         # return the first clicked monster, otherwise continue looping
-        for obj in Game.area_map.entities:
-            if obj.x == x and obj.y == y and Game.fighter_system.get(obj) and obj != Game.player:
+        for obj in Game.instance.area_map.entities:
+            if obj.x == x and obj.y == y and Game.instance.fighter_system.get(obj) and obj != Game.instance.player:
                 return obj

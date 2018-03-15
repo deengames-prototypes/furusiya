@@ -11,7 +11,7 @@ class TestLanceCharge:
         mock_target = Mock()
         mock_config = Mock(damage=damage)
 
-        Game.fighter_system.set(mock_target, mock_fighter)
+        Game.instance.fighter_system.set(mock_target, mock_fighter)
 
         LanceCharge.process(mock_target, mock_config)
 

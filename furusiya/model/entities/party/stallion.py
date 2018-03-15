@@ -14,8 +14,8 @@ class Stallion(GameObject):
 
         data = config.data.stallion
 
-        Game.ai_system.set(self, StallionAi(self))
-        Game.fighter_system.set(
+        Game.instance.ai_system.set(self, StallionAi(self))
+        Game.instance.fighter_system.set(
             self, Fighter(
                 owner=self,
                 hp=data.startingHealth,
@@ -25,7 +25,7 @@ class Stallion(GameObject):
             )
         )
 
-        Game.skill_system.set(
+        Game.instance.skill_system.set(
             self, SkillComponent(
                 owner=self,
                 max_skill_points=config.data.stallion.maxSkillPoints

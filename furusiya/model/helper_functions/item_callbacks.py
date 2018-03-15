@@ -10,7 +10,7 @@ from model.components.ai.monster import ConfusedMonster
 
 def cast_heal():
     # heal the player
-    player_fighter = Game.fighter_system.get(Game.player)
+    player_fighter = Game.instance.fighter_system.get(Game.instance.player)
     if player_fighter.hp == player_fighter.max_hp:
         message('You are already at full health.', colors.red)
         return 'cancelled'
@@ -31,7 +31,7 @@ def cast_lightning():
             'thunder! The damage is ' + str(LIGHTNING_DAMAGE) + ' hit points.',
             colors.light_blue)
 
-    Game.fighter_system.get(monster).take_damage(LIGHTNING_DAMAGE)
+    Game.instance.fighter_system.get(monster).take_damage(LIGHTNING_DAMAGE)
 
 
 def cast_confuse():
@@ -45,7 +45,7 @@ def cast_confuse():
 
     # replace the monster's AI with a "confused" one; after some turns it will
     # restore the old AI
-    Game.ai_system.get(monster).temporarily_switch_to(ConfusedMonster(monster))
+    Game.instance.ai_system.get(monster).temporarily_switch_to(ConfusedMonster(monster))
     message('The eyes of the ' + monster.name + ' look vacant, as he starts to ' +
             'stumble around!', colors.light_green)
 
@@ -62,8 +62,8 @@ def cast_fireball():
     message('The fireball explodes, burning everything within ' +
             str(FIREBALL_RADIUS) + ' tiles!', colors.orange)
 
-    for obj in Game.area_map.entities:  # damage every fighter in range, including the player
-        obj_fighter = Game.fighter_system.get(obj)
+    for obj in Game.instance.area_map.entities:  # damage every fighter in range, including the player
+        obj_fighter = Game.instance.fighter_system.get(obj)
         if obj.distance(x, y) <= FIREBALL_RADIUS and obj_fighter:
             message('The ' + obj.name + ' gets burned for ' +
                     str(FIREBALL_DAMAGE) + ' hit points.', colors.orange)
@@ -72,7 +72,7 @@ def cast_fireball():
 
 
 def restore_skill_points():
-    skill_component = Game.skill_system.get(Game.player)
+    skill_component = Game.instance.skill_system.get(Game.instance.player)
 
     if skill_component.skill_points == config.data.player.maxSkillPoints:
         message("You already feel great and ready for action.", colors.red)
