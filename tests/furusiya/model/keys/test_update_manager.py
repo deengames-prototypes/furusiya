@@ -1,7 +1,8 @@
-from model.keys.update_manager import UpdateManager
 from game import Game
+from model.entities.party.player import Player
+from model.keys.update_manager import UpdateManager
 import pytest
-from unittest.mock import Mock, MagicMock
+from unittest.mock import MagicMock, Mock
 
 class TestUpdateManager:
     @pytest.fixture

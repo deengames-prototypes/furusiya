@@ -1,4 +1,5 @@
 from model.config import config
+from game import Game
 
 class UpdateManager:
     def __init__(self, game):

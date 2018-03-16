@@ -13,6 +13,7 @@ from game import Game
 from data.save_manager import SaveManager
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
+from model.entities.fire import Fire
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.event.event_bus import EventBus
