@@ -20,7 +20,7 @@ class Stallion(GameObject):
                 owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
-                power=data.startingPower,
+                damage=data.startingDamage,
                 death_function=horse_death
             )
         )

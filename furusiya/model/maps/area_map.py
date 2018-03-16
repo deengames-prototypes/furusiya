@@ -1,3 +1,4 @@
+from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.maps.map_tile import MapTile
 from model.rect import Rect
@@ -60,12 +61,18 @@ class AreaMap:
         return self.entities.index(entity)
 
     def get_walkable_tile_within(self, rect):
-        for tile_x in range(rect.x1, rect.x2):
-            for tile_y in range(rect.y1, rect.y2):
-                if self.is_walkable(tile_x, tile_y):
-                    return tile_x, tile_y
+        all_tiles_around_range = [
+            (tile_x, tile_y)
+            for tile_x in range(rect.x1, rect.x2)
+            for tile_y in range(rect.y1, rect.y2)
+            if self.is_walkable(tile_x, tile_y)
+        ]
 
-        return None
+        if all_tiles_around_range:
+            tile = Game.instance.random.choice(all_tiles_around_range)
+            return tile
+        else:
+            return None
 
     def get_walkable_tile_around(self, x, y, range_num):
         """
@@ -99,6 +106,19 @@ class AreaMap:
         for obj in self.entities:
             if obj.blocks and (obj.x, obj.y) == (x, y):
                 return obj
+
+        return None
+
+    def mutate_position_if_walkable(self, x, y):
+        adjacent_tiles = [
+            (x + x_offset, y + y_offset)
+            for x_offset, y_offset in (DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT)
+        ]
+        Game.instance.random.shuffle(adjacent_tiles)
+
+        for tile_x, tile_y in adjacent_tiles:
+            if self.is_walkable(tile_x, tile_y):
+                return tile_x, tile_y
 
         return None
 

@@ -1,3 +1,4 @@
+from model.event.event_bus import EventBus
 from model.systems.system import ComponentSystem
 import random
 
@@ -35,6 +36,7 @@ class Game:
 
         self.random = random.Random()
         self.floors = []
+        self.event_busses = []
         self.current_floor = 1
 
-        self.event_bus = None
+        self.event_bus = EventBus()

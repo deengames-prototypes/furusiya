@@ -17,7 +17,7 @@
     "player": {
         "startingHealth": 30,
         "startingDefense": 2,
-        "startingPower": 6,
+        "startingDamage": 6,
 
         "maxSkillPoints": 50,
         "skillPointsPerTurn": 2,
@@ -33,7 +33,7 @@
         "enabled": true,
         "startingHealth": 40,
         "startingDefense": 5,
-        "startingPower": 10,
+        "startingDamage": 10,
         "maxSkillPoints": 50
     },
     "skills": {
@@ -100,8 +100,8 @@
         "randomlyWalkWhenOutOfSight": true,
         "fire": {
           "damage": 5,
-          "spreadProbability": 10,
-          "selfExtinguishTurns": 4
+          "spreadProbability": 5,
+          "selfExtinguishTurns": 3
         },
         "bushslime": {
             "attack": 3,
@@ -127,7 +127,8 @@
             "health": 8,
             "xp": 35,
             "shootsFire": true,
-            "firesPerTurn": 0.5
+            "firesPerTurn": 0.5,
+            "fireRange": 5
         }
     },
     "skillsOnLevelUp": {

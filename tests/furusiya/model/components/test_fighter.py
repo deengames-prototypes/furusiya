@@ -60,7 +60,7 @@ class TestFighter:
 
     def test_attack_doesnt_decrease_health_if_power_is_not_sufficient(self, fighter, bushslime, bushslime_fighter):
         old_hp = bushslime_fighter.hp
-        fighter.power = 1
+        fighter.damage = 1
 
         # Act
         fighter.attack(bushslime)
@@ -124,11 +124,5 @@ class TestFighter:
         fighter.die()
 
         # Assert
+        assert fighter.owner.cleanup.called
         assert fighter.death_function.called
-
-    def test_die_calls_owner_die_if_death_function_not_defined(self, fighter):
-        fighter.death_function = None
-
-        fighter.die()
-
-        assert fighter.owner.die.called

@@ -9,6 +9,7 @@ from model.entities.party.player import Player
 class TestDungeonGenerator:
     @pytest.fixture
     def dg(self):
+        Game()
         Game.instance.area_map = AreaMap(80, 43)
         Game.instance.player = Player()
         Game.instance.area_map.place_on_random_ground(Game.instance.player)

@@ -8,6 +8,7 @@ from model.maps.area_map import AreaMap
 
 class TestForestGenerator(unittest.TestCase):
     def test_generate_generates_trees(self):
+        Game()
         width, height = (10, 10)
         expected_num_trees = math.floor(ForestGenerator.TREE_PERCENTAGE * width * height)
 
@@ -28,7 +29,7 @@ class TestForestGenerator(unittest.TestCase):
         self.assertTrue(x for x in num_trees_set if x >= expected_num_trees)
 
     def test_generate_fills_holes(self):
-        
+        Game()
         # Generate a bunch of trees with a known seed that generates holes.
         # This is fragile, but there's no other way to test this.
         # This is valuable, because there's a ton of code/complexity behind
@@ -52,6 +53,7 @@ class TestForestGenerator(unittest.TestCase):
         self.assertGreater(actual_num_trees, pre_fill_num_trees)
 
     def test_generate_generates_monsters(self):
+        Game()
         width, height = 15, 15
         Game.instance.area_map = AreaMap(width, height)
         fg = ForestGenerator(Game.instance.area_map)

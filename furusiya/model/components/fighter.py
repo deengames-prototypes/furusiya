@@ -10,12 +10,12 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None, hostile=False):
+    def __init__(self, owner, hp, defense, damage, weapon=None, death_function=None, hostile=False):
         super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
-        self.power = power
+        self.damage = damage
         self.death_function = death_function
         self.weapon = weapon
         self.bow_crits = 0
@@ -37,7 +37,7 @@ class Fighter(Component):
     def attack(self, target, damage_multiplier=1, is_critical=False, *, recurse=True):
         # a simple formula for attack damage
         target_fighter = Game.instance.fighter_system.get(target)
-        damage = int(self.power * damage_multiplier) - target_fighter.defense
+        damage = self.calculate_damage(damage_multiplier, target_fighter)
 
         msg = f'{self.owner.name.capitalize()} attacks {target.name}'
         if damage > 0:
@@ -52,6 +52,9 @@ class Fighter(Component):
         # Regardless of damage, apply weapon effects
         if self.weapon:
             self.weapon.attack(target, Game.instance, recurse=recurse)
+
+    def calculate_damage(self, damage_multiplier, target_fighter):
+        return int(self.damage * damage_multiplier) - target_fighter.defense
 
     def heal(self, amount):
         # heal by the given amount, without going over the maximum
@@ -74,8 +77,8 @@ class Fighter(Component):
             arrows.send_to_back()
 
         # if there's a death function, call it
-        death_function = self.death_function
-        if death_function is not None:
-            death_function(self.owner)
+        if self.death_function is not None:
+            self.owner.cleanup()
+            self.death_function(self.owner)
         else:
-            self.owner.die()
+            self.owner.default_death_function()
