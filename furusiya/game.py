@@ -28,6 +28,7 @@ class Game:
         self.ai_system = ComponentSystem()
         self.xp_system = ComponentSystem()
         self.skill_system = ComponentSystem()
+        self.item_system = ComponentSystem()
 
         self.player = None
         self.stallion = None

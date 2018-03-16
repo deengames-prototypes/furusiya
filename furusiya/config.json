@@ -126,10 +126,11 @@
             "defense": 2,
             "health": 8,
             "xp": 35,
-            "shootsFire": true
+            "shootsFire": true,
+            "firesPerTurn": 0.5
         }
     },
-    "skillsOnLevelUp": {  // TO BE REMOVED, PROTOTYPE ONLY
+    "skillsOnLevelUp": {
         "2": "omnislash",
         "3": "whirlwind",
         "4": "ruqya",

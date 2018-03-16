@@ -3,7 +3,6 @@ import textwrap
 import colors
 from constants import INVENTORY_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT
 from game import Game
-from model.item import Item
 
 
 def create_menu(header, options, width):
@@ -68,4 +67,4 @@ def inventory_menu(header):
     # if an item was chosen, return it
     if index is None or len(Game.instance.inventory) == 0:
         return None
-    return Game.instance.inventory[index].get_component(Item)
+    return Game.instance.item_system.get(Game.instance.inventory[index])
