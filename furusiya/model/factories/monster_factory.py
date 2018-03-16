@@ -14,7 +14,7 @@ def create_monster(data, x, y, colour, name, cls):
             owner=monster,
             hp=data.health,
             defense=data.defense,
-            power=data.attack,
+            damage=data.attack,
             death_function=monster_death,
             hostile=True
         )

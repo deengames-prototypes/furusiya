@@ -60,7 +60,7 @@ class TestFighter:
 
     def test_attack_doesnt_decrease_health_if_power_is_not_sufficient(self, fighter, bushslime, bushslime_fighter):
         old_hp = bushslime_fighter.hp
-        fighter.power = 1
+        fighter.damage = 1
 
         # Act
         fighter.attack(bushslime)

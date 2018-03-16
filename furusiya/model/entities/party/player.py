@@ -24,7 +24,7 @@ class Player(GameObject):
                 owner=self,
                 hp=data.startingHealth,
                 defense=data.startingDefense,
-                power=data.startingPower,
+                damage=data.startingDamage,
                 weapon=weapon_init(self),
                 death_function=player_death
             )

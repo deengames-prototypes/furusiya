@@ -10,12 +10,12 @@ class Fighter(Component):
     """
     combat-related properties and methods (monster, player, NPC).
     """
-    def __init__(self, owner, hp, defense, power, weapon=None, death_function=None, hostile=False):
+    def __init__(self, owner, hp, defense, damage, weapon=None, death_function=None, hostile=False):
         super().__init__(owner)
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
-        self.power = power
+        self.damage = damage
         self.death_function = death_function
         self.weapon = weapon
         self.bow_crits = 0
@@ -37,7 +37,7 @@ class Fighter(Component):
     def attack(self, target, damage_multiplier=1, is_critical=False, *, recurse=True):
         # a simple formula for attack damage
         target_fighter = Game.instance.fighter_system.get(target)
-        damage = int(self.power * damage_multiplier) - target_fighter.defense
+        damage = int(self.damage * damage_multiplier) - target_fighter.defense
 
         msg = f'{self.owner.name.capitalize()} attacks {target.name}'
         if damage > 0:
