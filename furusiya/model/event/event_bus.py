@@ -6,7 +6,7 @@ class EventBus:
 
         events = {
             owner: {
-                'on_turn_passed': [
+                'on_turn_pass': [
                     <callback 1>,
                     <callback 2>
                 ],
@@ -16,7 +16,7 @@ class EventBus:
                 ]
             },
             'default_owner': {  # event definitions not related to a specific entity
-                'on_turn_passed': [
+                'on_turn_pass': [
                     <callback 1>
                 ]
             }
@@ -36,7 +36,7 @@ class EventBus:
             self.events[owner][event_name] = []
 
     def trigger(self, event_name, *args, **kwargs):
-        for event_ls in self.events.values():
+        for event_ls in self.events.copy().values():
             if event_ls.get(event_name, None) is not None:
                 for callback in event_ls[event_name]:
                     callback(*args, **kwargs)

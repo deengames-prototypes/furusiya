@@ -16,8 +16,10 @@ class Fire(GameObject):
 
     def on_entity_move(self, entity):
         if (entity.x, entity.y) == (self.x, self.y):
-            Game.instance.fighter_system.get(entity).take_damage(config.data.enemies.fire.damage)
-            self.die()
+            fighter = Game.instance.fighter_system.get(entity)
+            if fighter is not None:
+                fighter.take_damage(config.data.enemies.fire.damage)
+                self.die()
 
     def on_turn_passed(self):
         self.turns_passed_alight += 1
