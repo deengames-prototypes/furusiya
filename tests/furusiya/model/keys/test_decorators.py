@@ -60,23 +60,11 @@ class TestInGameDecorator:
         passes_turn(mock_event)
         actual_function.assert_not_called()
 
-    def test_in_game_calls_on_turn_passed_event_on_event_bus_when_pass_turn_is_true(self):
-        Game()
-        Game.instance.game_state = 'playing'
-        Game.instance.player = Mock(x = 3, y = 38)
-        Game.instance.current_turn = Game.instance.player
-
-        Game.instance.events = Mock()
-
-        ig = in_game(lambda e: None, pass_turn=True)
-        ig(Mock())
-
-        Game.instance.events.trigger.assert_called_with('on_turn_pass')
-
-
 class TestSkillDecorator:
     @pytest.fixture
     def skill_component(self):
+        Game()
+        Game.instance.skill_system.set(Game.instance.player, SkillComponent(Game.instance.player, max_skill_points = 50))
         yield Game.instance.skill_system.get(Game.instance.player)
 
     def test_skill_calls_callback_when_sufficient_skill_points(self, skill_component):

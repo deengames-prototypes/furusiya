@@ -1,4 +1,5 @@
 from game import Game
+from model.entities.party.player import Player
 from model.skills.omnislash import OmniSlash
 import pytest
 import random
@@ -7,14 +8,12 @@ from unittest.mock import Mock
 class TestOmniSlash:
     guaranteed_hits, rehit_percent = 2, 50
 
-    @pytest.fixture
-    def player(self):
-        yield Mock()
 
     @pytest.fixture
     def player_fighter(self, player):
         fighter = Mock()
         Game.instance.fighter_system.set(player, fighter)
+        Game.instance.player = player
         yield fighter
 
     @pytest.fixture

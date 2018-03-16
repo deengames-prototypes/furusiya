@@ -54,7 +54,8 @@ class TestSaveManager:
         os.remove('savegame')
 
     def test_load_loads_saved_game_without_raising(self):
-        save_manager = SaveManager(Game)
+        Game()
+        save_manager = SaveManager(Game.instance)
         save_manager.save()
         save_manager.load()
         os.remove('savegame')        

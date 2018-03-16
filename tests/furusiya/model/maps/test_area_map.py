@@ -2,6 +2,7 @@ import pytest
 
 from game import Game
 from model.entities.game_object import GameObject
+from model.entities.party.player import Player
 from model.maps.area_map import AreaMap
 from model.maps.generators import DungeonGenerator
 from model.rect import Rect
@@ -21,6 +22,9 @@ class TestAreaMap:
         yield basic_map
 
     def test_place_on_random_ground_places_entity_on_random_ground(self):
+        Game()
+        Game.instance.player = Player()
+
         width, height = (50, 50)
         Game.instance.area_map = AreaMap(width, height)
         DungeonGenerator(Game.instance.area_map).generate()

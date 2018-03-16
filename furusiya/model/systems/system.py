@@ -9,7 +9,8 @@ class ComponentSystem:
         self.component_dict[owner] = component
 
     def remove(self, owner):
-        del self.component_dict[owner]
+        if owner in self.component_dict:
+            del self.component_dict[owner] 
 
     def get(self, owner):
         return self.component_dict.get(owner, None)

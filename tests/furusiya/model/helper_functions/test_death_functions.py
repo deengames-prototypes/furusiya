@@ -1,14 +1,13 @@
-from unittest.mock import Mock
-
-import pytest
-
 from game import Game
 from model.components.xp import XPComponent
+from model.maps.area_map import AreaMap
 from model.entities.game_object import GameObject
+from model.entities.party.player import Player
 from model.helper_functions.death_functions import monster_death, player_death, horse_death
+import pytest
+from unittest.mock import Mock
 
 MONSTER_XP = 50
-
 
 @pytest.fixture
 def monster():
@@ -30,11 +29,13 @@ def player():
 
 
 def test_monster_death_marks_monster_as_dead(monster, player):
-    playerxp = Game.instance.xp_system.get(player)
-    old_xp = playerxp.xp
+    Game()
+    Game.instance.player = player
+    player_xp = Game.instance.xp_system.get(player)
+    old_xp = player_xp.xp
 
     monster_death(monster)
-    new_xp = playerxp.xp
+    new_xp = player_xp.xp
 
     assert monster.char == '%'
     assert monster.blocks is False
@@ -46,6 +47,8 @@ def test_monster_death_marks_monster_as_dead(monster, player):
 
 
 def test_player_death_affects_game_state(player):
+    Game()
+    Game.instance.player = player
     Game.instance.game_state = 'playing'
 
     player_death(player)
@@ -55,6 +58,9 @@ def test_player_death_affects_game_state(player):
 
 
 def test_horse_death_removes_components(monster):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.area_map = AreaMap(10, 10)
     horse_death(monster)
 
     assert monster.char == '%'
