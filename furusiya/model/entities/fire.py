@@ -1,5 +1,4 @@
 import colors
-from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.entities.game_object import GameObject
 from model.config import config
@@ -26,6 +25,7 @@ class Fire(GameObject):
         if self.turns_passed_alight >= config.data.enemies.fire.selfExtinguishTurns:
             self.die()
         if config.data.enemies.fire.spreadProbability >= Game.instance.random.randint(1, 100):
-            dx, dy = Game.instance.random.choice([DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT])
-            created_fire = Fire(self.x + dx, self.y + dy)
-            Game.instance.area_map.entities.append(created_fire)
+            tile = Game.instance.area_map.mutate_position_if_walkable(self.x, self.y)
+            if tile is not None:
+                created_fire = Fire(*tile)
+                Game.instance.area_map.entities.append(created_fire)

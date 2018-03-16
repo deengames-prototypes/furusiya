@@ -29,6 +29,7 @@ class TestFire:
     def game(self):
         old_map = Game.instance.area_map
         Game.instance.area_map = Mock()
+        Game.instance.area_map.mutate_position_if_walkable.side_effect = lambda x, y: (x + 1, y)
         yield
         Game.instance.area_map = old_map
 
