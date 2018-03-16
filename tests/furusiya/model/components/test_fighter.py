@@ -5,7 +5,9 @@ import pytest
 from game import Game
 from model.components.fighter import Fighter
 from model.config import config
+from model.entities.party.player import Player
 from model.factories import item_factory
+from model.maps.area_map import AreaMap
 
 def setup_module(module):
     Game()

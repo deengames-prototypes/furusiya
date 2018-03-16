@@ -1,11 +1,14 @@
+from game import Game
+from model.config import config
+from model.entities.fire import Fire
+from model.event.event_bus import EventBus
+import pytest
 from unittest.mock import Mock
 
-import pytest
-
-from game import Game
-from model.entities.fire import Fire
-from model.config import config
-
+def setup_module(module):
+    Game()
+    Game.instance.events = EventBus()
+    Game.instance.ui = Mock()
 
 class TestFire:
     @pytest.fixture

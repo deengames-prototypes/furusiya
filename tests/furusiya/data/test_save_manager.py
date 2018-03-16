@@ -28,12 +28,14 @@ class TestSaveManager:
         monkeypatch.setattr(pickle, 'load', m.load)
         yield m
 
-    def test_save_saves_game(self, save_manager, patched_pickle):
+    def test_save_saves_game(self, patched_pickle):
+        save_manager = SaveManager(MockGame())
         save_manager.save()
 
         assert patched_pickle.dump.called
 
-    def test_load_loads_game(self, save_manager, patched_pickle):
+    def test_load_loads_game(self, patched_pickle):
+        save_manager = SaveManager(MockGame())
         save_manager.save()
         save_manager.load()
 

@@ -1,10 +1,8 @@
-from unittest.mock import Mock
-
-import pytest
-
 from game import Game
 from model.keys.decorators import in_game, skill
-
+from model.components.skill import SkillComponent
+import pytest
+from unittest.mock import Mock
 
 class TestInGameDecorator:
     @pytest.fixture(autouse=True, scope='class')
