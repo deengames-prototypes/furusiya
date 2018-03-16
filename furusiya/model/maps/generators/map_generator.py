@@ -1,4 +1,6 @@
 from game import Game
+from model.entities.enemies.salamander import Salamander
+from model.entities.game_object import GameObject
 from model.helper_functions import item_callbacks
 from model.config import config
 from model.factories import item_factory
@@ -8,22 +10,24 @@ import colors
 
 def generate_monsters(area_map, num_monsters):
     enemies = [
-        ('bushslime', config.data.enemies.bushslime, colors.desaturated_green),
-        ('steelhawk', config.data.enemies.steelhawk, colors.light_blue),
-        ('tigerslash', config.data.enemies.tigerslash, colors.orange)
+        ('bushslime', config.data.enemies.bushslime, colors.desaturated_green, GameObject),
+        ('steelhawk', config.data.enemies.steelhawk, colors.light_blue, GameObject),
+        ('tigerslash', config.data.enemies.tigerslash, colors.orange, GameObject),
+        ('salamander', config.data.enemies.salamander, colors.red, Salamander)
     ]
     probabilities = [
-        55,
+        45,
         30,
-        25
+        25,
+        10
     ]
 
     for i in range(num_monsters):
         # choose random spot for this monster
         x, y = area_map.get_random_walkable_tile()
-        name, data, colour = Game.instance.random.choices(enemies, weights=probabilities)[0]
+        name, data, colour, cls = Game.instance.random.choices(enemies, weights=probabilities)[0]
 
-        monster = monster_factory.create_monster(data, x, y, colour, name)
+        monster = monster_factory.create_monster(data, x, y, colour, name, cls)
         area_map.entities.append(monster)
 
 

@@ -120,6 +120,13 @@
             "defense": 0,
             "health": 10,
             "xp": 35
+        },
+        "salamander": {
+            "attack": 4,
+            "defense": 2,
+            "health": 8,
+            "xp": 35,
+            "shootsFire": true
         }
     },
     "skillsOnLevelUp": {  // TO BE REMOVED, PROTOTYPE ONLY
