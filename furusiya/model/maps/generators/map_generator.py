@@ -7,60 +7,46 @@ import colors
 
 
 def generate_monsters(area_map, num_monsters):
+    enemies = [
+        ('bushslime', config.data.enemies.bushslime, colors.desaturated_green),
+        ('steelhawk', config.data.enemies.steelhawk, colors.light_blue),
+        ('tigerslash', config.data.enemies.tigerslash, colors.orange)
+    ]
+    probabilities = [
+        55,
+        30,
+        25
+    ]
+
     for i in range(num_monsters):
         # choose random spot for this monster
         x, y = area_map.get_random_walkable_tile()
-            
-        choice = Game.instance.random.randint(0, 100)
-        
-        if choice <= 55: 
-            name = 'bushslime'
-            data = config.data.enemies.bushslime
-            colour = colors.desaturated_green
-        elif choice <= 55 + 30:
-            name = 'steelhawk'
-            data = config.data.enemies.steelhawk
-            colour = colors.light_blue
-        else:  # 15
-            name = 'tigerslash'
-            data = config.data.enemies.tigerslash
-            colour = colors.orange
+        name, data, colour = Game.instance.random.choices(enemies, weights=probabilities)[0]
 
         monster = monster_factory.create_monster(data, x, y, colour, name)
         area_map.entities.append(monster)
 
 
 def generate_items(area_map, num_items):
+    items = [
+        ('!', 'healing potion', colors.violet, item_callbacks.cast_heal),
+        ('$', 'skill potion', colors.violet, item_callbacks.restore_skill_points),
+        ('#', 'scroll of lightning bolt', colors.light_yellow, item_callbacks.cast_lightning),
+        ('#', 'scroll of fireball', colors.light_yellow, item_callbacks.cast_fireball),
+        ('#', 'scroll of confusion', colors.light_yellow, item_callbacks.cast_confuse)
+    ]
+    probabilities = [
+        35,
+        35,
+        10,
+        10,
+        10
+    ]
+
     for i in range(num_items):
         # choose random spot for this item
         x, y = area_map.get_random_walkable_tile()
-
-        choice = Game.instance.random.randint(0, 100)
-        if choice < 35:  # 35%
-            char = '!'
-            name = 'healing potion'
-            color = colors.violet
-            use_func = item_callbacks.cast_heal
-        elif choice < 35 + 35:  # 35%
-            char = '$'
-            name = 'skill potion'
-            color = colors.violet
-            use_func = item_callbacks.restore_skill_points
-        elif choice < 35 + 35 + 10:  # 10%
-            char = '#'
-            name = 'scroll of lightning bolt'
-            color = colors.light_yellow
-            use_func = item_callbacks.cast_lightning
-        elif choice < 35 + 35 + 10 + 10:  # 10%
-            char = '#'
-            name = 'scroll of fireball'
-            color = colors.light_yellow
-            use_func = item_callbacks.cast_fireball
-        else:  # 10
-            char = '#'
-            name = 'scroll of confusion'
-            color = colors.light_yellow
-            use_func = item_callbacks.cast_confuse
+        char, name, color, use_func = Game.instance.random.choices(items, weights=probabilities)[0]
 
         item = item_factory.create_item(x, y, char, name, color, use_func)
 
