@@ -147,3 +147,17 @@ class TestAreaMap:
 
         # Assert
         assert tile is None
+
+    def test_mutate_position_if_walkable_returns_tile_if_available(self, basic_map):
+        x, y = 2, 2
+
+        tile = basic_map.mutate_position_if_walkable(x, y)
+
+        assert basic_map.tiles[tile[0]][tile[1]].is_walkable
+
+    def test_mutate_position_if_walkable_returns_none_if_not_available(self, blocked_map):
+        x, y = 2, 2
+
+        tile = blocked_map.mutate_position_if_walkable(x, y)
+
+        assert tile is None

@@ -1,3 +1,4 @@
+from constants import DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT
 from game import Game
 from model.maps.map_tile import MapTile
 from model.rect import Rect
@@ -99,6 +100,19 @@ class AreaMap:
         for obj in self.entities:
             if obj.blocks and (obj.x, obj.y) == (x, y):
                 return obj
+
+        return None
+
+    def mutate_position_if_walkable(self, x, y):
+        adjacent_tiles = [
+            (x + x_offset, y + y_offset)
+            for x_offset, y_offset in (DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT)
+        ]
+        Game.instance.random.shuffle(adjacent_tiles)
+
+        for tile_x, tile_y in adjacent_tiles:
+            if self.is_walkable(tile_x, tile_y):
+                return tile_x, tile_y
 
         return None
 
