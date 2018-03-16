@@ -69,10 +69,3 @@ class TestFire:
         fire.on_turn_passed()
 
         assert Game.instance.area_map.entities.append.called
-
-    def test_die_unbinds_events(self, fire):
-        Game.instance.event_bus = Mock()
-
-        fire.die()
-
-        assert Game.instance.event_bus.unbind.called

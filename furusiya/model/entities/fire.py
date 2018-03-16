@@ -9,8 +9,8 @@ class Fire(GameObject):
     def __init__(self, x, y):
         super().__init__(x, y, '*', 'Fire', colors.red, blocks=False)
 
-        Game.instance.event_bus.bind('on_entity_move', self.on_entity_move)
-        Game.instance.event_bus.bind('on_turn_pass', self.on_turn_passed)
+        Game.instance.event_bus.bind('on_entity_move', self.on_entity_move, self)
+        Game.instance.event_bus.bind('on_turn_pass', self.on_turn_passed, self)
 
         self.turns_passed_alight = 0
 
@@ -27,8 +27,3 @@ class Fire(GameObject):
             dx, dy = Game.instance.random.choice([DELTA_UP, DELTA_DOWN, DELTA_LEFT, DELTA_RIGHT])
             created_fire = Fire(self.x + dx, self.y + dy)
             Game.instance.area_map.entities.append(created_fire)
-
-    def die(self):
-        super().die()
-        Game.instance.event_bus.unbind('on_entity_move', self.on_entity_move)
-        Game.instance.event_bus.unbind('on_turn_pass', self.on_turn_passed)
