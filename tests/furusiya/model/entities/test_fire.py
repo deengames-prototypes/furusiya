@@ -7,7 +7,7 @@ from unittest.mock import Mock
 
 def setup_module(module):
     Game()
-    Game.instance.events = EventBus()
+    Game.instance.event_bus = EventBus()
     Game.instance.ui = Mock()
 
 class TestFire:
@@ -71,8 +71,8 @@ class TestFire:
         assert Game.instance.area_map.entities.append.called
 
     def test_die_unbinds_events(self, fire):
-        Game.instance.events = Mock()
+        Game.instance.event_bus = Mock()
 
         fire.die()
 
-        assert Game.instance.events.unbind.called
+        assert Game.instance.event_bus.unbind.called

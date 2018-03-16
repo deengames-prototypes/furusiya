@@ -21,7 +21,7 @@ class GameObject:
         if Game.instance.area_map.is_walkable(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
-            Game.instance.events.trigger('on_entity_move', self)
+            Game.instance.event_bus.trigger('on_entity_move', self)
         else:
             return Game.instance.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 

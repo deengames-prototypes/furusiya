@@ -37,4 +37,4 @@ class Game:
         self.floors = []
         self.current_floor = 1
 
-        self.events = None
+        self.event_bus = None

@@ -146,7 +146,7 @@ class TestUpdateManager:
     def test_update_triggers_on_turn_passed_event_on_bus(self):
         g = Game()
         g.current_turn = 123 # not player, which is None
-        g.events = Mock()
+        g.event_bus = Mock()
 
         u = UpdateManager(g)
 
@@ -158,4 +158,4 @@ class TestUpdateManager:
 
         u.update(1)
 
-        g.events.trigger.assert_called_with('on_turn_pass')
+        g.event_bus.trigger.assert_called_with('on_turn_pass')

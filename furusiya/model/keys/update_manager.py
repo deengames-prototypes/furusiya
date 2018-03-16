@@ -1,5 +1,4 @@
 from model.config import config
-from game import Game
 
 class UpdateManager:
     def __init__(self, game):
@@ -12,7 +11,7 @@ class UpdateManager:
         else:  # it's everyone else's turn
             self.take_enemy_turns()
             self.restore_skill_points()
-            self.game.events.trigger('on_turn_pass')
+            self.game.event_bus.trigger('on_turn_pass')
 
     def take_enemy_turns(self):
         for e in self.game.area_map.entities:
