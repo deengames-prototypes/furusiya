@@ -77,8 +77,6 @@ class Fighter(Component):
             arrows.send_to_back()
 
         # if there's a death function, call it
-        death_function = self.death_function
-        if death_function is not None:
-            death_function(self.owner)
-        else:
-            self.owner.die()
+        self.owner.die()
+        if self.death_function is not None:
+            self.death_function(self.owner)
