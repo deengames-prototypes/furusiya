@@ -20,7 +20,9 @@ class Fire(GameObject):
             if fighter is not None:
                 damage = Fighter.calculate_damage(config.data.enemies.fire, 1, fighter)
                 fighter.take_damage(damage)
-                self.default_death_function()
+            else:
+                entity.default_death_function()
+            self.default_death_function()
 
     def on_turn_passed(self):
         self.turns_left_alight -= 1
@@ -35,3 +37,6 @@ class Fire(GameObject):
                 if not fire_on_tile:
                     created_fire = Fire(*tile)
                     Game.instance.area_map.entities.append(created_fire)
+
+                    if entities_on_tile:
+                        created_fire.on_entity_move(entities_on_tile[0])

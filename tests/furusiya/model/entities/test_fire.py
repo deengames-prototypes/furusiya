@@ -62,7 +62,9 @@ class TestFire:
         assert fire.cleanup.called
 
     def test_on_turn_passed_spreads_to_nearby_tiles(self, fire, monkeypatch):
+        Game.instance.area_map.reset_mock()
         monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
+        Game.instance.area_map.get_entities_on.return_value = []
 
         def append(e):
             assert fire.x == e.x or fire.y == e.y
@@ -81,3 +83,30 @@ class TestFire:
         fire.on_turn_passed()
 
         assert not Game.instance.area_map.entities.append.called
+
+    def test_on_turn_passed_immediately_destroys_non_fighter_entities_spread_upon(self, fire,  monkeypatch):
+        Game.instance.area_map.reset_mock()
+        monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
+
+        entity = Mock(x=fire.x, y=fire.y)
+        Game.instance.area_map.get_entities_on.return_value = [entity]
+        fire.default_death_function = Mock()
+
+        fire.on_turn_passed()
+
+        assert entity.default_death_function.called
+
+    def test_on_turn_passed_immediately_damages_fighter_entities_spread_upon(self, fire,  monkeypatch):
+        Game.instance.area_map.reset_mock()
+        monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
+
+        entity = Mock(x=fire.x, y=fire.y)
+        Game.instance.area_map.get_entities_on.return_value = [entity]
+        fire.default_death_function = Mock()
+
+        fighter = Mock(defense=1)
+        Game.instance.fighter_system.set(entity, fighter)
+
+        fire.on_turn_passed()
+
+        assert fighter.take_damage.called
