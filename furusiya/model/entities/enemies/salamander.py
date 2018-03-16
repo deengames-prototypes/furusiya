@@ -15,5 +15,6 @@ class Salamander(GameObject):
             self.spawn_fire()
 
     def spawn_fire(self):
-        x, y = Game.instance.area_map.get_walkable_tile_around(self.x, self.y, config.data.enemies.salamander.fireRange)
-        Game.instance.area_map.entities.append(Fire(x, y))
+        tile = Game.instance.area_map.get_walkable_tile_around(self.x, self.y, config.data.enemies.salamander.fireRange)
+        if tile is not None:
+            Game.instance.area_map.entities.append(Fire(*tile))
