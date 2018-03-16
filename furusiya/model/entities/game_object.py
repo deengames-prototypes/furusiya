@@ -66,6 +66,7 @@ class GameObject:
 
     def die(self):
         Game.instance.area_map.entities.remove(self)
+        Game.instance.event_bus.unregister(self)
         self.clear()
         self.name = ''
         self.blocks = False
