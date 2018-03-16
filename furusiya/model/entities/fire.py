@@ -20,12 +20,12 @@ class Fire(GameObject):
             if fighter is not None:
                 damage = Fighter.calculate_damage(config.data.enemies.fire, 1, fighter)
                 fighter.take_damage(damage)
-                self.die()
+                self.default_death_function()
 
     def on_turn_passed(self):
         self.turns_passed_alight += 1
         if self.turns_passed_alight >= config.data.enemies.fire.selfExtinguishTurns:
-            self.die()
+            self.default_death_function()
         if config.data.enemies.fire.spreadProbability >= Game.instance.random.randint(1, 100):
             tile = Game.instance.area_map.mutate_position_if_walkable(self.x, self.y)
             if tile is not None:

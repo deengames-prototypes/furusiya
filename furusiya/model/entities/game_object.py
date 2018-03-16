@@ -64,9 +64,12 @@ class GameObject:
         # erase the character that represents this object
         Game.instance.ui.con.draw_str(self.x, self.y, ' ', self.color)
 
-    def die(self):
+    def cleanup(self):
         Game.instance.area_map.entities.remove(self)
         Game.instance.event_bus.unregister(self)
+
+    def default_death_function(self):
+        self.cleanup()
         self.clear()
         self.name = ''
         self.blocks = False

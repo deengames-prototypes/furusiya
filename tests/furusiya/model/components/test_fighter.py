@@ -124,5 +124,5 @@ class TestFighter:
         fighter.die()
 
         # Assert
-        assert fighter.owner.die.called
+        assert fighter.owner.cleanup.called
         assert fighter.death_function.called
