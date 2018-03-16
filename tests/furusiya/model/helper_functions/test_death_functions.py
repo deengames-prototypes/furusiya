@@ -9,6 +9,13 @@ from unittest.mock import Mock
 
 MONSTER_XP = 50
 
+def setup_module(module):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.xp_system.set(Game.instance.player, XPComponent(Game.instance.player))
+    Game.instance.keybinder = Mock()
+    Game.instance.area_map = AreaMap(10, 10)
+
 @pytest.fixture
 def monster():
     obj = GameObject(2, 2, 's', 'scary monster', (0, 0, 0), blocks=True)
@@ -20,18 +27,10 @@ def monster():
     yield obj
 
 
-@pytest.fixture
-def player():
-    Game.instance.xp_system.set(Game.instance.player, XPComponent(Game.instance.player))
-    Game.instance.keybinder = Mock()
-
-    yield Game.instance.player
-
-
-def test_monster_death_marks_monster_as_dead(monster, player):
-    Game()
-    Game.instance.player = player
-    player_xp = Game.instance.xp_system.get(player)
+def test_monster_death_marks_monster_as_dead(monster):
+    Game.instance.area_map = AreaMap(10, 10)
+    
+    player_xp = Game.instance.xp_system.get(Game.instance.player)
     old_xp = player_xp.xp
 
     monster_death(monster)
@@ -46,21 +45,15 @@ def test_monster_death_marks_monster_as_dead(monster, player):
     assert not Game.instance.ai_system.has(monster)
 
 
-def test_player_death_affects_game_state(player):
-    Game()
-    Game.instance.player = player
+def test_player_death_affects_game_state():
     Game.instance.game_state = 'playing'
-
-    player_death(player)
+    player_death(Game.instance.player)
 
     assert Game.instance.game_state == 'dead'
-    assert player.char == '%'
+    assert Game.instance.player.char == '%'
 
 
 def test_horse_death_removes_components(monster):
-    Game()
-    Game.instance.player = Player()
-    Game.instance.area_map = AreaMap(10, 10)
     horse_death(monster)
 
     assert monster.char == '%'
