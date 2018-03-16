@@ -127,7 +127,8 @@
             "health": 8,
             "xp": 35,
             "shootsFire": true,
-            "firesPerTurn": 0.5
+            "firesPerTurn": 0.5,
+            "fireRange": 5
         }
     },
     "skillsOnLevelUp": {
