@@ -13,7 +13,6 @@ from game import Game
 from data.save_manager import SaveManager
 from model.helper_functions.menu import create_menu, message_box
 from model.helper_functions.message import message
-from model.entities.fire import Fire
 from model.entities.party.player import Player
 from model.entities.party.stallion import Stallion
 from model.event.event_bus import EventBus
@@ -40,6 +39,7 @@ def new_game():
 
     for i in range(1, config.data.numFloors + 1):
         Game.instance.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
+        Game.instance.event_bus = EventBus()
 
         # generate map (at this point it's not drawn to the screen)
         generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
@@ -47,8 +47,10 @@ def new_game():
         generator(Game.instance.area_map).generate()
 
         Game.instance.floors.append(Game.instance.area_map)
+        Game.instance.event_busses.append(Game.instance.event_bus)
 
     Game.instance.area_map = Game.instance.floors[Game.instance.current_floor-1]
+    Game.instance.event_bus = Game.instance.event_busses[Game.instance.current_floor-1]
 
     Game.instance.area_map.place_on_random_ground(Game.instance.player)
     if config.data.stallion.enabled:

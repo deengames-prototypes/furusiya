@@ -92,7 +92,7 @@ class TestUpdateManager:
         assert game.area_map != game.floors[game.current_floor - 1]
         old_area_map = game.area_map
 
-        update_man.load_next_floors_area_map()
+        update_man.load_next_floors_objects()
 
         assert game.area_map != old_area_map
 

@@ -36,6 +36,7 @@ class Game:
 
         self.random = random.Random()
         self.floors = []
+        self.event_busses = []
         self.current_floor = 1
 
         self.event_bus = EventBus()
