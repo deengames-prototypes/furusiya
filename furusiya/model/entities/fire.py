@@ -12,7 +12,7 @@ class Fire(GameObject):
         Game.instance.event_bus.bind('on_entity_move', self.on_entity_move, self)
         Game.instance.event_bus.bind('on_turn_pass', self.on_turn_passed, self)
 
-        self.turns_passed_alight = 0
+        self.turns_left_alight = config.data.enemies.fire.selfExtinguishTurns
 
     def on_entity_move(self, entity):
         if (entity.x, entity.y) == (self.x, self.y):
@@ -23,8 +23,8 @@ class Fire(GameObject):
                 self.default_death_function()
 
     def on_turn_passed(self):
-        self.turns_passed_alight += 1
-        if self.turns_passed_alight >= config.data.enemies.fire.selfExtinguishTurns:
+        self.turns_left_alight -= 1
+        if self.turns_left_alight <= 0:
             self.default_death_function()
         if config.data.enemies.fire.spreadProbability >= Game.instance.random.randint(1, 100):
             tile = Game.instance.area_map.mutate_position_if_walkable(self.x, self.y)
