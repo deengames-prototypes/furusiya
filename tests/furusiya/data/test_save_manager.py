@@ -28,30 +28,16 @@ class TestSaveManager:
         monkeypatch.setattr(pickle, 'load', m.load)
         yield m
 
-    @pytest.fixture
-    def save_manager(self):
-        yield SaveManager(MockGame())
-
     def test_save_saves_game(self, save_manager, patched_pickle):
         save_manager.save()
 
         assert patched_pickle.dump.called
 
     def test_load_loads_game(self, save_manager, patched_pickle):
+        save_manager.save()
         save_manager.load()
 
         assert patched_pickle.load.called
-
-    def test_round_trip_with_fake_game(self, save_manager):
-        save_manager.save()
-        save_manager.game.cool_attribute = False
-
-        save_manager.load()
-
-        assert save_manager.game.cool_attribute is True
-
-        # cleanup generated files
-        os.remove('savegame')
 
     def test_load_loads_saved_game_without_raising(self):
         Game()

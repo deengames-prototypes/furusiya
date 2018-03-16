@@ -1,11 +1,15 @@
-from unittest.mock import Mock
-
-import pytest
-
 from game import Game
 from model.components.ai.monster import BasicMonster, StunnedMonster, FrozenMonster, ConfusedMonster
 from model.config import config
+from model.entities.party.player import Player
+from model.maps.area_map import AreaMap
+import pytest
+from unittest.mock import Mock
 
+def setup_module(module):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.area_map = AreaMap(9, 9)
 
 class TestBasicMonster:
     @pytest.fixture

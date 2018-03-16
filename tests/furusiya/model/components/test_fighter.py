@@ -7,6 +7,10 @@ from model.components.fighter import Fighter
 from model.config import config
 from model.factories import item_factory
 
+def setup_module(module):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.area_map = AreaMap(9, 9)
 
 class TestFighter:
     @pytest.fixture
