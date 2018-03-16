@@ -5,8 +5,14 @@ import pytest
 from game import Game
 from model.components.fighter import Fighter
 from model.config import config
+from model.entities.party.player import Player
 from model.factories import item_factory
+from model.maps.area_map import AreaMap
 
+def setup_module(module):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.area_map = AreaMap(9, 9)
 
 class TestFighter:
     @pytest.fixture
@@ -20,8 +26,8 @@ class TestFighter:
     @pytest.fixture
     def bushslime_fighter(self, bushslime):
         bush_fighter = Fighter(bushslime, 15, 2, 2)
-        Game.fighter_system.set(bushslime, bush_fighter)
-        Game.ai_system.set(bushslime, Mock())
+        Game.instance.fighter_system.set(bushslime, bush_fighter)
+        Game.instance.ai_system.set(bushslime, Mock())
         yield bush_fighter
 
     def test_take_damage_decreases_health(self, fighter):

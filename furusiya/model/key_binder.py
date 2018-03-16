@@ -73,11 +73,12 @@ class KeyBinder:
 
     def register_keybind(self, key, callback=None):
         callback = callback or KEY_BINDINGS.get(key) or placeholder_callback
-        setattr(self.game.ui.app, self._format_attr_key(key), callback)
+        
+        setattr(Game.instance.ui.app, self._format_attr_key(key), callback)
 
     def suspend_keybind(self, key):
         try:
-            delattr(self.game.ui.app, self._format_attr_key(key))
+            delattr(Game.instance.ui.app, self._format_attr_key(key))
         except AttributeError:
             pass
 
@@ -90,18 +91,18 @@ class KeyBinder:
 
     def register_event(self, event_name, callback=None):
         callback = callback or EVENT_BINDINGS.get(event_name) or placeholder_callback
-        setattr(self.game.ui.app, self._format_attr_event(event_name), callback)
+        setattr(Game.instance.ui.app, self._format_attr_event(event_name), callback)
 
     # Update
     def register_update(self, new_callback=None):
-        update_manager = UpdateManager(Game)
+        update_manager = UpdateManager(Game.instance)
 
         def update(delta_time):
             update_manager.base_update()
             new_callback(delta_time, update_manager)
 
         callback = update if new_callback is not None else update_manager.update
-        setattr(self.game.ui.app, 'update', callback)
+        setattr(Game.instance.ui.app, 'update', callback)
 
 
 SKILL_KEYBINDINGS = {
@@ -115,4 +116,4 @@ SKILL_KEYBINDINGS = {
 
 def add_skill(skill_name):
     skill_keybind = SKILL_KEYBINDINGS.get(skill_name)
-    Game.keybinder.register_keybinds(skill_keybind)
+    Game.instance.keybinder.register_keybinds(skill_keybind)

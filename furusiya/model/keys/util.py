@@ -20,7 +20,7 @@ def map_movement_callback(callback):
     def new_right(event):
         callback(*DELTA_RIGHT)
 
-    Game.keybinder.register_keybinds({
+    Game.instance.keybinder.register_keybinds({
         'UP': new_up,
         'DOWN': new_down,
         'LEFT': new_left,

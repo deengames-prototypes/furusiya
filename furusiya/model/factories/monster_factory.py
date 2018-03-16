@@ -10,7 +10,7 @@ from model.entities.game_object import GameObject
 def create_monster(data, x, y, colour, name):
     monster = GameObject(x, y, name[0], name, colour, blocks=True)
 
-    Game.fighter_system.set(
+    Game.instance.fighter_system.set(
         monster, Fighter(
             owner=monster,
             hp=data.health,
@@ -21,13 +21,13 @@ def create_monster(data, x, y, colour, name):
         )
     )
 
-    Game.xp_system.set(
+    Game.instance.xp_system.set(
         monster, XPComponent(
             owner=monster,
             xp=data.xp
         )
     )
 
-    Game.ai_system.set(monster, BasicMonster(monster))
+    Game.instance.ai_system.set(monster, BasicMonster(monster))
 
     return monster

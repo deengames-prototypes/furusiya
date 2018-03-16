@@ -30,10 +30,10 @@ class ForestGenerator:
         self._generate_trees()
         
         map_generator.generate_monsters(self._area_map,
-            Game.random.randint(*ForestGenerator.NUM_MONSTERS))
+            Game.instance.random.randint(*ForestGenerator.NUM_MONSTERS))
 
         map_generator.generate_items(self._area_map, 
-            Game.random.randint(*ForestGenerator.NUM_ITEMS))
+            Game.instance.random.randint(*ForestGenerator.NUM_ITEMS))
 
         self.place_stairs()
 
@@ -105,7 +105,7 @@ class ForestGenerator:
         unreachable = [(x, y) for (x, y) in all_ground_tiles if (x, y) not in reachable]
 
         for (x, y) in unreachable:
-            self._area_map.tiles[x][y].convert_to_wall(colour=Game.random.choice(ForestGenerator.TREE_COLOURS))
+            self._area_map.tiles[x][y].convert_to_wall(colour=Game.instance.random.choice(ForestGenerator.TREE_COLOURS))
 
     def _random_walk(self, num_tiles):
         """
@@ -114,19 +114,19 @@ class ForestGenerator:
         the number of tiles we have to walk.
         Repeat until num_tiles is 0
         """
-        e = AttrDict({'x': (Game.random.randint(0, self._area_map.width - 1)), 'y': (Game.random.randint(0, self._area_map.height - 1))})
+        e = AttrDict({'x': (Game.instance.random.randint(0, self._area_map.width - 1)), 'y': (Game.instance.random.randint(0, self._area_map.height - 1))})
         walker = RandomWalker(self._area_map, e)
 
         while num_tiles > 0:
             try:
                 walker.walk()
-                self._area_map.tiles[e.x][e.y].convert_to_wall(colour=Game.random.choice(ForestGenerator.TREE_COLOURS))
+                self._area_map.tiles[e.x][e.y].convert_to_wall(colour=Game.instance.random.choice(ForestGenerator.TREE_COLOURS))
                 num_tiles -= 1
             except ValueError as no_walkable_adjacents_error:
                 # While loop will not terminate, we'll try elsewhere
                 # Randomly move, even if there's a tree there.
-                dx = Game.random.randint(-1, 1)
-                dy = Game.random.randint(-1, 1) if dx == 0 else 0
+                dx = Game.instance.random.randint(-1, 1)
+                dy = Game.instance.random.randint(-1, 1) if dx == 0 else 0
 
                 e.x += dx
                 e.y += dy

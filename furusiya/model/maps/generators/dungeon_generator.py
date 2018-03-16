@@ -23,9 +23,9 @@ class DungeonGenerator:
         self._generate_rooms()
 
         map_generator.generate_monsters(self._area_map,
-            Game.random.randint(*DungeonGenerator.NUM_ROOMS))
+            Game.instance.random.randint(*DungeonGenerator.NUM_ROOMS))
         map_generator.generate_items(self._area_map,
-            Game.random.randint(*DungeonGenerator.NUM_ITEMS))
+            Game.instance.random.randint(*DungeonGenerator.NUM_ITEMS))
 
     def _generate_rooms(self):
         # TODO: dry this block with forest generator
@@ -33,7 +33,7 @@ class DungeonGenerator:
             for y in range(0, self._area_map.height):
                 self._area_map.tiles[x][y].convert_to_wall()
 
-        rooms_to_generate = Game.random.randint(*DungeonGenerator.NUM_ROOMS)
+        rooms_to_generate = Game.instance.random.randint(*DungeonGenerator.NUM_ROOMS)
 
         # If you generate a room overlapping another room, that's a fail.
         # After ten failures, we give up and return the dungeon as-is.
@@ -41,11 +41,11 @@ class DungeonGenerator:
 
         while rooms_to_generate and num_failures:
             # random width and height
-            w = Game.random.randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
-            h = Game.random.randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
+            w = Game.instance.random.randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
+            h = Game.instance.random.randint(DungeonGenerator.ROOM_MIN_SIZE, DungeonGenerator.ROOM_MAX_SIZE)
             # random position without going out of the boundaries of the map
-            x = Game.random.randint(0, self._area_map.width - w - 1)
-            y = Game.random.randint(0, self._area_map.height - h - 1)
+            x = Game.instance.random.randint(0, self._area_map.width - w - 1)
+            y = Game.instance.random.randint(0, self._area_map.height - h - 1)
 
             # "Rect" class makes rectangles easier to work with
             new_room = Rect(x, y, w, h)
@@ -70,8 +70,8 @@ class DungeonGenerator:
 
                 if len(self._rooms) == 0:
                     # this is the first room, where the player starts at
-                    Game.player.x = new_x
-                    Game.player.y = new_y
+                    Game.instance.player.x = new_x
+                    Game.instance.player.y = new_y
 
                 else:
                     # all rooms after the first:
@@ -81,7 +81,7 @@ class DungeonGenerator:
                     (prev_x, prev_y) = self._rooms[len(self._rooms) - 1].center()
 
                     # draw a coin (random number that is either 0 or 1)
-                    if Game.random.randint(0, 1):
+                    if Game.instance.random.randint(0, 1):
                         # first move horizontally, then vertically
                         self._create_h_tunnel(prev_x, new_x, prev_y)
                         self._create_v_tunnel(prev_y, new_y, new_x)

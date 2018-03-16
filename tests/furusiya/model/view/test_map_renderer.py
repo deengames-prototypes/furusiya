@@ -1,25 +1,28 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, Mock
 
 from constants import FOV_ALGO, FOV_LIGHT_WALLS
 from game import Game
-from model.entities.party.player import Player
 from model.config import config
+from model.entities.party.player import Player
+from model.entities.party.stallion import Stallion
 from model.maps.area_map import AreaMap
+from model.systems.system import ComponentSystem
 from view.map_renderer import MapRenderer
 from view.adapter.tdl_adapter import TdlAdapter
-
 
 SCREEN_WIDTH = 50
 SCREEN_HEIGHT = 50
 MAP_WIDTH = 10
 MAP_HEIGHT = 10
-PANEL_HEIGHT = 7
+PANEL_HEIGHT = 10
 
 
 class TestMapRenderer(unittest.TestCase):
     def setUp(self):
-        Game.game_messages = []
+        Game.instance = Mock()
+        Game.instance.game_messages = []
+        Game.instance.mouse_coord = (0, 0)
 
     def test_render_marks_current_fov_as_explored(self):
         map = AreaMap(MAP_WIDTH, MAP_HEIGHT)
@@ -48,9 +51,9 @@ class TestMapRenderer(unittest.TestCase):
         tdl_adapter.calculate_fov = MagicMock(return_value=fov_tiles)
 
         renderer = MapRenderer(player, tdl_adapter)
-        Game.area_map = map
-        Game.renderer = renderer
-        Game.ui = tdl_adapter
+        Game.instance.area_map = map
+        Game.instance.renderer = renderer
+        Game.instance.ui = tdl_adapter
         renderer.render()
 
         # Just check straight horizontal/vertical, as per our expectation
@@ -81,9 +84,9 @@ class TestMapRenderer(unittest.TestCase):
 
         renderer = MapRenderer(player, tdl_adapter)
         self.assertTrue(renderer.recompute_fov)
-        Game.area_map = map
-        Game.renderer = renderer
-        Game.ui = tdl_adapter
+        Game.instance.area_map = map
+        Game.instance.renderer = renderer
+        Game.instance.ui = tdl_adapter
         renderer.render()  # calls calculate_fov
         
         self.assertFalse(renderer.recompute_fov)        

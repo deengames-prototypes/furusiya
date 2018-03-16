@@ -9,9 +9,9 @@ def monster_death(monster):
     message(monster.name.capitalize() + ' is dead!', colors.orange)
     _mark_entity_as_dead(monster)
 
-    Game.xp_system.get(Game.player).gain_xp(Game.xp_system.get(monster).xp)
-    Game.fighter_system.remove(monster)
-    Game.ai_system.remove(monster)
+    Game.instance.xp_system.get(Game.instance.player).gain_xp(Game.instance.xp_system.get(monster).xp)
+    Game.instance.fighter_system.remove(monster)
+    Game.instance.ai_system.remove(monster)
 
     monster.original_ai = None
 
@@ -19,8 +19,8 @@ def monster_death(monster):
 def player_death(player):
     # the game ended!
     message('You died!', colors.red)
-    Game.game_state = 'dead'
-    Game.keybinder.register_all_keybinds_and_events()
+    Game.instance.game_state = 'dead'
+    Game.instance.keybinder.register_all_keybinds_and_events()
 
     # for added effect, transform the player into a corpse!
     player.char = '%'
@@ -31,11 +31,11 @@ def horse_death(horse):
     message('Stallion is dead!', colors.red)
     _mark_entity_as_dead(horse)
 
-    Game.fighter_system.remove(horse)
-    Game.ai_system.remove(horse)
+    Game.instance.fighter_system.remove(horse)
+    Game.instance.ai_system.remove(horse)
 
-    if Game.player.mounted:
-        Game.player.unmount(Game.stallion)
+    if Game.instance.player.mounted:
+        Game.instance.player.unmount(Game.instance.stallion)
 
 
 def _mark_entity_as_dead(entity):

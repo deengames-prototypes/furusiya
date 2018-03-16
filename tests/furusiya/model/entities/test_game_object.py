@@ -1,10 +1,9 @@
-from unittest.mock import Mock
-
-import pytest
-
 from game import Game
 from model.components.base import Component
 from model.entities.game_object import GameObject
+from model.maps.area_map import AreaMap
+import pytest
+from unittest.mock import Mock
 
 
 @pytest.fixture
@@ -73,10 +72,13 @@ def test_replace_component(obj, comp):
 
 
 def test_die_kills_entity(obj):
-    Game.area_map.entities.append(obj)
+    Game()
+    Game.instance.area_map = AreaMap(3, 3)
+    Game.instance.area_map.entities.append(obj)
+    Game.instance.ui = Mock()
 
     obj.die()
 
-    assert obj not in Game.area_map.entities
+    assert obj not in Game.instance.area_map.entities
     assert obj.name == ''
     assert obj.blocks is False

@@ -1,11 +1,15 @@
-from unittest.mock import Mock
-
-import pytest
-
 from game import Game
 from model.components.ai.monster import BasicMonster, StunnedMonster, FrozenMonster, ConfusedMonster
 from model.config import config
+from model.entities.party.player import Player
+from model.maps.area_map import AreaMap
+import pytest
+from unittest.mock import Mock
 
+def setup_module(module):
+    Game()
+    Game.instance.player = Player()
+    Game.instance.area_map = AreaMap(9, 9)
 
 class TestBasicMonster:
     @pytest.fixture
@@ -13,11 +17,11 @@ class TestBasicMonster:
         mock_ai = BasicMonster(Mock())
 
         visible_tile = (1, 1)
-        Game.renderer = Mock(visible_tiles=[visible_tile])
+        Game.instance.renderer = Mock(visible_tiles=[visible_tile])
         mock_ai.owner.x, mock_ai.owner.y = visible_tile
 
-        Game.fighter_system.set(Game.player, Mock(hp=5))
-        Game.fighter_system.set(mock_ai.owner, Mock())
+        Game.instance.fighter_system.set(Game.instance.player, Mock(hp=5))
+        Game.instance.fighter_system.set(mock_ai.owner, Mock())
 
         yield mock_ai
 
@@ -33,11 +37,11 @@ class TestBasicMonster:
 
         ai.take_turn()
 
-        Game.fighter_system.get(ai.owner).attack.assert_called_with(Game.player)
+        Game.instance.fighter_system.get(ai.owner).attack.assert_called_with(Game.instance.player)
 
     if config.data.enemies.randomlyWalkWhenOutOfSight:
         def test_take_turn_randomly_walks_if_out_of_sight(self, ai, monkeypatch):
-            Game.renderer.visible_tiles = []
+            Game.instance.renderer.visible_tiles = []
             mock_walker = Mock()
             monkeypatch.setattr('model.components.ai.monster.RandomWalker', mock_walker)
 
@@ -71,7 +75,7 @@ class TestFrozenMonster:
     @pytest.fixture
     def ai(self):
         mock_owner = Mock()
-        Game.fighter_system.set(mock_owner, Mock())
+        Game.instance.fighter_system.set(mock_owner, Mock())
         mock_ai = FrozenMonster(mock_owner)
 
         mock_ai.owner_fighter.max_hp = 1000

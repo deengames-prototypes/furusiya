@@ -1,6 +1,5 @@
 from model.components.base import Component
 
-
 class SkillComponent(Component):
     def __init__(self, owner, max_skill_points: int):
         super().__init__(owner)

@@ -18,7 +18,7 @@ def player_fighter():
 
 @pytest.fixture
 def xp(monkeypatch, player, player_fighter):
-    game.Game.fighter_system.set(player, player_fighter)
+    game.Game.instance.fighter_system.set(player, player_fighter)
     monkeypatch.setattr(game, 'message', lambda *args, **kwargs: None)
     yield XPComponent(player)
 

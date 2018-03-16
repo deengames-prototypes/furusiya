@@ -1,11 +1,14 @@
+from game import Game
+from model.config import config
+from model.entities.fire import Fire
+from model.event.event_bus import EventBus
+import pytest
 from unittest.mock import Mock
 
-import pytest
-
-from game import Game
-from model.entities.fire import Fire
-from model.config import config
-
+def setup_module(module):
+    Game()
+    Game.instance.events = EventBus()
+    Game.instance.ui = Mock()
 
 class TestFire:
     @pytest.fixture
@@ -19,15 +22,15 @@ class TestFire:
     @pytest.fixture
     def entity(self, fighter):
         e = Mock()
-        Game.fighter_system.set(e, fighter)
+        Game.instance.fighter_system.set(e, fighter)
         yield e
 
     @pytest.fixture(autouse=True, scope='class')
     def game(self):
-        old_map = Game.area_map
-        Game.area_map = Mock()
+        old_map = Game.instance.area_map
+        Game.instance.area_map = Mock()
         yield
-        Game.area_map = old_map
+        Game.instance.area_map = old_map
 
     def test_on_entity_move_damages_entity_and_extinguishes_self(self, fire, entity, fighter):
         fire.die = Mock()
@@ -56,20 +59,20 @@ class TestFire:
         assert fire.die.called
 
     def test_on_turn_passed_spreads_to_nearby_tiles(self, fire, monkeypatch):
-        monkeypatch.setattr(Game.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
+        monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
 
         def append(e):
             assert fire.x == e.x or fire.y == e.y
 
-        Game.area_map.entities.append.side_effect = append
+        Game.instance.area_map.entities.append.side_effect = append
 
         fire.on_turn_passed()
 
-        assert Game.area_map.entities.append.called
+        assert Game.instance.area_map.entities.append.called
 
     def test_die_unbinds_events(self, fire):
-        Game.events = Mock()
+        Game.instance.events = Mock()
 
         fire.die()
 
-        assert Game.events.unbind.called
+        assert Game.instance.events.unbind.called
