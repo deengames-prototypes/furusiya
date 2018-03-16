@@ -8,6 +8,10 @@ from unittest.mock import Mock
 class TestOmniSlash:
     guaranteed_hits, rehit_percent = 2, 50
 
+    @pytest.fixture
+    def player(self):
+        Game.instance.player = Player()
+        yield Game.instance.player
 
     @pytest.fixture
     def player_fighter(self, player):
@@ -42,7 +46,6 @@ class TestOmniSlash:
             player_fighter.reset_mock()
 
     def test_slash_hits_extra_hits(self, player, player_fighter, monster, monster_fighter, conf):
-        Game()
         Game.instance.random = random.Random()
         # set random seed for deterministic extra hits
         Game.instance.random.seed(2)
