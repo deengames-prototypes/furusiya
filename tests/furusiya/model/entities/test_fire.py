@@ -88,9 +88,8 @@ class TestFire:
         Game.instance.area_map.reset_mock()
         monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
 
-        entity = Mock(x=fire.x, y=fire.y)
+        entity = Mock(x=fire.x + 1, y=fire.y)
         Game.instance.area_map.get_entities_on.return_value = [entity]
-        fire.default_death_function = Mock()
 
         fire.on_turn_passed()
 
@@ -100,7 +99,7 @@ class TestFire:
         Game.instance.area_map.reset_mock()
         monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
 
-        entity = Mock(x=fire.x, y=fire.y)
+        entity = Mock(x=fire.x + 1, y=fire.y)
         Game.instance.area_map.get_entities_on.return_value = [entity]
         fire.default_death_function = Mock()
 
