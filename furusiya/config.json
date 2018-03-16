@@ -100,8 +100,8 @@
         "randomlyWalkWhenOutOfSight": true,
         "fire": {
           "damage": 5,
-          "spreadProbability": 10,
-          "selfExtinguishTurns": 4
+          "spreadProbability": 5,
+          "selfExtinguishTurns": 3
         },
         "bushslime": {
             "attack": 3,

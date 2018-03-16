@@ -61,12 +61,18 @@ class AreaMap:
         return self.entities.index(entity)
 
     def get_walkable_tile_within(self, rect):
-        for tile_x in range(rect.x1, rect.x2):
-            for tile_y in range(rect.y1, rect.y2):
-                if self.is_walkable(tile_x, tile_y):
-                    return tile_x, tile_y
+        all_tiles_around_range = [
+            (tile_x, tile_y)
+            for tile_x in range(rect.x1, rect.x2)
+            for tile_y in range(rect.y1, rect.y2)
+            if self.is_walkable(tile_x, tile_y)
+        ]
 
-        return None
+        if all_tiles_around_range:
+            tile = Game.instance.random.choice(all_tiles_around_range)
+            return tile
+        else:
+            return None
 
     def get_walkable_tile_around(self, x, y, range_num):
         """
