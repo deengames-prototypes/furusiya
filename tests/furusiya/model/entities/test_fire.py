@@ -3,7 +3,8 @@ from model.config import config
 from model.entities.fire import Fire
 from model.event.event_bus import EventBus
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
+
 
 def setup_module(module):
     Game()
@@ -28,7 +29,7 @@ class TestFire:
     @pytest.fixture(autouse=True, scope='class')
     def game(self):
         old_map = Game.instance.area_map
-        Game.instance.area_map = Mock()
+        Game.instance.area_map = MagicMock()
         Game.instance.area_map.mutate_position_if_walkable.side_effect = lambda x, y: (x + 1, y)
         yield
         Game.instance.area_map = old_map
@@ -71,3 +72,12 @@ class TestFire:
         fire.on_turn_passed()
 
         assert Game.instance.area_map.entities.append.called
+
+    def test_on_turn_passed_doesnt_spread_if_already_burning(self, fire, monkeypatch):
+        Game.instance.area_map.reset_mock()
+        monkeypatch.setattr(Game.instance.random, 'randint', Mock(return_value=config.data.enemies.fire.spreadProbability))
+        Game.instance.area_map.get_entities_on.return_value = [Fire(fire.x, fire.y)]
+
+        fire.on_turn_passed()
+
+        assert not Game.instance.area_map.entities.append.called

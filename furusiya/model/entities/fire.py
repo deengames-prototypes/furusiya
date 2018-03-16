@@ -29,5 +29,9 @@ class Fire(GameObject):
         if config.data.enemies.fire.spreadProbability >= Game.instance.random.randint(1, 100):
             tile = Game.instance.area_map.mutate_position_if_walkable(self.x, self.y)
             if tile is not None:
-                created_fire = Fire(*tile)
-                Game.instance.area_map.entities.append(created_fire)
+                entities_on_tile = Game.instance.area_map.get_entities_on(*tile)
+                fire_on_tile = [e for e in entities_on_tile if isinstance(e, Fire)]
+
+                if not fire_on_tile:
+                    created_fire = Fire(*tile)
+                    Game.instance.area_map.entities.append(created_fire)
