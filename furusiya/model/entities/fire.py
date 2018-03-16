@@ -1,5 +1,6 @@
 import colors
 from game import Game
+from model.components.fighter import Fighter
 from model.entities.game_object import GameObject
 from model.config import config
 
@@ -17,7 +18,8 @@ class Fire(GameObject):
         if (entity.x, entity.y) == (self.x, self.y):
             fighter = Game.instance.fighter_system.get(entity)
             if fighter is not None:
-                fighter.take_damage(config.data.enemies.fire.damage)
+                damage = Fighter.calculate_damage(config.data.enemies.fire, 1, fighter)
+                fighter.take_damage(damage)
                 self.die()
 
     def on_turn_passed(self):

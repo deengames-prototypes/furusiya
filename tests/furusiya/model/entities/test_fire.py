@@ -36,6 +36,7 @@ class TestFire:
     def test_on_entity_move_damages_entity_and_extinguishes_self(self, fire, entity, fighter):
         fire.die = Mock()
         entity.x, entity.y = fire.x, fire.y
+        fighter.defense = 1
 
         fire.on_entity_move(entity)
 
