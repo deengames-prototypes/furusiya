@@ -1,5 +1,4 @@
 from game import Game
-from model.item import Item
 from model.maps.area_map import AreaMap
 from model.maps.generators import map_generator
 
@@ -28,4 +27,4 @@ class TestMapGenerator:
         assert len(area_map.entities) == expected_items
 
         for item in area_map.entities:
-            assert item.get_component(Item) is not None
+            assert Game.instance.item_system.get(item) is not None

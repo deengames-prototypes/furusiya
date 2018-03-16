@@ -4,11 +4,10 @@ from model.components.ai.monster import BasicMonster
 from model.helper_functions.death_functions import monster_death
 from model.components.fighter import Fighter
 from model.components.xp import XPComponent
-from model.entities.game_object import GameObject
 
 
-def create_monster(data, x, y, colour, name):
-    monster = GameObject(x, y, name[0], name, colour, blocks=True)
+def create_monster(data, x, y, colour, name, cls):
+    monster = cls(x, y, name[0], name, colour, blocks=True)
 
     Game.instance.fighter_system.set(
         monster, Fighter(

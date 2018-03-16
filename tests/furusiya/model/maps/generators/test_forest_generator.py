@@ -52,7 +52,7 @@ class TestForestGenerator(unittest.TestCase):
         self.assertGreater(actual_num_trees, pre_fill_num_trees)
 
     def test_generate_generates_monsters(self):
-        width, height = 10, 10
+        width, height = 15, 15
         Game.instance.area_map = AreaMap(width, height)
         fg = ForestGenerator(Game.instance.area_map)
         fg.generate()

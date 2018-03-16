@@ -99,7 +99,7 @@ def init_game():
     Game.instance.random = Random(seed)
     print("Seeding as universe #{}".format(seed))
 
-    Game.instance.events = EventBus()
+    Game.instance.event_bus = EventBus()
 
 
 def main_menu():

@@ -4,7 +4,6 @@ from game import Game
 from model.helper_functions.menu import inventory_menu
 from model.helper_functions.message import message
 from model.helper_functions.skills import can_use_skill
-from model.item import Item
 from model.keys.decorators import in_game, skill, horse_skill
 from model.keys.util import map_movement_callback
 from model.skills.frostbomb import FrostBomb
@@ -52,7 +51,7 @@ def right_callback(event):
 @in_game(pass_turn=False)
 def pickup_callback(event):
     for obj in Game.instance.area_map.entities:  # look for an item in the player's tile
-        obj_item = obj.get_component(Item)
+        obj_item = Game.instance.item_system.get(obj)
         if (obj.x, obj.y) == (Game.instance.player.x, Game.instance.player.y) and obj_item:
             obj_item.pick_up()
             break

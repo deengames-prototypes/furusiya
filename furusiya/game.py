@@ -28,6 +28,7 @@ class Game:
         self.ai_system = ComponentSystem()
         self.xp_system = ComponentSystem()
         self.skill_system = ComponentSystem()
+        self.item_system = ComponentSystem()
 
         self.player = None
         self.stallion = None
@@ -36,4 +37,4 @@ class Game:
         self.floors = []
         self.current_floor = 1
 
-        self.events = None
+        self.event_bus = None

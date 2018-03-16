@@ -16,44 +16,12 @@ class GameObject:
         self.name = name
         self.blocks = blocks
 
-        self._components = {}
-
-    def _get_components_of_type(self, component_type):
-        return [
-            k
-            for k in self._components.keys()
-            if k == component_type
-        ]
-
-    def _get_component_type(self, component_type):
-        possible_matches = self._get_components_of_type(component_type)
-
-        if len(possible_matches) == 0:
-            return None
-        else:
-            return possible_matches[0]
-
-    def set_component(self, component):
-        self._components[type(component)] = component
-
-    def get_component(self, component_type):
-        return self._components.get(self._get_component_type(component_type), None)
-
-    def remove_component(self, component_type):
-        try:
-            del self._components[self._get_component_type(component_type)]
-        except KeyError:
-            pass
-
-    def has_component(self, component_type):
-        return self.get_component(component_type) is not None
-
     def move(self, dx, dy):
         # move by the given amount, if the destination is not blocked
         if Game.instance.area_map.is_walkable(self.x + dx, self.y + dy):
             self.x += dx
             self.y += dy
-            Game.instance.events.trigger('on_entity_move', self)
+            Game.instance.event_bus.trigger('on_entity_move', self)
         else:
             return Game.instance.area_map.get_blocking_object_at(self.x + dx, self.y + dy)
 
