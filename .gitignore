@@ -3,3 +3,6 @@ coverage
 savegame*
 .coverage
 .pytest_cache
+build
+dist
+main.spec
