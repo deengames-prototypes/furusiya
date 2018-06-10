@@ -65,7 +65,8 @@ class GameObject:
         Game.instance.ui.con.draw_str(self.x, self.y, ' ', self.color)
 
     def cleanup(self):
-        Game.instance.area_map.entities.remove(self)
+        if self in Game.instance.area_map.entities:
+            Game.instance.area_map.entities.remove(self)
         Game.instance.event_bus.unregister(self)
 
     def default_death_function(self):

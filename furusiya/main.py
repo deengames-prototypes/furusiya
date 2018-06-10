@@ -37,13 +37,15 @@ def new_game():
     if config.data.stallion.enabled:
         Game.instance.stallion = Stallion(Game.instance.player)
 
+    Game.instance.floors = []
+
     for i in range(1, config.data.numFloors + 1):
         Game.instance.area_map = AreaMap(MAP_WIDTH, MAP_HEIGHT, i)
         Game.instance.event_bus = EventBus()
 
         # generate map (at this point it's not drawn to the screen)
         generator_class_name = f'{str(config.data.mapType).lower().capitalize()}Generator'
-        generator = getattr(generators, generator_class_name, ForestGenerator)
+        generator = getattr(generators, generator_class_name)
         generator(Game.instance.area_map).generate()
 
         Game.instance.floors.append(Game.instance.area_map)
